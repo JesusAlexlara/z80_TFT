@@ -7,91 +7,139 @@ Symbol Table
     .__.ABS.                                                    =  0000 G
     .__.CPU.                                                    =  0000 L
     .__.H$L.                                                    =  0000 L
+  0 LOOP_10                                                        01DB R
+  0 LOOP_100                                                       01E4 R
     _PPI_CTRL                                                   =  0043 
     _PPI_PORTA                                                  =  0040 
     _PPI_PORTB                                                  =  0041 
     _PPI_PORTC                                                  =  0042 
-    _UDLL                                                       =  0020 
-    _UDLM                                                       =  0021 
-    _UIER                                                       =  0021 
-    _UIIR                                                       =  0022 
-    _ULCR                                                       =  0023 
-    _ULSR                                                       =  0025 
-    _UMCR                                                       =  0024 
-    _UMSR                                                       =  0026 
-    _URBR                                                       =  0020 
-    _UTHR                                                       =  0020 
-  0 _UartInit                                                      0053 GR
-  0 _UartInit_end                                                  0068 GR
-  0 _UartInit_start                                                0053 GR
-  0 _UartPrint                                                     00A1 GR
-  0 _UartPrint_end                                                 00B4 GR
-  0 _UartPrint_start                                               00A1 GR
-  0 _UartRead                                                      008B GR
-  0 _UartReadLine                                                  00B4 GR
-  0 _UartReadLine_end                                              0145 GR
-  0 _UartReadLine_start                                            00B4 GR
-  0 _UartRead_end                                                  00A1 GR
-  0 _UartRead_start                                                008B GR
-  0 _UartWrite                                                     0068 GR
-  0 _UartWrite_end                                                 008B GR
-  0 _UartWrite_start                                               0068 GR
-  0 ___str_0                                                       0448 R
-  7 __xinit__corrimiento                                           0000 R
-  2 _corrimiento                                                   0000 GR
-  0 _delay_ms                                                      0236 GR
-  0 _delay_ms_end                                                  024C GR
-  0 _delay_ms_start                                                0236 GR
-  0 _getchar                                                       0162 GR
-  0 _getchar_end                                                   0165 GR
-  0 _getchar_start                                                 0162 GR
-  1 _io_addr                                                       0001 R
-  0 _io_read                                                       002E GR
-  0 _io_read_end                                                   0053 GR
-  0 _io_read_start                                                 002E GR
-  1 _io_val                                                        0000 R
+  0 _PROGMEM                                                       022D R
+    _URDLL                                                      =  0010 
+    _URDLM                                                      =  0011 
+    _URIER                                                      =  0011 
+    _URIIR                                                      =  0012 
+    _URLCR                                                      =  0013 
+    _URLSR                                                      =  0015 
+    _URMCR                                                      =  0014 
+    _URMSR                                                      =  0016 
+    _URRBR                                                      =  0010 
+    _URTHR                                                      =  0010 
+  1 ___ret_aux                                                     0000 GR
+  0 _delay_100us                                                   01E0 GR
+  0 _delay_100us_end                                               01E9 GR
+  0 _delay_100us_start                                             01E0 GR
+  0 _delay_10us                                                    01D7 GR
+  0 _delay_10us_end                                                01E0 GR
+  0 _delay_10us_start                                              01D7 GR
+  0 _delay_ms                                                      01E9 GR
+  0 _delay_ms_end                                                  01FF GR
+  0 _delay_ms_start                                                01E9 GR
+  0 _getchar                                                       021C GR
+  0 _getchar_end                                                   021F GR
+  0 _getchar_start                                                 021C GR
+  0 _io_read                                                       0011 GR
+  0 _io_read_buffer                                                0042 GR
+  0 _io_read_buffer_end                                            005D GR
+  0 _io_read_buffer_start                                          0042 GR
+  0 _io_read_end                                                   0027 GR
+  0 _io_read_start                                                 0011 GR
   0 _io_write                                                      0000 GR
-  0 _io_write_end                                                  002E GR
+  0 _io_write_buffer                                               0027 GR
+  0 _io_write_buffer_end                                           0042 GR
+  0 _io_write_buffer_start                                         0027 GR
+  0 _io_write_end                                                  0011 GR
   0 _io_write_start                                                0000 GR
     _isprint                                                       **** GX
-  0 _isr_vector38                                                  0173 GR
-  0 _isr_vector38_end                                              0185 GR
-  0 _isr_vector38_start                                            0173 GR
-  0 _isr_vector66                                                  0165 GR
+  0 _isr_vector38                                                  02F9 GR
+  0 _isr_vector38_end                                              0307 GR
+  0 _isr_vector38_start                                            02F9 GR
+  0 _isr_vector66                                                  021F GR
+  0 _isr_vector66_end                                              022D GR
+  0 _isr_vector66_start                                            021F GR
+  0 _lcd_init                                                      0314 GR
+  0 _lcd_init_end                                                  038C GR
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 2.
 Hexadecimal [16-Bits]
 
 Symbol Table
 
-  0 _isr_vector66_end                                              0173 GR
-  0 _isr_vector66_start                                            0165 GR
-  0 _main                                                          0185 GR
-  0 _main_end                                                      021F GR
-  0 _main_start                                                    0185 GR
-    _printf                                                        **** GX
-  0 _putchar                                                       0145 GR
-  0 _putchar_end                                                   0162 GR
-  0 _putchar_start                                                 0145 GR
-  0 _system_init                                                   021F GR
-  0 _system_init_end                                               0236 GR
-  0 _system_init_start                                             021F GR
-  0 _teclado_read                                                  024C GR
-  0 _teclado_read_end                                              0448 GR
-  0 _teclado_read_start                                            024C GR
-
-
+  0 _lcd_init_start                                                0314 GR
+  0 _main                                                          0307 GR
+  0 _main_end                                                      030D GR
+  0 _main_start                                                    0307 GR
+  0 _ppi_clear_portc_bit                                           01CE GR
+  0 _ppi_clear_portc_bit_end                                       01D7 GR
+  0 _ppi_clear_portc_bit_start                                     01CE GR
+  0 _ppi_init                                                      0184 GR
+  0 _ppi_init_end                                                  01C3 GR
+  0 _ppi_init_start                                                0184 GR
+  0 _ppi_set_portc_bit                                             01C3 GR
+  0 _ppi_set_portc_bit_end                                         01CE GR
+  0 _ppi_set_portc_bit_start                                       01C3 GR
+  0 _putchar                                                       01FF GR
+  0 _putchar_end                                                   021C GR
+  0 _putchar_start                                                 01FF GR
+  0 _setAddrWindow                                                 04F5 GR
+  0 _setAddrWindow_end                                             055F GR
+  0 _setAddrWindow_start                                           04F5 GR
+  0 _system_init                                                   030D GR
+  0 _system_init_end                                               0314 GR
+  0 _system_init_start                                             030D GR
+  0 _uart_disable_interrupts                                       0177 GR
+  0 _uart_disable_interrupts_end                                   017C GR
+  0 _uart_disable_interrupts_start                                 0177 GR
+  0 _uart_enable_interrupts                                        017C GR
+  0 _uart_enable_interrupts_end                                    0184 GR
+  0 _uart_enable_interrupts_start                                  017C GR
+  0 _uart_init                                                     005D GR
+  0 _uart_init_end                                                 0093 GR
+  0 _uart_init_start                                               005D GR
+  0 _uart_print                                                    00C8 GR
+  0 _uart_print_end                                                00DB GR
+  0 _uart_print_start                                              00C8 GR
+  0 _uart_read                                                     00BC GR
+  0 _uart_read_end                                                 00C8 GR
+  0 _uart_read_line                                                00DB GR
+  0 _uart_read_line_end                                            0177 GR
+  0 _uart_read_line_start                                          00DB GR
+  0 _uart_read_start                                               00BC GR
+  0 _uart_set_baudrate                                             0093 GR
+  0 _uart_set_baudrate_end                                         00AB GR
+  0 _uart_set_baudrate_start                                       0093 GR
+  0 _uart_write                                                    00AB GR
+  0 _uart_write_end                                                00BC GR
+  0 _uart_write_start                                              00AB GR
+  0 _write8                                                        04E1 GR
+  0 _write8_end                                                    04F5 GR
+  0 _write8_start                                                  04E1 GR
+  0 _writeRegister16                                               04B0 GR
+  0 _writeRegister16_end                                           04E1 GR
+  0 _writeRegister16_start                                         04B0 GR
+  0 _writeRegister24                                               038C GR
+  0 _writeRegister24_end                                           040B GR
+  0 _writeRegister24_start                                         038C GR
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 3.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+  0 _writeRegister32                                               040B GR
+  0 _writeRegister32_end                                           04B0 GR
+  0 _writeRegister32_start                                         040B GR
+
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 4.
 Hexadecimal [16-Bits]
 
 Area Table
 
-   0 _CODE                                      size  44C   flags    0
-   1 _DATA                                      size    2   flags    0
-   2 _INITIALIZED                               size    1   flags    0
+   0 _CODE                                      size  55F   flags    0
+   1 _DATA                                      size    1   flags    0
+   2 _INITIALIZED                               size    0   flags    0
    3 _DABS                                      size    0   flags    8
    4 _HOME                                      size    0   flags    0
    5 _GSINIT                                    size    0   flags    0
    6 _GSFINAL                                   size    0   flags    0
-   7 _INITIALIZER                               size    1   flags    0
+   7 _INITIALIZER                               size    0   flags    0
    8 _CABS                                      size    0   flags    8
 

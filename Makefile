@@ -8,7 +8,8 @@
 #	
 #	Programas necesarios:
 #	
-#	SDCC > 3.4
+#	SDCC > 3.3
+#	make 
 #	srec_cat
 #
 #	Opciones:
@@ -36,12 +37,7 @@
 PROYECT_NAME := Z80-Template-Proyect
 
 ##################################################################################
-# Comndo para eliminar archivos, descomentar dependiendo el sistema operativo.
-
-# Windows
-#RMCMD := del -F
-
-# Unix/Linux
+# Comndo para eliminar archivos.
 RMCMD := rm -Rf
 
 ###################################################################################
@@ -88,10 +84,10 @@ ASMFLAGS := -go
 # Estas 2 lineas definen las  direcciones de datos y de codigo
 # dependiendo de el mapa de memoria ROM y RAM del sistema.
 
-# CODEINIT indica la dirección en la que comienza el programa,
-# se usa la dirección 0xA0 0 0x100,  una  dirección segura despues de
+# CODEINIT indica la dirección en la que comienza el programa 'main',
+# se usa la dirección 0x90 0 0x100,  una  dirección segura despues de
 # los vectores de interrupción.
-CODEINIT:=0xA0
+CODEINIT:=0x90
 
 # DATAINIT indica la dirección en  la  que comienza la memoria
 # RAM, para este caso es de 32k y va desde 0x8000 a 0xFFFF.

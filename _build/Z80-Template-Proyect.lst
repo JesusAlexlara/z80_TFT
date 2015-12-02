@@ -1,7 +1,7 @@
                               1 ;--------------------------------------------------------
                               2 ; File Created by SDCC : free open source ANSI-C Compiler
                               3 ; Version 3.4.0 #8981 (Jul 12 2014) (Linux)
-                              4 ; This file was generated Mon Nov 30 13:17:10 2015
+                              4 ; This file was generated Tue Dec  1 19:45:35 2015
                               5 ;--------------------------------------------------------
                               6 	.module main
                               7 	.optsdcc -mz80
@@ -12,924 +12,1200 @@
                              12 	.globl _main
                              13 	.globl _isr_vector38
                              14 	.globl _isr_vector66
-                             15 	.globl _UartReadLine
-                             16 	.globl _UartPrint
-                             17 	.globl _UartRead
-                             18 	.globl _UartWrite
-                             19 	.globl _UartInit
-                             20 	.globl _io_read
-                             21 	.globl _io_write
-                             22 	.globl _printf
-                             23 	.globl _isprint
-                             24 	.globl _corrimiento
-                             25 	.globl _putchar
-                             26 	.globl _getchar
-                             27 	.globl _system_init
-                             28 	.globl _delay_ms
-                             29 	.globl _teclado_read
-                             30 ;--------------------------------------------------------
-                             31 ; special function registers
-                             32 ;--------------------------------------------------------
-                     0040    33 _PPI_PORTA	=	0x0040
-                     0041    34 _PPI_PORTB	=	0x0041
-                     0042    35 _PPI_PORTC	=	0x0042
-                     0043    36 _PPI_CTRL	=	0x0043
-                     0020    37 _URBR	=	0x0020
-                     0020    38 _UTHR	=	0x0020
-                     0021    39 _UIER	=	0x0021
-                     0022    40 _UIIR	=	0x0022
-                     0023    41 _ULCR	=	0x0023
-                     0025    42 _ULSR	=	0x0025
-                     0024    43 _UMCR	=	0x0024
-                     0026    44 _UMSR	=	0x0026
-                     0020    45 _UDLL	=	0x0020
-                     0021    46 _UDLM	=	0x0021
-                             47 ;--------------------------------------------------------
-                             48 ; ram data
-                             49 ;--------------------------------------------------------
-                             50 	.area _DATA
-   0000                      51 _io_val:
-   0000                      52 	.ds 1
-   0001                      53 _io_addr:
-   0001                      54 	.ds 1
-                             55 ;--------------------------------------------------------
-                             56 ; ram data
-                             57 ;--------------------------------------------------------
-                             58 	.area _INITIALIZED
-   0000                      59 _corrimiento::
-   0000                      60 	.ds 1
+                             15 	.globl _isprint
+                             16 	.globl ___ret_aux
+                             17 	.globl _io_write
+                             18 	.globl _io_read
+                             19 	.globl _io_write_buffer
+                             20 	.globl _io_read_buffer
+                             21 	.globl _uart_init
+                             22 	.globl _uart_set_baudrate
+                             23 	.globl _uart_write
+                             24 	.globl _uart_read
+                             25 	.globl _uart_print
+                             26 	.globl _uart_read_line
+                             27 	.globl _uart_disable_interrupts
+                             28 	.globl _uart_enable_interrupts
+                             29 	.globl _ppi_init
+                             30 	.globl _ppi_set_portc_bit
+                             31 	.globl _ppi_clear_portc_bit
+                             32 	.globl _delay_10us
+                             33 	.globl _delay_100us
+                             34 	.globl _delay_ms
+                             35 	.globl _putchar
+                             36 	.globl _getchar
+                             37 	.globl _system_init
+                             38 	.globl _lcd_init
+                             39 	.globl _writeRegister24
+                             40 	.globl _writeRegister32
+                             41 	.globl _writeRegister16
+                             42 	.globl _write8
+                             43 	.globl _setAddrWindow
+                             44 ;--------------------------------------------------------
+                             45 ; special function registers
+                             46 ;--------------------------------------------------------
+                     0010    47 _URRBR	=	0x0010
+                     0010    48 _URTHR	=	0x0010
+                     0011    49 _URIER	=	0x0011
+                     0012    50 _URIIR	=	0x0012
+                     0013    51 _URLCR	=	0x0013
+                     0015    52 _URLSR	=	0x0015
+                     0014    53 _URMCR	=	0x0014
+                     0016    54 _URMSR	=	0x0016
+                     0010    55 _URDLL	=	0x0010
+                     0011    56 _URDLM	=	0x0011
+                     0040    57 _PPI_PORTA	=	0x0040
+                     0041    58 _PPI_PORTB	=	0x0041
+                     0042    59 _PPI_PORTC	=	0x0042
+                     0043    60 _PPI_CTRL	=	0x0043
                              61 ;--------------------------------------------------------
-                             62 ; absolute external ram data
+                             62 ; ram data
                              63 ;--------------------------------------------------------
-                             64 	.area _DABS (ABS)
-                             65 ;--------------------------------------------------------
-                             66 ; global & static initialisations
+                             64 	.area _DATA
+   0000                      65 ___ret_aux::
+   0000                      66 	.ds 1
                              67 ;--------------------------------------------------------
-                             68 	.area _HOME
-                             69 	.area _GSINIT
-                             70 	.area _GSFINAL
-                             71 	.area _GSINIT
-                             72 ;--------------------------------------------------------
-                             73 ; Home
-                             74 ;--------------------------------------------------------
-                             75 	.area _HOME
-                             76 	.area _HOME
+                             68 ; ram data
+                             69 ;--------------------------------------------------------
+                             70 	.area _INITIALIZED
+                             71 ;--------------------------------------------------------
+                             72 ; absolute external ram data
+                             73 ;--------------------------------------------------------
+                             74 	.area _DABS (ABS)
+                             75 ;--------------------------------------------------------
+                             76 ; global & static initialisations
                              77 ;--------------------------------------------------------
-                             78 ; code
-                             79 ;--------------------------------------------------------
-                             80 	.area _CODE
-                             81 ;z80io.h:272: void io_write(byte addr, byte data){
-                             82 ;	---------------------------------
-                             83 ; Function io_write
-                             84 ; ---------------------------------
-   0000                      85 _io_write_start::
-   0000                      86 _io_write:
-                             87 ;z80io.h:274: io_addr=addr;
-   0000 FD 21 02 00   [14]   88 	ld	iy,#2
-   0004 FD 39         [15]   89 	add	iy,sp
-   0006 FD 7E 00      [19]   90 	ld	a,0 (iy)
-   0009 FD 21r01r00   [14]   91 	ld	iy,#_io_addr
-   000D FD 77 00      [19]   92 	ld	0 (iy),a
-                             93 ;z80io.h:275: io_val=data;
-   0010 FD 21 03 00   [14]   94 	ld	iy,#3
-   0014 FD 39         [15]   95 	add	iy,sp
-   0016 FD 7E 00      [19]   96 	ld	a,0 (iy)
-   0019 FD 21r00r00   [14]   97 	ld	iy,#_io_val
-   001D FD 77 00      [19]   98 	ld	0 (iy),a
-                             99 ;z80io.h:289: __endasm;
-   0020 D9            [ 4]  100 	EXX
-   0021 08            [ 4]  101 	EX AF,AF'
-   0022 3Ar00r00      [13]  102 	LD A,(_io_val)
-   0025 ED 4Br01r00   [20]  103 	LD BC,(_io_addr)
-   0029 ED 79         [12]  104 	OUT (C),A
-   002B 08            [ 4]  105 	EX AF,AF'
-   002C D9            [ 4]  106 	EXX
-   002D C9            [10]  107 	ret
-   002E                     108 _io_write_end::
-                            109 ;z80io.h:292: char io_read(byte addr){
-                            110 ;	---------------------------------
-                            111 ; Function io_read
-                            112 ; ---------------------------------
-   002E                     113 _io_read_start::
-   002E                     114 _io_read:
-                            115 ;z80io.h:294: io_addr=addr;
-   002E FD 21 02 00   [14]  116 	ld	iy,#2
-   0032 FD 39         [15]  117 	add	iy,sp
-   0034 FD 7E 00      [19]  118 	ld	a,0 (iy)
-   0037 FD 21r01r00   [14]  119 	ld	iy,#_io_addr
-   003B FD 77 00      [19]  120 	ld	0 (iy),a
-                            121 ;z80io.h:308: __endasm;
-   003E D9            [ 4]  122 	EXX
-   003F 08            [ 4]  123 	EX AF,AF'
-   0040 ED 4Br01r00   [20]  124 	LD BC,(_io_addr)
-   0044 ED 78         [12]  125 	IN A,(C)
-   0046 32r00r00      [13]  126 	LD (_io_val),A
-   0049 08            [ 4]  127 	EX AF,AF'
-   004A D9            [ 4]  128 	EXX
-                            129 ;z80io.h:310: return io_val;
-   004B FD 21r00r00   [14]  130 	ld	iy,#_io_val
-   004F FD 6E 00      [19]  131 	ld	l,0 (iy)
-   0052 C9            [10]  132 	ret
-   0053                     133 _io_read_end::
-                            134 ;z80uart.h:64: void UartInit(){
-                            135 ;	---------------------------------
-                            136 ; Function UartInit
-                            137 ; ---------------------------------
-   0053                     138 _UartInit_start::
-   0053                     139 _UartInit:
-                            140 ;z80uart.h:67: ULCR = UDLAB;
-   0053 3E 80         [ 7]  141 	ld	a,#0x80
-   0055 D3 23         [11]  142 	out	(_ULCR),a
-                            143 ;z80uart.h:69: UDLL = UART_DIV_VALUE();
-   0057 3E 1A         [ 7]  144 	ld	a,#0x1A
-   0059 D3 20         [11]  145 	out	(_UDLL),a
-                            146 ;z80uart.h:71: UDLM = UART_DIV_VALUE() >> 8;
-   005B 3E 00         [ 7]  147 	ld	a,#0x00
-   005D D3 21         [11]  148 	out	(_UDLM),a
-                            149 ;z80uart.h:73: ULCR = UWLS0 | UWLS1;
-   005F 3E 03         [ 7]  150 	ld	a,#0x03
-   0061 D3 23         [11]  151 	out	(_ULCR),a
-                            152 ;z80uart.h:76: UIER = UERBFI;
-   0063 3E 01         [ 7]  153 	ld	a,#0x01
-   0065 D3 21         [11]  154 	out	(_UIER),a
-   0067 C9            [10]  155 	ret
-   0068                     156 _UartInit_end::
-                            157 ;z80uart.h:80: void UartWrite(char c){
-                            158 ;	---------------------------------
-                            159 ; Function UartWrite
-                            160 ; ---------------------------------
-   0068                     161 _UartWrite_start::
-   0068                     162 _UartWrite:
-                            163 ;z80uart.h:84: while( !(io_read(UART_LSR_ADDR) & UTEMT) );
-   0068                     164 00101$:
-   0068 3E 25         [ 7]  165 	ld	a,#0x25
-   006A F5            [11]  166 	push	af
-   006B 33            [ 6]  167 	inc	sp
-   006C CDr2Er00      [17]  168 	call	_io_read
-   006F 33            [ 6]  169 	inc	sp
-   0070 CB 75         [ 8]  170 	bit	6, l
-   0072 28 F4         [12]  171 	jr	Z,00101$
-                            172 ;z80uart.h:85: NOP();    
-   0074 00            [ 4]  173 	NOP
-                            174 ;z80uart.h:87: io_write(UART_THR_ADDR,c);
-   0075 21 02 00      [10]  175 	ld	hl, #2+0
-   0078 39            [11]  176 	add	hl, sp
-   0079 56            [ 7]  177 	ld	d, (hl)
-   007A 1E 20         [ 7]  178 	ld	e,#0x20
-   007C D5            [11]  179 	push	de
-   007D CDr00r00      [17]  180 	call	_io_write
-   0080 F1            [10]  181 	pop	af
-                            182 ;z80uart.h:90: for(i=0;i<0xF0;i++)
-   0081 11 F0 00      [10]  183 	ld	de,#0x00F0
-   0084                     184 00107$:
-                            185 ;z80uart.h:91: __asm__("nop");
-   0084 00            [ 4]  186 	nop
-   0085 1B            [ 6]  187 	dec	de
-                            188 ;z80uart.h:90: for(i=0;i<0xF0;i++)
-   0086 7A            [ 4]  189 	ld	a,d
-   0087 B3            [ 4]  190 	or	a,e
-   0088 20 FA         [12]  191 	jr	NZ,00107$
-   008A C9            [10]  192 	ret
-   008B                     193 _UartWrite_end::
-                            194 ;z80uart.h:94: char UartRead(){
-                            195 ;	---------------------------------
-                            196 ; Function UartRead
-                            197 ; ---------------------------------
-   008B                     198 _UartRead_start::
-   008B                     199 _UartRead:
-                            200 ;z80uart.h:97: while( !(io_read(UART_LSR_ADDR) & UDR) );    
-   008B                     201 00101$:
-   008B 3E 25         [ 7]  202 	ld	a,#0x25
-   008D F5            [11]  203 	push	af
-   008E 33            [ 6]  204 	inc	sp
-   008F CDr2Er00      [17]  205 	call	_io_read
-   0092 33            [ 6]  206 	inc	sp
-   0093 7D            [ 4]  207 	ld	a,l
-   0094 0F            [ 4]  208 	rrca
-   0095 30 F4         [12]  209 	jr	NC,00101$
-                            210 ;z80uart.h:98: NOP();
-   0097 00            [ 4]  211 	NOP
-                            212 ;z80uart.h:100: return io_read(UART_RBR_ADDR);
-   0098 3E 20         [ 7]  213 	ld	a,#0x20
-   009A F5            [11]  214 	push	af
-   009B 33            [ 6]  215 	inc	sp
-   009C CDr2Er00      [17]  216 	call	_io_read
-   009F 33            [ 6]  217 	inc	sp
-   00A0 C9            [10]  218 	ret
-   00A1                     219 _UartRead_end::
-                            220 ;z80uart.h:104: void UartPrint(const char* str){
-                            221 ;	---------------------------------
-                            222 ; Function UartPrint
-                            223 ; ---------------------------------
-   00A1                     224 _UartPrint_start::
-   00A1                     225 _UartPrint:
-                            226 ;z80uart.h:106: while(*str)       
-   00A1 C1            [10]  227 	pop	bc
-   00A2 E1            [10]  228 	pop	hl
-   00A3 E5            [11]  229 	push	hl
-   00A4 C5            [11]  230 	push	bc
-   00A5                     231 00101$:
-   00A5 7E            [ 7]  232 	ld	a,(hl)
-   00A6 B7            [ 4]  233 	or	a, a
-   00A7 C8            [11]  234 	ret	Z
-                            235 ;z80uart.h:107: putchar(*str++);
-   00A8 23            [ 6]  236 	inc	hl
-   00A9 E5            [11]  237 	push	hl
-   00AA F5            [11]  238 	push	af
-   00AB 33            [ 6]  239 	inc	sp
-   00AC CDr45r01      [17]  240 	call	_putchar
-   00AF 33            [ 6]  241 	inc	sp
-   00B0 E1            [10]  242 	pop	hl
-   00B1 18 F2         [12]  243 	jr	00101$
-   00B3 C9            [10]  244 	ret
-   00B4                     245 _UartPrint_end::
-                            246 ;z80uart.h:111: void UartReadLine(char* str){
-                            247 ;	---------------------------------
-                            248 ; Function UartReadLine
-                            249 ; ---------------------------------
-   00B4                     250 _UartReadLine_start::
-   00B4                     251 _UartReadLine:
-   00B4 DD E5         [15]  252 	push	ix
-   00B6 DD 21 00 00   [14]  253 	ld	ix,#0
-   00BA DD 39         [15]  254 	add	ix,sp
-                            255 ;z80uart.h:113: int n=0;
-   00BC 01 00 00      [10]  256 	ld	bc,#0x0000
-                            257 ;z80uart.h:115: while(n<MAXREAD-1 && (c=getchar()) != '\n' && c !='\r'){
-   00BF                     258 00111$:
-   00BF 79            [ 4]  259 	ld	a,c
-   00C0 D6 63         [ 7]  260 	sub	a, #0x63
-   00C2 78            [ 4]  261 	ld	a,b
-   00C3 17            [ 4]  262 	rla
-   00C4 3F            [ 4]  263 	ccf
-   00C5 1F            [ 4]  264 	rra
-   00C6 DE 80         [ 7]  265 	sbc	a, #0x80
-   00C8 30 70         [12]  266 	jr	NC,00113$
-   00CA C5            [11]  267 	push	bc
-   00CB CDr62r01      [17]  268 	call	_getchar
-   00CE 7D            [ 4]  269 	ld	a,l
-   00CF C1            [10]  270 	pop	bc
-   00D0 57            [ 4]  271 	ld	d,a
-   00D1 D6 0A         [ 7]  272 	sub	a, #0x0A
-   00D3 28 65         [12]  273 	jr	Z,00113$
-                            274 ;z80uart.h:117: if(c == 0x7f || c == 0x08){
-   00D5 7A            [ 4]  275 	ld	a,d
-   00D6 FE 0D         [ 7]  276 	cp	a,#0x0D
-   00D8 28 60         [12]  277 	jr	Z,00113$
-   00DA FE 7F         [ 7]  278 	cp	a,#0x7F
-   00DC 28 04         [12]  279 	jr	Z,00105$
-   00DE D6 08         [ 7]  280 	sub	a, #0x08
-   00E0 20 2D         [12]  281 	jr	NZ,00106$
-   00E2                     282 00105$:
-                            283 ;z80uart.h:119: if(n>0){
-   00E2 AF            [ 4]  284 	xor	a, a
-   00E3 B9            [ 4]  285 	cp	a, c
-   00E4 98            [ 4]  286 	sbc	a, b
-   00E5 E2rEAr00      [10]  287 	jp	PO, 00149$
-   00E8 EE 80         [ 7]  288 	xor	a, #0x80
-   00EA                     289 00149$:
-   00EA F2rBFr00      [10]  290 	jp	P,00111$
-                            291 ;z80uart.h:120: str[--n]='\0';
-   00ED 0B            [ 6]  292 	dec	bc
-   00EE DD 6E 04      [19]  293 	ld	l,4 (ix)
-   00F1 DD 66 05      [19]  294 	ld	h,5 (ix)
-   00F4 09            [11]  295 	add	hl,bc
-   00F5 36 00         [10]  296 	ld	(hl),#0x00
-                            297 ;z80uart.h:121: putchar(c);
-   00F7 C5            [11]  298 	push	bc
-   00F8 D5            [11]  299 	push	de
-   00F9 D5            [11]  300 	push	de
-   00FA 33            [ 6]  301 	inc	sp
-   00FB CDr45r01      [17]  302 	call	_putchar
-   00FE 33            [ 6]  303 	inc	sp
-   00FF 3E 20         [ 7]  304 	ld	a,#0x20
-   0101 F5            [11]  305 	push	af
-   0102 33            [ 6]  306 	inc	sp
-   0103 CDr45r01      [17]  307 	call	_putchar
-   0106 33            [ 6]  308 	inc	sp
-   0107 33            [ 6]  309 	inc	sp
-   0108 CDr45r01      [17]  310 	call	_putchar
-   010B 33            [ 6]  311 	inc	sp
-   010C C1            [10]  312 	pop	bc
-   010D 18 B0         [12]  313 	jr	00111$
-   010F                     314 00106$:
-                            315 ;z80uart.h:127: if(isprint(c))
-   010F 7A            [ 4]  316 	ld	a,d
-   0110 6F            [ 4]  317 	ld	l,a
-   0111 17            [ 4]  318 	rla
-   0112 9F            [ 4]  319 	sbc	a, a
-   0113 67            [ 4]  320 	ld	h,a
-   0114 C5            [11]  321 	push	bc
-   0115 D5            [11]  322 	push	de
-   0116 E5            [11]  323 	push	hl
-   0117 CDr00r00      [17]  324 	call	_isprint
-   011A F1            [10]  325 	pop	af
-   011B D1            [10]  326 	pop	de
-   011C C1            [10]  327 	pop	bc
-   011D 7C            [ 4]  328 	ld	a,h
-   011E B5            [ 4]  329 	or	a,l
-   011F 28 9E         [12]  330 	jr	Z,00111$
-                            331 ;z80uart.h:129: str[n++]=c;
-   0121 61            [ 4]  332 	ld	h,c
-   0122 58            [ 4]  333 	ld	e,b
-   0123 03            [ 6]  334 	inc	bc
-   0124 7C            [ 4]  335 	ld	a,h
-   0125 DD 86 04      [19]  336 	add	a, 4 (ix)
-   0128 6F            [ 4]  337 	ld	l,a
-   0129 7B            [ 4]  338 	ld	a,e
-   012A DD 8E 05      [19]  339 	adc	a, 5 (ix)
-   012D 67            [ 4]  340 	ld	h,a
-   012E 72            [ 7]  341 	ld	(hl),d
-                            342 ;z80uart.h:130: putchar(c);
-   012F C5            [11]  343 	push	bc
-   0130 D5            [11]  344 	push	de
-   0131 33            [ 6]  345 	inc	sp
-   0132 CDr45r01      [17]  346 	call	_putchar
-   0135 33            [ 6]  347 	inc	sp
-   0136 C1            [10]  348 	pop	bc
-   0137 C3rBFr00      [10]  349 	jp	00111$
-   013A                     350 00113$:
-                            351 ;z80uart.h:134: putchar('\n');
-   013A 3E 0A         [ 7]  352 	ld	a,#0x0A
-   013C F5            [11]  353 	push	af
-   013D 33            [ 6]  354 	inc	sp
-   013E CDr45r01      [17]  355 	call	_putchar
-   0141 33            [ 6]  356 	inc	sp
-   0142 DD E1         [14]  357 	pop	ix
-   0144 C9            [10]  358 	ret
-   0145                     359 _UartReadLine_end::
-                            360 ;z80uart.h:136: void putchar(char c ){
-                            361 ;	---------------------------------
-                            362 ; Function putchar
-                            363 ; ---------------------------------
-   0145                     364 _putchar_start::
-   0145                     365 _putchar:
-                            366 ;z80uart.h:138: if(c=='\n')
-   0145 21 02 00      [10]  367 	ld	hl, #2+0
-   0148 39            [11]  368 	add	hl, sp
-   0149 7E            [ 7]  369 	ld	a, (hl)
-   014A D6 0A         [ 7]  370 	sub	a, #0x0A
-   014C 20 08         [12]  371 	jr	NZ,00102$
-                            372 ;z80uart.h:139: UartWrite('\r');
-   014E 3E 0D         [ 7]  373 	ld	a,#0x0D
-   0150 F5            [11]  374 	push	af
-   0151 33            [ 6]  375 	inc	sp
-   0152 CDr68r00      [17]  376 	call	_UartWrite
-   0155 33            [ 6]  377 	inc	sp
-   0156                     378 00102$:
-                            379 ;z80uart.h:141: UartWrite(c);
-   0156 21 02 00      [10]  380 	ld	hl, #2+0
-   0159 39            [11]  381 	add	hl, sp
-   015A 7E            [ 7]  382 	ld	a, (hl)
-   015B F5            [11]  383 	push	af
-   015C 33            [ 6]  384 	inc	sp
-   015D CDr68r00      [17]  385 	call	_UartWrite
-   0160 33            [ 6]  386 	inc	sp
-   0161 C9            [10]  387 	ret
-   0162                     388 _putchar_end::
-                            389 ;z80uart.h:144: char getchar(){
-                            390 ;	---------------------------------
-                            391 ; Function getchar
-                            392 ; ---------------------------------
-   0162                     393 _getchar_start::
-   0162                     394 _getchar:
-                            395 ;z80uart.h:145: return UartRead();
-   0162 C3r8Br00      [10]  396 	jp	_UartRead
-   0165                     397 _getchar_end::
-                            398 ;main.c:38: ISR_NMI(){
-                            399 ;	---------------------------------
-                            400 ; Function isr_vector66
-                            401 ; ---------------------------------
-   0165                     402 _isr_vector66_start::
-   0165                     403 _isr_vector66:
-   0165 F5            [11]  404 	push	af
-   0166 C5            [11]  405 	push	bc
-   0167 D5            [11]  406 	push	de
-   0168 E5            [11]  407 	push	hl
-   0169 FD E5         [15]  408 	push	iy
-                            409 ;main.c:41: }
-   016B FD E1         [14]  410 	pop	iy
-   016D E1            [10]  411 	pop	hl
-   016E D1            [10]  412 	pop	de
-   016F C1            [10]  413 	pop	bc
-   0170 F1            [10]  414 	pop	af
-   0171 ED 45         [14]  415 	retn
-   0173                     416 _isr_vector66_end::
-                            417 ;main.c:43: ISR_INT_38(){
-                            418 ;	---------------------------------
-                            419 ; Function isr_vector38
-                            420 ; ---------------------------------
-   0173                     421 _isr_vector38_start::
-   0173                     422 _isr_vector38:
-   0173 F5            [11]  423 	push	af
-   0174 C5            [11]  424 	push	bc
-   0175 D5            [11]  425 	push	de
-   0176 E5            [11]  426 	push	hl
-   0177 FD E5         [15]  427 	push	iy
-                            428 ;main.c:44: teclado_read();
-   0179 CDr4Cr02      [17]  429 	call	_teclado_read
-                            430 ;main.c:45: EI();
-   017C FB            [ 4]  431 	EI
-   017D FD E1         [14]  432 	pop	iy
-   017F E1            [10]  433 	pop	hl
-   0180 D1            [10]  434 	pop	de
-   0181 C1            [10]  435 	pop	bc
-   0182 F1            [10]  436 	pop	af
-   0183 ED 4D         [14]  437 	reti
-   0185                     438 _isr_vector38_end::
-                            439 ;main.c:50: int main(){
-                            440 ;	---------------------------------
-                            441 ; Function main
-                            442 ; ---------------------------------
-   0185                     443 _main_start::
-   0185                     444 _main:
-   0185 21 F0 FF      [10]  445 	ld	hl,#-16
-   0188 39            [11]  446 	add	hl,sp
-   0189 F9            [ 6]  447 	ld	sp,hl
-                            448 ;main.c:51: char KEYS[4][4] = 
-   018A 21 00 00      [10]  449 	ld	hl,#0x0000
-   018D 39            [11]  450 	add	hl,sp
-   018E 36 31         [10]  451 	ld	(hl),#0x31
-   0190 21 00 00      [10]  452 	ld	hl,#0x0000
-   0193 39            [11]  453 	add	hl,sp
-   0194 5D            [ 4]  454 	ld	e,l
-   0195 54            [ 4]  455 	ld	d,h
-   0196 23            [ 6]  456 	inc	hl
-   0197 36 32         [10]  457 	ld	(hl),#0x32
-   0199 6B            [ 4]  458 	ld	l, e
-   019A 62            [ 4]  459 	ld	h, d
-   019B 23            [ 6]  460 	inc	hl
-   019C 23            [ 6]  461 	inc	hl
-   019D 36 33         [10]  462 	ld	(hl),#0x33
-   019F 6B            [ 4]  463 	ld	l,e
-   01A0 62            [ 4]  464 	ld	h,d
-   01A1 23            [ 6]  465 	inc	hl
-   01A2 23            [ 6]  466 	inc	hl
-   01A3 23            [ 6]  467 	inc	hl
-   01A4 36 41         [10]  468 	ld	(hl),#0x41
-   01A6 21 00 00      [10]  469 	ld	hl,#0x0000
-   01A9 39            [11]  470 	add	hl,sp
-   01AA EB            [ 4]  471 	ex	de,hl
-   01AB 21 04 00      [10]  472 	ld	hl,#0x0004
-   01AE 19            [11]  473 	add	hl,de
-   01AF 36 34         [10]  474 	ld	(hl),#0x34
-   01B1 21 05 00      [10]  475 	ld	hl,#0x0005
-   01B4 19            [11]  476 	add	hl,de
-   01B5 36 35         [10]  477 	ld	(hl),#0x35
-   01B7 21 06 00      [10]  478 	ld	hl,#0x0006
-   01BA 19            [11]  479 	add	hl,de
-   01BB 36 36         [10]  480 	ld	(hl),#0x36
-   01BD 21 07 00      [10]  481 	ld	hl,#0x0007
-   01C0 19            [11]  482 	add	hl,de
-   01C1 36 42         [10]  483 	ld	(hl),#0x42
-   01C3 21 08 00      [10]  484 	ld	hl,#0x0008
-   01C6 19            [11]  485 	add	hl,de
-   01C7 36 37         [10]  486 	ld	(hl),#0x37
-   01C9 21 09 00      [10]  487 	ld	hl,#0x0009
-   01CC 19            [11]  488 	add	hl,de
-   01CD 36 38         [10]  489 	ld	(hl),#0x38
-   01CF 21 0A 00      [10]  490 	ld	hl,#0x000A
-   01D2 19            [11]  491 	add	hl,de
-   01D3 36 39         [10]  492 	ld	(hl),#0x39
-   01D5 21 0B 00      [10]  493 	ld	hl,#0x000B
-   01D8 19            [11]  494 	add	hl,de
-   01D9 36 43         [10]  495 	ld	(hl),#0x43
-   01DB 21 0C 00      [10]  496 	ld	hl,#0x000C
-   01DE 19            [11]  497 	add	hl,de
-   01DF 36 2A         [10]  498 	ld	(hl),#0x2A
-   01E1 21 0D 00      [10]  499 	ld	hl,#0x000D
-   01E4 19            [11]  500 	add	hl,de
-   01E5 36 30         [10]  501 	ld	(hl),#0x30
-   01E7 21 0E 00      [10]  502 	ld	hl,#0x000E
-   01EA 19            [11]  503 	add	hl,de
-   01EB 36 23         [10]  504 	ld	(hl),#0x23
-   01ED 21 0F 00      [10]  505 	ld	hl,#0x000F
-   01F0 19            [11]  506 	add	hl,de
-   01F1 36 44         [10]  507 	ld	(hl),#0x44
-                            508 ;main.c:56: corrimiento=0X10;
-   01F3 21r00r00      [10]  509 	ld	hl,#_corrimiento + 0
-   01F6 36 10         [10]  510 	ld	(hl), #0x10
-                            511 ;main.c:58: system_init();
-   01F8 CDr1Fr02      [17]  512 	call	_system_init
-                            513 ;main.c:60: while(TRUE)
-   01FB                     514 00105$:
-                            515 ;main.c:62: PPI_PORTC = corrimiento;
-   01FB 3Ar00r00      [13]  516 	ld	a,(#_corrimiento + 0)
-   01FE D3 42         [11]  517 	out	(_PPI_PORTC),a
-                            518 ;main.c:63: if(PPI_PORTC==0x0)
-   0200 DB 42         [11]  519 	in	a,(_PPI_PORTC)
-   0202 B7            [ 4]  520 	or	a, a
-   0203 20 07         [12]  521 	jr	NZ,00102$
-                            522 ;main.c:65: corrimiento=0x10;
-   0205 21r00r00      [10]  523 	ld	hl,#_corrimiento + 0
-   0208 36 10         [10]  524 	ld	(hl), #0x10
-   020A 18 EF         [12]  525 	jr	00105$
-   020C                     526 00102$:
-                            527 ;main.c:69: corrimiento<<=1;
-   020C FD 21r00r00   [14]  528 	ld	iy,#_corrimiento
-   0210 FD CB 00 26   [23]  529 	sla	0 (iy)
-   0214 18 E5         [12]  530 	jr	00105$
-   0216 FD 21 10 00   [14]  531 	ld	iy,#16
-   021A FD 39         [15]  532 	add	iy,sp
-   021C FD F9         [10]  533 	ld	sp,iy
-   021E C9            [10]  534 	ret
-   021F                     535 _main_end::
-                            536 ;main.c:78: void system_init(){
-                            537 ;	---------------------------------
-                            538 ; Function system_init
-                            539 ; ---------------------------------
-   021F                     540 _system_init_start::
-   021F                     541 _system_init:
-                            542 ;main.c:80: PPI_CTRL = 0x81; //Salida
-   021F 3E 81         [ 7]  543 	ld	a,#0x81
-   0221 D3 43         [11]  544 	out	(_PPI_CTRL),a
-                            545 ;main.c:81: PPI_PORTA = 0;
-   0223 3E 00         [ 7]  546 	ld	a,#0x00
-   0225 D3 40         [11]  547 	out	(_PPI_PORTA),a
-                            548 ;main.c:82: PPI_PORTB = 0;
-   0227 3E 00         [ 7]  549 	ld	a,#0x00
-   0229 D3 41         [11]  550 	out	(_PPI_PORTB),a
-                            551 ;main.c:83: PPI_PORTC = 0;
-   022B 3E 00         [ 7]  552 	ld	a,#0x00
-   022D D3 42         [11]  553 	out	(_PPI_PORTC),a
-                            554 ;main.c:85: UartInit();
-   022F CDr53r00      [17]  555 	call	_UartInit
-                            556 ;main.c:86: IM(1);
-   0232 ED 56         [ 8]  557 	IM 1 
-                            558 ;main.c:87: EI();
-   0234 FB            [ 4]  559 	EI
-   0235 C9            [10]  560 	ret
-   0236                     561 _system_init_end::
-                            562 ;main.c:91: void delay_ms(int milis){
-                            563 ;	---------------------------------
-                            564 ; Function delay_ms
-                            565 ; ---------------------------------
-   0236                     566 _delay_ms_start::
-   0236                     567 _delay_ms:
-                            568 ;main.c:93: while(milis--){
-   0236 C1            [10]  569 	pop	bc
-   0237 D1            [10]  570 	pop	de
-   0238 D5            [11]  571 	push	de
-   0239 C5            [11]  572 	push	bc
-   023A                     573 00102$:
-   023A 43            [ 4]  574 	ld	b,e
-   023B 4A            [ 4]  575 	ld	c,d
-   023C 1B            [ 6]  576 	dec	de
-   023D 79            [ 4]  577 	ld	a,c
-   023E B0            [ 4]  578 	or	a,b
-   023F C8            [11]  579 	ret	Z
-                            580 ;main.c:94: for(i = 0; i<0x10A; i++){
-   0240 01 0A 01      [10]  581 	ld	bc,#0x010A
-   0243                     582 00107$:
-                            583 ;main.c:95: NOP();
-   0243 00            [ 4]  584 	NOP
-   0244 0B            [ 6]  585 	dec	bc
-                            586 ;main.c:94: for(i = 0; i<0x10A; i++){
-   0245 78            [ 4]  587 	ld	a,b
-   0246 B1            [ 4]  588 	or	a,c
-   0247 20 FA         [12]  589 	jr	NZ,00107$
-   0249 18 EF         [12]  590 	jr	00102$
-   024B C9            [10]  591 	ret
-   024C                     592 _delay_ms_end::
-                            593 ;main.c:100: void teclado_read()
-                            594 ;	---------------------------------
-                            595 ; Function teclado_read
-                            596 ; ---------------------------------
-   024C                     597 _teclado_read_start::
-   024C                     598 _teclado_read:
-   024C DD E5         [15]  599 	push	ix
-   024E DD 21 00 00   [14]  600 	ld	ix,#0
-   0252 DD 39         [15]  601 	add	ix,sp
-   0254 F5            [11]  602 	push	af
-                            603 ;main.c:104: RES  =  PPI_PORTC & 0x0F;
-   0255 DB 42         [11]  604 	in	a,(_PPI_PORTC)
-   0257 E6 0F         [ 7]  605 	and	a, #0x0F
-   0259 5F            [ 4]  606 	ld	e,a
-   025A 16 00         [ 7]  607 	ld	d,#0x00
-                            608 ;main.c:105: RES = RES | corrimiento;
-   025C 21r00r00      [10]  609 	ld	hl,#_corrimiento + 0
-   025F 4E            [ 7]  610 	ld	c, (hl)
-   0260 06 00         [ 7]  611 	ld	b,#0x00
-   0262 7B            [ 4]  612 	ld	a,e
-   0263 B1            [ 4]  613 	or	a, c
-   0264 67            [ 4]  614 	ld	h,a
-   0265 7A            [ 4]  615 	ld	a,d
-   0266 B0            [ 4]  616 	or	a, b
-   0267 DD 74 FE      [19]  617 	ld	-2 (ix), h
-   026A DD 77 FF      [19]  618 	ld	-1 (ix), a
-                            619 ;main.c:106: switch(RES)
-   026D DD 7E FE      [19]  620 	ld	a,-2 (ix)
-   0270 D6 11         [ 7]  621 	sub	a, #0x11
-   0272 20 07         [12]  622 	jr	NZ,00184$
-   0274 DD 7E FF      [19]  623 	ld	a,-1 (ix)
-   0277 B7            [ 4]  624 	or	a, a
-   0278 CArDCr03      [10]  625 	jp	Z,00110$
-   027B                     626 00184$:
-   027B DD 7E FE      [19]  627 	ld	a,-2 (ix)
-   027E D6 12         [ 7]  628 	sub	a, #0x12
-   0280 20 07         [12]  629 	jr	NZ,00185$
-   0282 DD 7E FF      [19]  630 	ld	a,-1 (ix)
-   0285 B7            [ 4]  631 	or	a, a
-   0286 CArEBr03      [10]  632 	jp	Z,00111$
-   0289                     633 00185$:
-   0289 DD 7E FE      [19]  634 	ld	a,-2 (ix)
-   028C D6 14         [ 7]  635 	sub	a, #0x14
-   028E 20 07         [12]  636 	jr	NZ,00186$
-   0290 DD 7E FF      [19]  637 	ld	a,-1 (ix)
-   0293 B7            [ 4]  638 	or	a, a
-   0294 CArFAr03      [10]  639 	jp	Z,00112$
-   0297                     640 00186$:
-   0297 DD 7E FE      [19]  641 	ld	a,-2 (ix)
-   029A D6 18         [ 7]  642 	sub	a, #0x18
-   029C 20 07         [12]  643 	jr	NZ,00187$
-   029E DD 7E FF      [19]  644 	ld	a,-1 (ix)
-   02A1 B7            [ 4]  645 	or	a, a
-   02A2 CAr09r04      [10]  646 	jp	Z,00113$
-   02A5                     647 00187$:
-   02A5 DD 7E FE      [19]  648 	ld	a,-2 (ix)
-   02A8 D6 21         [ 7]  649 	sub	a, #0x21
-   02AA 20 07         [12]  650 	jr	NZ,00188$
-   02AC DD 7E FF      [19]  651 	ld	a,-1 (ix)
-   02AF B7            [ 4]  652 	or	a, a
-   02B0 CAr6Dr03      [10]  653 	jp	Z,00103$
-   02B3                     654 00188$:
-   02B3 DD 7E FE      [19]  655 	ld	a,-2 (ix)
-   02B6 D6 22         [ 7]  656 	sub	a, #0x22
-   02B8 20 07         [12]  657 	jr	NZ,00189$
-   02BA DD 7E FF      [19]  658 	ld	a,-1 (ix)
-   02BD B7            [ 4]  659 	or	a, a
-   02BE CAr9Dr03      [10]  660 	jp	Z,00106$
-   02C1                     661 00189$:
-   02C1 DD 7E FE      [19]  662 	ld	a,-2 (ix)
-   02C4 D6 24         [ 7]  663 	sub	a, #0x24
-   02C6 20 07         [12]  664 	jr	NZ,00190$
-   02C8 DD 7E FF      [19]  665 	ld	a,-1 (ix)
-   02CB B7            [ 4]  666 	or	a, a
-   02CC CArCDr03      [10]  667 	jp	Z,00109$
-   02CF                     668 00190$:
-   02CF DD 7E FE      [19]  669 	ld	a,-2 (ix)
-   02D2 D6 28         [ 7]  670 	sub	a, #0x28
-   02D4 20 07         [12]  671 	jr	NZ,00191$
-   02D6 DD 7E FF      [19]  672 	ld	a,-1 (ix)
-   02D9 B7            [ 4]  673 	or	a, a
-   02DA CAr27r04      [10]  674 	jp	Z,00115$
-   02DD                     675 00191$:
-   02DD DD 7E FE      [19]  676 	ld	a,-2 (ix)
-   02E0 D6 41         [ 7]  677 	sub	a, #0x41
-   02E2 20 06         [12]  678 	jr	NZ,00192$
-   02E4 DD 7E FF      [19]  679 	ld	a,-1 (ix)
-   02E7 B7            [ 4]  680 	or	a, a
-   02E8 28 73         [12]  681 	jr	Z,00102$
-   02EA                     682 00192$:
-   02EA DD 7E FE      [19]  683 	ld	a,-2 (ix)
-   02ED D6 42         [ 7]  684 	sub	a, #0x42
-   02EF 20 07         [12]  685 	jr	NZ,00193$
-   02F1 DD 7E FF      [19]  686 	ld	a,-1 (ix)
-   02F4 B7            [ 4]  687 	or	a, a
-   02F5 CAr8Dr03      [10]  688 	jp	Z,00105$
-   02F8                     689 00193$:
-   02F8 DD 7E FE      [19]  690 	ld	a,-2 (ix)
-   02FB D6 44         [ 7]  691 	sub	a, #0x44
-   02FD 20 07         [12]  692 	jr	NZ,00194$
-   02FF DD 7E FF      [19]  693 	ld	a,-1 (ix)
-   0302 B7            [ 4]  694 	or	a, a
-   0303 CArBDr03      [10]  695 	jp	Z,00108$
-   0306                     696 00194$:
-   0306 DD 7E FE      [19]  697 	ld	a,-2 (ix)
-   0309 D6 48         [ 7]  698 	sub	a, #0x48
-   030B 20 07         [12]  699 	jr	NZ,00195$
-   030D DD 7E FF      [19]  700 	ld	a,-1 (ix)
-   0310 B7            [ 4]  701 	or	a, a
-   0311 CAr36r04      [10]  702 	jp	Z,00116$
-   0314                     703 00195$:
-   0314 DD 7E FE      [19]  704 	ld	a,-2 (ix)
-   0317 D6 81         [ 7]  705 	sub	a, #0x81
-   0319 20 06         [12]  706 	jr	NZ,00196$
-   031B DD 7E FF      [19]  707 	ld	a,-1 (ix)
-   031E B7            [ 4]  708 	or	a, a
-   031F 28 2C         [12]  709 	jr	Z,00101$
-   0321                     710 00196$:
-   0321 DD 7E FE      [19]  711 	ld	a,-2 (ix)
-   0324 D6 82         [ 7]  712 	sub	a, #0x82
-   0326 20 06         [12]  713 	jr	NZ,00197$
-   0328 DD 7E FF      [19]  714 	ld	a,-1 (ix)
-   032B B7            [ 4]  715 	or	a, a
-   032C 28 4F         [12]  716 	jr	Z,00104$
-   032E                     717 00197$:
-   032E DD 7E FE      [19]  718 	ld	a,-2 (ix)
-   0331 D6 84         [ 7]  719 	sub	a, #0x84
-   0333 20 06         [12]  720 	jr	NZ,00198$
-   0335 DD 7E FF      [19]  721 	ld	a,-1 (ix)
-   0338 B7            [ 4]  722 	or	a, a
-   0339 28 72         [12]  723 	jr	Z,00107$
-   033B                     724 00198$:
-   033B DD 7E FE      [19]  725 	ld	a,-2 (ix)
-   033E D6 88         [ 7]  726 	sub	a, #0x88
-   0340 C2r43r04      [10]  727 	jp	NZ,00118$
-   0343 DD 7E FF      [19]  728 	ld	a,-1 (ix)
-   0346 B7            [ 4]  729 	or	a, a
-   0347 CAr18r04      [10]  730 	jp	Z,00114$
-   034A C3r43r04      [10]  731 	jp	00118$
-                            732 ;main.c:108: case 0x81:
-   034D                     733 00101$:
-                            734 ;main.c:110: printf(" %c", letra);
-   034D 21r48r04      [10]  735 	ld	hl,#___str_0
-   0350 01 31 00      [10]  736 	ld	bc,#0x0031
-   0353 C5            [11]  737 	push	bc
-   0354 E5            [11]  738 	push	hl
-   0355 CDr00r00      [17]  739 	call	_printf
-   0358 F1            [10]  740 	pop	af
-   0359 F1            [10]  741 	pop	af
-                            742 ;main.c:111: break;
-   035A C3r43r04      [10]  743 	jp	00118$
-                            744 ;main.c:113: case 0x41:		
-   035D                     745 00102$:
-                            746 ;main.c:115: printf(" %c", letra);
-   035D 21r48r04      [10]  747 	ld	hl,#___str_0
-   0360 01 32 00      [10]  748 	ld	bc,#0x0032
-   0363 C5            [11]  749 	push	bc
-   0364 E5            [11]  750 	push	hl
-   0365 CDr00r00      [17]  751 	call	_printf
-   0368 F1            [10]  752 	pop	af
-   0369 F1            [10]  753 	pop	af
-                            754 ;main.c:116: break;
-   036A C3r43r04      [10]  755 	jp	00118$
-                            756 ;main.c:118: case 0x21:
-   036D                     757 00103$:
-                            758 ;main.c:120: printf(" %c", letra);
-   036D 21r48r04      [10]  759 	ld	hl,#___str_0
-   0370 01 33 00      [10]  760 	ld	bc,#0x0033
-   0373 C5            [11]  761 	push	bc
-   0374 E5            [11]  762 	push	hl
-   0375 CDr00r00      [17]  763 	call	_printf
-   0378 F1            [10]  764 	pop	af
-   0379 F1            [10]  765 	pop	af
-                            766 ;main.c:121: break;
-   037A C3r43r04      [10]  767 	jp	00118$
-                            768 ;main.c:123: case 0x82:
-   037D                     769 00104$:
-                            770 ;main.c:125: printf(" %c", letra);
-   037D 21r48r04      [10]  771 	ld	hl,#___str_0
-   0380 01 34 00      [10]  772 	ld	bc,#0x0034
-   0383 C5            [11]  773 	push	bc
-   0384 E5            [11]  774 	push	hl
-   0385 CDr00r00      [17]  775 	call	_printf
-   0388 F1            [10]  776 	pop	af
-   0389 F1            [10]  777 	pop	af
-                            778 ;main.c:126: break;
-   038A C3r43r04      [10]  779 	jp	00118$
-                            780 ;main.c:128: case 0x42:
-   038D                     781 00105$:
-                            782 ;main.c:130: printf(" %c", letra);
-   038D 21r48r04      [10]  783 	ld	hl,#___str_0
-   0390 01 35 00      [10]  784 	ld	bc,#0x0035
-   0393 C5            [11]  785 	push	bc
-   0394 E5            [11]  786 	push	hl
-   0395 CDr00r00      [17]  787 	call	_printf
-   0398 F1            [10]  788 	pop	af
-   0399 F1            [10]  789 	pop	af
-                            790 ;main.c:131: break;
-   039A C3r43r04      [10]  791 	jp	00118$
-                            792 ;main.c:133: case 0x22:
-   039D                     793 00106$:
-                            794 ;main.c:135: printf(" %c", letra);
-   039D 21r48r04      [10]  795 	ld	hl,#___str_0
-   03A0 01 36 00      [10]  796 	ld	bc,#0x0036
-   03A3 C5            [11]  797 	push	bc
-   03A4 E5            [11]  798 	push	hl
-   03A5 CDr00r00      [17]  799 	call	_printf
-   03A8 F1            [10]  800 	pop	af
-   03A9 F1            [10]  801 	pop	af
-                            802 ;main.c:136: break;
-   03AA C3r43r04      [10]  803 	jp	00118$
-                            804 ;main.c:138: case 0x84:
-   03AD                     805 00107$:
-                            806 ;main.c:140: printf(" %c", letra);
-   03AD 21r48r04      [10]  807 	ld	hl,#___str_0
-   03B0 01 37 00      [10]  808 	ld	bc,#0x0037
-   03B3 C5            [11]  809 	push	bc
-   03B4 E5            [11]  810 	push	hl
-   03B5 CDr00r00      [17]  811 	call	_printf
-   03B8 F1            [10]  812 	pop	af
-   03B9 F1            [10]  813 	pop	af
-                            814 ;main.c:141: break;
-   03BA C3r43r04      [10]  815 	jp	00118$
-                            816 ;main.c:143: case 0x44:
-   03BD                     817 00108$:
-                            818 ;main.c:145: printf(" %c", letra);
-   03BD 21r48r04      [10]  819 	ld	hl,#___str_0
-   03C0 01 38 00      [10]  820 	ld	bc,#0x0038
-   03C3 C5            [11]  821 	push	bc
-   03C4 E5            [11]  822 	push	hl
-   03C5 CDr00r00      [17]  823 	call	_printf
-   03C8 F1            [10]  824 	pop	af
-   03C9 F1            [10]  825 	pop	af
-                            826 ;main.c:146: break;
-   03CA C3r43r04      [10]  827 	jp	00118$
-                            828 ;main.c:148: case 0x24:
-   03CD                     829 00109$:
-                            830 ;main.c:150: printf(" %c", letra);
-   03CD 21r48r04      [10]  831 	ld	hl,#___str_0
-   03D0 01 39 00      [10]  832 	ld	bc,#0x0039
-   03D3 C5            [11]  833 	push	bc
-   03D4 E5            [11]  834 	push	hl
-   03D5 CDr00r00      [17]  835 	call	_printf
-   03D8 F1            [10]  836 	pop	af
-   03D9 F1            [10]  837 	pop	af
-                            838 ;main.c:151: break;
-   03DA 18 67         [12]  839 	jr	00118$
-                            840 ;main.c:153: case 0x11:
-   03DC                     841 00110$:
-                            842 ;main.c:155: printf(" %c", letra);
-   03DC 21r48r04      [10]  843 	ld	hl,#___str_0
-   03DF 01 41 00      [10]  844 	ld	bc,#0x0041
-   03E2 C5            [11]  845 	push	bc
-   03E3 E5            [11]  846 	push	hl
-   03E4 CDr00r00      [17]  847 	call	_printf
-   03E7 F1            [10]  848 	pop	af
-   03E8 F1            [10]  849 	pop	af
-                            850 ;main.c:156: break;
-   03E9 18 58         [12]  851 	jr	00118$
-                            852 ;main.c:158: case 0x12:
-   03EB                     853 00111$:
-                            854 ;main.c:160: printf(" %c", letra);
-   03EB 21r48r04      [10]  855 	ld	hl,#___str_0
-   03EE 01 42 00      [10]  856 	ld	bc,#0x0042
-   03F1 C5            [11]  857 	push	bc
-   03F2 E5            [11]  858 	push	hl
-   03F3 CDr00r00      [17]  859 	call	_printf
-   03F6 F1            [10]  860 	pop	af
-   03F7 F1            [10]  861 	pop	af
-                            862 ;main.c:161: break;
-   03F8 18 49         [12]  863 	jr	00118$
-                            864 ;main.c:163: case 0x14:
-   03FA                     865 00112$:
-                            866 ;main.c:165: printf(" %c", letra);
-   03FA 21r48r04      [10]  867 	ld	hl,#___str_0
-   03FD 01 43 00      [10]  868 	ld	bc,#0x0043
-   0400 C5            [11]  869 	push	bc
-   0401 E5            [11]  870 	push	hl
-   0402 CDr00r00      [17]  871 	call	_printf
-   0405 F1            [10]  872 	pop	af
-   0406 F1            [10]  873 	pop	af
-                            874 ;main.c:166: break;
-   0407 18 3A         [12]  875 	jr	00118$
-                            876 ;main.c:168: case 0x18:
-   0409                     877 00113$:
-                            878 ;main.c:170: printf(" %c", letra);
-   0409 21r48r04      [10]  879 	ld	hl,#___str_0
-   040C 01 44 00      [10]  880 	ld	bc,#0x0044
-   040F C5            [11]  881 	push	bc
-   0410 E5            [11]  882 	push	hl
-   0411 CDr00r00      [17]  883 	call	_printf
-   0414 F1            [10]  884 	pop	af
-   0415 F1            [10]  885 	pop	af
-                            886 ;main.c:171: break;
-   0416 18 2B         [12]  887 	jr	00118$
-                            888 ;main.c:173: case 0x88:
-   0418                     889 00114$:
-                            890 ;main.c:175: printf(" %c", letra);
-   0418 21r48r04      [10]  891 	ld	hl,#___str_0
-   041B 01 45 00      [10]  892 	ld	bc,#0x0045
-   041E C5            [11]  893 	push	bc
-   041F E5            [11]  894 	push	hl
-   0420 CDr00r00      [17]  895 	call	_printf
-   0423 F1            [10]  896 	pop	af
-   0424 F1            [10]  897 	pop	af
-                            898 ;main.c:176: break;
-   0425 18 1C         [12]  899 	jr	00118$
-                            900 ;main.c:178: case 0x28:
-   0427                     901 00115$:
-                            902 ;main.c:180: printf(" %c", letra);
-   0427 21r48r04      [10]  903 	ld	hl,#___str_0
-   042A 01 46 00      [10]  904 	ld	bc,#0x0046
-   042D C5            [11]  905 	push	bc
-   042E E5            [11]  906 	push	hl
-   042F CDr00r00      [17]  907 	call	_printf
-   0432 F1            [10]  908 	pop	af
-   0433 F1            [10]  909 	pop	af
-                            910 ;main.c:181: break;
-   0434 18 0D         [12]  911 	jr	00118$
-                            912 ;main.c:183: case 0x48:
-   0436                     913 00116$:
-                            914 ;main.c:185: printf(" %c", letra);
-   0436 21r48r04      [10]  915 	ld	hl,#___str_0
-   0439 01 30 00      [10]  916 	ld	bc,#0x0030
-   043C C5            [11]  917 	push	bc
-   043D E5            [11]  918 	push	hl
-   043E CDr00r00      [17]  919 	call	_printf
-   0441 F1            [10]  920 	pop	af
-   0442 F1            [10]  921 	pop	af
-                            922 ;main.c:188: }
-   0443                     923 00118$:
-   0443 DD F9         [10]  924 	ld	sp, ix
-   0445 DD E1         [14]  925 	pop	ix
-   0447 C9            [10]  926 	ret
-   0448                     927 _teclado_read_end::
-   0448                     928 ___str_0:
-   0448 20 25 63            929 	.ascii " %c"
-   044B 00                  930 	.db 0x00
-                            931 	.area _CODE
-                            932 	.area _INITIALIZER
-   0000                     933 __xinit__corrimiento:
-   0000 00                  934 	.db #0x00	; 0
-                            935 	.area _CABS (ABS)
+                             78 	.area _HOME
+                             79 	.area _GSINIT
+                             80 	.area _GSFINAL
+                             81 	.area _GSINIT
+                             82 ;--------------------------------------------------------
+                             83 ; Home
+                             84 ;--------------------------------------------------------
+                             85 	.area _HOME
+                             86 	.area _HOME
+                             87 ;--------------------------------------------------------
+                             88 ; code
+                             89 ;--------------------------------------------------------
+                             90 	.area _CODE
+                             91 ;smz80.h:631: void io_write(char port_addr, char data){
+                             92 ;	---------------------------------
+                             93 ; Function io_write
+                             94 ; ---------------------------------
+   0000                      95 _io_write_start::
+   0000                      96 _io_write:
+                             97 ;smz80.h:642: __endasm;
+   0000 DD 21 02 00   [14]   98 	ld ix, #2
+   0004 DD 39         [15]   99 	add ix,sp
+   0006 DD 4E 00      [19]  100 	ld c, (ix)
+   0009 DD 23         [10]  101 	inc ix
+   000B DD 7E 00      [19]  102 	ld a,(ix)
+   000E ED 79         [12]  103 	out (c), a
+   0010 C9            [10]  104 	ret
+   0011                     105 _io_write_end::
+                            106 ;smz80.h:649: char io_read(char port_addr){
+                            107 ;	---------------------------------
+                            108 ; Function io_read
+                            109 ; ---------------------------------
+   0011                     110 _io_read_start::
+   0011                     111 _io_read:
+                            112 ;smz80.h:661: __endasm;
+   0011 DD 21 02 00   [14]  113 	LD IX, #2
+   0015 DD 39         [15]  114 	ADD IX,SP
+   0017 DD 4E 00      [19]  115 	LD C, (IX)
+   001A ED 78         [12]  116 	IN A,(C)
+   001C 32r00r00      [13]  117 	LD (___ret_aux),A
+                            118 ;smz80.h:663: return __ret_aux;
+   001F FD 21r00r00   [14]  119 	ld	iy,#___ret_aux
+   0023 FD 6E 00      [19]  120 	ld	l,0 (iy)
+   0026 C9            [10]  121 	ret
+   0027                     122 _io_read_end::
+                            123 ;smz80.h:666: void io_write_buffer(char port_addr, char* buffer_out, char count){
+                            124 ;	---------------------------------
+                            125 ; Function io_write_buffer
+                            126 ; ---------------------------------
+   0027                     127 _io_write_buffer_start::
+   0027                     128 _io_write_buffer:
+                            129 ;smz80.h:682: __endasm;
+   0027 DD 21 02 00   [14]  130 	LD IX, #2
+   002B DD 39         [15]  131 	ADD IX,SP
+   002D DD 4E 00      [19]  132 	LD C, (IX)
+   0030 DD 23         [10]  133 	INC IX
+   0032 DD 6E 00      [19]  134 	LD L,(IX)
+   0035 DD 23         [10]  135 	INC IX
+   0037 DD 66 00      [19]  136 	LD H,(IX)
+   003A DD 23         [10]  137 	INC IX
+   003C DD 46 00      [19]  138 	LD B,(IX)
+   003F ED B3         [21]  139 	OTIR
+   0041 C9            [10]  140 	ret
+   0042                     141 _io_write_buffer_end::
+                            142 ;smz80.h:685: void io_read_buffer(char port_addr, char* buffer_in, char count){
+                            143 ;	---------------------------------
+                            144 ; Function io_read_buffer
+                            145 ; ---------------------------------
+   0042                     146 _io_read_buffer_start::
+   0042                     147 _io_read_buffer:
+                            148 ;smz80.h:702: __endasm;
+   0042 DD 21 02 00   [14]  149 	LD IX, #2
+   0046 DD 39         [15]  150 	ADD IX,SP
+   0048 DD 4E 00      [19]  151 	LD C, (IX)
+   004B DD 23         [10]  152 	INC IX
+   004D DD 6E 00      [19]  153 	LD L,(IX)
+   0050 DD 23         [10]  154 	INC IX
+   0052 DD 66 00      [19]  155 	LD H,(IX)
+   0055 DD 23         [10]  156 	INC IX
+   0057 DD 46 00      [19]  157 	LD B,(IX)
+   005A ED B2         [21]  158 	INIR
+   005C C9            [10]  159 	ret
+   005D                     160 _io_read_buffer_end::
+                            161 ;smz80.h:705: void uart_init(const uart_cfg_t *uart_config){
+                            162 ;	---------------------------------
+                            163 ; Function uart_init
+                            164 ; ---------------------------------
+   005D                     165 _uart_init_start::
+   005D                     166 _uart_init:
+   005D DD E5         [15]  167 	push	ix
+   005F DD 21 00 00   [14]  168 	ld	ix,#0
+   0063 DD 39         [15]  169 	add	ix,sp
+                            170 ;smz80.h:708: uart_set_baudrate(uart_config->baudrate);
+   0065 DD 5E 04      [19]  171 	ld	e,4 (ix)
+   0068 DD 56 05      [19]  172 	ld	d,5 (ix)
+   006B 1A            [ 7]  173 	ld	a,(de)
+   006C D5            [11]  174 	push	de
+   006D F5            [11]  175 	push	af
+   006E 33            [ 6]  176 	inc	sp
+   006F CDr93r00      [17]  177 	call	_uart_set_baudrate
+   0072 33            [ 6]  178 	inc	sp
+   0073 D1            [10]  179 	pop	de
+                            180 ;smz80.h:710: URIER = uart_config->interrupt;
+   0074 6B            [ 4]  181 	ld	l, e
+   0075 62            [ 4]  182 	ld	h, d
+   0076 01 04 00      [10]  183 	ld	bc, #0x0004
+   0079 09            [11]  184 	add	hl, bc
+   007A 7E            [ 7]  185 	ld	a,(hl)
+   007B D3 11         [11]  186 	out	(_URIER),a
+                            187 ;smz80.h:712: URLCR = (uart_config->stop_bits) | (uart_config->parity) | (uart_config->word_length);
+   007D 6B            [ 4]  188 	ld	l, e
+   007E 62            [ 4]  189 	ld	h, d
+   007F 23            [ 6]  190 	inc	hl
+   0080 46            [ 7]  191 	ld	b,(hl)
+   0081 6B            [ 4]  192 	ld	l, e
+   0082 62            [ 4]  193 	ld	h, d
+   0083 23            [ 6]  194 	inc	hl
+   0084 23            [ 6]  195 	inc	hl
+   0085 7E            [ 7]  196 	ld	a,(hl)
+   0086 B0            [ 4]  197 	or	a, b
+   0087 62            [ 4]  198 	ld	h,d
+   0088 6B            [ 4]  199 	ld	l, e
+   0089 23            [ 6]  200 	inc	hl
+   008A 23            [ 6]  201 	inc	hl
+   008B 23            [ 6]  202 	inc	hl
+   008C 56            [ 7]  203 	ld	d,(hl)
+   008D B2            [ 4]  204 	or	a, d
+   008E D3 13         [11]  205 	out	(_URLCR),a
+   0090 DD E1         [14]  206 	pop	ix
+   0092 C9            [10]  207 	ret
+   0093                     208 _uart_init_end::
+                            209 ;smz80.h:715: void uart_set_baudrate(const uart_baudrate_t baudrate){
+                            210 ;	---------------------------------
+                            211 ; Function uart_set_baudrate
+                            212 ; ---------------------------------
+   0093                     213 _uart_set_baudrate_start::
+   0093                     214 _uart_set_baudrate:
+                            215 ;smz80.h:718: URLCR |= BV(UDLAB);
+   0093 DB 13         [11]  216 	in	a,(_URLCR)
+   0095 CB FF         [ 8]  217 	set	7, a
+   0097 D3 13         [11]  218 	out	(_URLCR),a
+                            219 ;smz80.h:720: URDLL = baudrate;
+   0099 21 02 00      [10]  220 	ld	hl, #2+0
+   009C 39            [11]  221 	add	hl, sp
+   009D 7E            [ 7]  222 	ld	a, (hl)
+   009E D3 10         [11]  223 	out	(_URDLL),a
+                            224 ;smz80.h:722: URDLM = ((uint16_t)baudrate)>>8;
+   00A0 3E 00         [ 7]  225 	ld	a, #0x00
+   00A2 D3 11         [11]  226 	out	(_URDLM),a
+                            227 ;smz80.h:724: URLCR &= ~BV(UDLAB);
+   00A4 DB 13         [11]  228 	in	a,(_URLCR)
+   00A6 E6 7F         [ 7]  229 	and	a, #0x7F
+   00A8 D3 13         [11]  230 	out	(_URLCR),a
+   00AA C9            [10]  231 	ret
+   00AB                     232 _uart_set_baudrate_end::
+                            233 ;smz80.h:727: void uart_write(char c){
+                            234 ;	---------------------------------
+                            235 ; Function uart_write
+                            236 ; ---------------------------------
+   00AB                     237 _uart_write_start::
+   00AB                     238 _uart_write:
+                            239 ;smz80.h:730: while( !(URLSR & BV(UTHRE)))
+   00AB                     240 00101$:
+   00AB DB 15         [11]  241 	in	a,(_URLSR)
+   00AD E6 20         [ 7]  242 	and	a, #0x20
+   00AF 20 03         [12]  243 	jr	NZ,00103$
+                            244 ;smz80.h:731: NOP();    
+   00B1 00            [ 4]  245 	NOP
+   00B2 18 F7         [12]  246 	jr	00101$
+   00B4                     247 00103$:
+                            248 ;smz80.h:733: URTHR = c;
+   00B4 21 02 00      [10]  249 	ld	hl, #2+0
+   00B7 39            [11]  250 	add	hl, sp
+   00B8 7E            [ 7]  251 	ld	a, (hl)
+   00B9 D3 10         [11]  252 	out	(_URTHR),a
+   00BB C9            [10]  253 	ret
+   00BC                     254 _uart_write_end::
+                            255 ;smz80.h:736: char uart_read(){
+                            256 ;	---------------------------------
+                            257 ; Function uart_read
+                            258 ; ---------------------------------
+   00BC                     259 _uart_read_start::
+   00BC                     260 _uart_read:
+                            261 ;smz80.h:739: while(!(URLSR & BV(UDR))) 
+   00BC                     262 00101$:
+   00BC DB 15         [11]  263 	in	a,(_URLSR)
+   00BE 0F            [ 4]  264 	rrca
+   00BF 38 03         [12]  265 	jr	C,00103$
+                            266 ;smz80.h:740: NOP();
+   00C1 00            [ 4]  267 	NOP
+   00C2 18 F8         [12]  268 	jr	00101$
+   00C4                     269 00103$:
+                            270 ;smz80.h:742: return URRBR;
+   00C4 DB 10         [11]  271 	in	a,(_URRBR)
+   00C6 6F            [ 4]  272 	ld	l,a
+   00C7 C9            [10]  273 	ret
+   00C8                     274 _uart_read_end::
+                            275 ;smz80.h:745: void uart_print(const char* str){
+                            276 ;	---------------------------------
+                            277 ; Function uart_print
+                            278 ; ---------------------------------
+   00C8                     279 _uart_print_start::
+   00C8                     280 _uart_print:
+                            281 ;smz80.h:748: while(*str)       
+   00C8 C1            [10]  282 	pop	bc
+   00C9 E1            [10]  283 	pop	hl
+   00CA E5            [11]  284 	push	hl
+   00CB C5            [11]  285 	push	bc
+   00CC                     286 00101$:
+   00CC 7E            [ 7]  287 	ld	a,(hl)
+   00CD B7            [ 4]  288 	or	a, a
+   00CE C8            [11]  289 	ret	Z
+                            290 ;smz80.h:749: putchar(*str++); // envía el siguiente caracter. 
+   00CF 23            [ 6]  291 	inc	hl
+   00D0 E5            [11]  292 	push	hl
+   00D1 F5            [11]  293 	push	af
+   00D2 33            [ 6]  294 	inc	sp
+   00D3 CDrFFr01      [17]  295 	call	_putchar
+   00D6 33            [ 6]  296 	inc	sp
+   00D7 E1            [10]  297 	pop	hl
+   00D8 18 F2         [12]  298 	jr	00101$
+   00DA C9            [10]  299 	ret
+   00DB                     300 _uart_print_end::
+                            301 ;smz80.h:752: int uart_read_line(char* str){
+                            302 ;	---------------------------------
+                            303 ; Function uart_read_line
+                            304 ; ---------------------------------
+   00DB                     305 _uart_read_line_start::
+   00DB                     306 _uart_read_line:
+   00DB DD E5         [15]  307 	push	ix
+   00DD DD 21 00 00   [14]  308 	ld	ix,#0
+   00E1 DD 39         [15]  309 	add	ix,sp
+                            310 ;smz80.h:754: int n=0;
+   00E3 01 00 00      [10]  311 	ld	bc,#0x0000
+                            312 ;smz80.h:756: while(n<MAXLINE-1 && (c=getchar()) != '\n' && c !='\r'){
+   00E6                     313 00111$:
+   00E6 79            [ 4]  314 	ld	a,c
+   00E7 D6 63         [ 7]  315 	sub	a, #0x63
+   00E9 78            [ 4]  316 	ld	a,b
+   00EA 17            [ 4]  317 	rla
+   00EB 3F            [ 4]  318 	ccf
+   00EC 1F            [ 4]  319 	rra
+   00ED DE 80         [ 7]  320 	sbc	a, #0x80
+   00EF 30 70         [12]  321 	jr	NC,00113$
+   00F1 C5            [11]  322 	push	bc
+   00F2 CDr1Cr02      [17]  323 	call	_getchar
+   00F5 7D            [ 4]  324 	ld	a,l
+   00F6 C1            [10]  325 	pop	bc
+   00F7 57            [ 4]  326 	ld	d,a
+   00F8 D6 0A         [ 7]  327 	sub	a, #0x0A
+   00FA 28 65         [12]  328 	jr	Z,00113$
+                            329 ;smz80.h:758: if(c == 0x7F || c==0x08){
+   00FC 7A            [ 4]  330 	ld	a,d
+   00FD FE 0D         [ 7]  331 	cp	a,#0x0D
+   00FF 28 60         [12]  332 	jr	Z,00113$
+   0101 FE 7F         [ 7]  333 	cp	a,#0x7F
+   0103 28 04         [12]  334 	jr	Z,00105$
+   0105 D6 08         [ 7]  335 	sub	a, #0x08
+   0107 20 2D         [12]  336 	jr	NZ,00106$
+   0109                     337 00105$:
+                            338 ;smz80.h:760: if(n>0){
+   0109 AF            [ 4]  339 	xor	a, a
+   010A B9            [ 4]  340 	cp	a, c
+   010B 98            [ 4]  341 	sbc	a, b
+   010C E2r11r01      [10]  342 	jp	PO, 00149$
+   010F EE 80         [ 7]  343 	xor	a, #0x80
+   0111                     344 00149$:
+   0111 F2rE6r00      [10]  345 	jp	P,00111$
+                            346 ;smz80.h:761: str[--n]='\0';
+   0114 0B            [ 6]  347 	dec	bc
+   0115 DD 6E 04      [19]  348 	ld	l,4 (ix)
+   0118 DD 66 05      [19]  349 	ld	h,5 (ix)
+   011B 09            [11]  350 	add	hl,bc
+   011C 36 00         [10]  351 	ld	(hl),#0x00
+                            352 ;smz80.h:762: putchar(c);
+   011E C5            [11]  353 	push	bc
+   011F D5            [11]  354 	push	de
+   0120 D5            [11]  355 	push	de
+   0121 33            [ 6]  356 	inc	sp
+   0122 CDrFFr01      [17]  357 	call	_putchar
+   0125 33            [ 6]  358 	inc	sp
+   0126 3E 20         [ 7]  359 	ld	a,#0x20
+   0128 F5            [11]  360 	push	af
+   0129 33            [ 6]  361 	inc	sp
+   012A CDrFFr01      [17]  362 	call	_putchar
+   012D 33            [ 6]  363 	inc	sp
+   012E 33            [ 6]  364 	inc	sp
+   012F CDrFFr01      [17]  365 	call	_putchar
+   0132 33            [ 6]  366 	inc	sp
+   0133 C1            [10]  367 	pop	bc
+   0134 18 B0         [12]  368 	jr	00111$
+   0136                     369 00106$:
+                            370 ;smz80.h:768: if(isprint(c))
+   0136 7A            [ 4]  371 	ld	a,d
+   0137 6F            [ 4]  372 	ld	l,a
+   0138 17            [ 4]  373 	rla
+   0139 9F            [ 4]  374 	sbc	a, a
+   013A 67            [ 4]  375 	ld	h,a
+   013B C5            [11]  376 	push	bc
+   013C D5            [11]  377 	push	de
+   013D E5            [11]  378 	push	hl
+   013E CDr00r00      [17]  379 	call	_isprint
+   0141 F1            [10]  380 	pop	af
+   0142 D1            [10]  381 	pop	de
+   0143 C1            [10]  382 	pop	bc
+   0144 7C            [ 4]  383 	ld	a,h
+   0145 B5            [ 4]  384 	or	a,l
+   0146 28 9E         [12]  385 	jr	Z,00111$
+                            386 ;smz80.h:770: str[n++]=c;
+   0148 61            [ 4]  387 	ld	h,c
+   0149 58            [ 4]  388 	ld	e,b
+   014A 03            [ 6]  389 	inc	bc
+   014B DD 7E 04      [19]  390 	ld	a,4 (ix)
+   014E 84            [ 4]  391 	add	a, h
+   014F 6F            [ 4]  392 	ld	l,a
+   0150 DD 7E 05      [19]  393 	ld	a,5 (ix)
+   0153 8B            [ 4]  394 	adc	a, e
+   0154 67            [ 4]  395 	ld	h,a
+   0155 72            [ 7]  396 	ld	(hl),d
+                            397 ;smz80.h:771: putchar(c);
+   0156 C5            [11]  398 	push	bc
+   0157 D5            [11]  399 	push	de
+   0158 33            [ 6]  400 	inc	sp
+   0159 CDrFFr01      [17]  401 	call	_putchar
+   015C 33            [ 6]  402 	inc	sp
+   015D C1            [10]  403 	pop	bc
+   015E C3rE6r00      [10]  404 	jp	00111$
+   0161                     405 00113$:
+                            406 ;smz80.h:775: str[n]='\0';     
+   0161 DD 6E 04      [19]  407 	ld	l,4 (ix)
+   0164 DD 66 05      [19]  408 	ld	h,5 (ix)
+   0167 09            [11]  409 	add	hl,bc
+   0168 36 00         [10]  410 	ld	(hl),#0x00
+                            411 ;smz80.h:776: putchar('\n');
+   016A C5            [11]  412 	push	bc
+   016B 3E 0A         [ 7]  413 	ld	a,#0x0A
+   016D F5            [11]  414 	push	af
+   016E 33            [ 6]  415 	inc	sp
+   016F CDrFFr01      [17]  416 	call	_putchar
+   0172 33            [ 6]  417 	inc	sp
+                            418 ;smz80.h:777: return n;
+   0173 E1            [10]  419 	pop	hl
+   0174 DD E1         [14]  420 	pop	ix
+   0176 C9            [10]  421 	ret
+   0177                     422 _uart_read_line_end::
+                            423 ;smz80.h:780: void uart_disable_interrupts(){
+                            424 ;	---------------------------------
+                            425 ; Function uart_disable_interrupts
+                            426 ; ---------------------------------
+   0177                     427 _uart_disable_interrupts_start::
+   0177                     428 _uart_disable_interrupts:
+                            429 ;smz80.h:782: URIER = 0;
+   0177 3E 00         [ 7]  430 	ld	a,#0x00
+   0179 D3 11         [11]  431 	out	(_URIER),a
+   017B C9            [10]  432 	ret
+   017C                     433 _uart_disable_interrupts_end::
+                            434 ;smz80.h:785: void uart_enable_interrupts(uart_interrupt_t int_cfg){
+                            435 ;	---------------------------------
+                            436 ; Function uart_enable_interrupts
+                            437 ; ---------------------------------
+   017C                     438 _uart_enable_interrupts_start::
+   017C                     439 _uart_enable_interrupts:
+                            440 ;smz80.h:787: URIER = int_cfg;
+   017C 21 02 00      [10]  441 	ld	hl, #2+0
+   017F 39            [11]  442 	add	hl, sp
+   0180 7E            [ 7]  443 	ld	a, (hl)
+   0181 D3 11         [11]  444 	out	(_URIER),a
+   0183 C9            [10]  445 	ret
+   0184                     446 _uart_enable_interrupts_end::
+                            447 ;smz80.h:792: void ppi_init(const ppi_cfg_t *ppi_config){
+                            448 ;	---------------------------------
+                            449 ; Function ppi_init
+                            450 ; ---------------------------------
+   0184                     451 _ppi_init_start::
+   0184                     452 _ppi_init:
+   0184 DD E5         [15]  453 	push	ix
+   0186 DD 21 00 00   [14]  454 	ld	ix,#0
+   018A DD 39         [15]  455 	add	ix,sp
+                            456 ;smz80.h:794: PPI_CTRL = 0x80 | ppi_config->mode | (ppi_config->pcl_dir << PCPCL) | (ppi_config->pch_dir << PCPCH) | (ppi_config->pa_dir << PCPA) | (ppi_config->pb_dir << PCPB);
+   018C DD 4E 04      [19]  457 	ld	c,4 (ix)
+   018F DD 46 05      [19]  458 	ld	b,5 (ix)
+   0192 0A            [ 7]  459 	ld	a,(bc)
+   0193 CB FF         [ 8]  460 	set	7, a
+   0195 5F            [ 4]  461 	ld	e,a
+   0196 C5            [11]  462 	push	bc
+   0197 FD E1         [14]  463 	pop	iy
+   0199 FD 7E 03      [19]  464 	ld	a,3 (iy)
+   019C B3            [ 4]  465 	or	a, e
+   019D 5F            [ 4]  466 	ld	e,a
+   019E C5            [11]  467 	push	bc
+   019F FD E1         [14]  468 	pop	iy
+   01A1 FD 7E 04      [19]  469 	ld	a,4 (iy)
+   01A4 07            [ 4]  470 	rlca
+   01A5 07            [ 4]  471 	rlca
+   01A6 07            [ 4]  472 	rlca
+   01A7 E6 F8         [ 7]  473 	and	a,#0xF8
+   01A9 B3            [ 4]  474 	or	a, e
+   01AA 5F            [ 4]  475 	ld	e,a
+   01AB 69            [ 4]  476 	ld	l, c
+   01AC 60            [ 4]  477 	ld	h, b
+   01AD 23            [ 6]  478 	inc	hl
+   01AE 7E            [ 7]  479 	ld	a,(hl)
+   01AF 07            [ 4]  480 	rlca
+   01B0 07            [ 4]  481 	rlca
+   01B1 07            [ 4]  482 	rlca
+   01B2 07            [ 4]  483 	rlca
+   01B3 E6 F0         [ 7]  484 	and	a,#0xF0
+   01B5 B3            [ 4]  485 	or	a, e
+   01B6 57            [ 4]  486 	ld	d,a
+   01B7 69            [ 4]  487 	ld	l, c
+   01B8 60            [ 4]  488 	ld	h, b
+   01B9 23            [ 6]  489 	inc	hl
+   01BA 23            [ 6]  490 	inc	hl
+   01BB 7E            [ 7]  491 	ld	a,(hl)
+   01BC 87            [ 4]  492 	add	a, a
+   01BD B2            [ 4]  493 	or	a, d
+   01BE D3 43         [11]  494 	out	(_PPI_CTRL),a
+   01C0 DD E1         [14]  495 	pop	ix
+   01C2 C9            [10]  496 	ret
+   01C3                     497 _ppi_init_end::
+                            498 ;smz80.h:797: void ppi_set_portc_bit(const char bit){
+                            499 ;	---------------------------------
+                            500 ; Function ppi_set_portc_bit
+                            501 ; ---------------------------------
+   01C3                     502 _ppi_set_portc_bit_start::
+   01C3                     503 _ppi_set_portc_bit:
+                            504 ;smz80.h:799: PPI_CTRL = 1 | bit << 1;
+   01C3 21 02 00      [10]  505 	ld	hl, #2+0
+   01C6 39            [11]  506 	add	hl, sp
+   01C7 7E            [ 7]  507 	ld	a, (hl)
+   01C8 87            [ 4]  508 	add	a, a
+   01C9 CB C7         [ 8]  509 	set	0, a
+   01CB D3 43         [11]  510 	out	(_PPI_CTRL),a
+   01CD C9            [10]  511 	ret
+   01CE                     512 _ppi_set_portc_bit_end::
+                            513 ;smz80.h:802: void ppi_clear_portc_bit(const char bit){
+                            514 ;	---------------------------------
+                            515 ; Function ppi_clear_portc_bit
+                            516 ; ---------------------------------
+   01CE                     517 _ppi_clear_portc_bit_start::
+   01CE                     518 _ppi_clear_portc_bit:
+                            519 ;smz80.h:804: PPI_CTRL = bit << 1;
+   01CE 21 02 00      [10]  520 	ld	hl, #2+0
+   01D1 39            [11]  521 	add	hl, sp
+   01D2 7E            [ 7]  522 	ld	a, (hl)
+   01D3 87            [ 4]  523 	add	a, a
+   01D4 D3 43         [11]  524 	out	(_PPI_CTRL),a
+   01D6 C9            [10]  525 	ret
+   01D7                     526 _ppi_clear_portc_bit_end::
+                            527 ;smz80.h:807: void delay_10us(){
+                            528 ;	---------------------------------
+                            529 ; Function delay_10us
+                            530 ; ---------------------------------
+   01D7                     531 _delay_10us_start::
+   01D7                     532 _delay_10us:
+                            533 ;smz80.h:817: __endasm;
+   01D7 D9            [ 4]  534 	EXX
+   01D8 08            [ 4]  535 	EX AF,AF'
+   01D9 06 02         [ 7]  536 	LD B,#0x2
+   01DB                     537 	    LOOP_10:
+   01DB 10 FE         [13]  538 	DJNZ LOOP_10
+   01DD 08            [ 4]  539 	EX AF,AF'
+   01DE D9            [ 4]  540 	EXX
+   01DF C9            [10]  541 	ret
+   01E0                     542 _delay_10us_end::
+                            543 ;smz80.h:821: void delay_100us(){
+                            544 ;	---------------------------------
+                            545 ; Function delay_100us
+                            546 ; ---------------------------------
+   01E0                     547 _delay_100us_start::
+   01E0                     548 _delay_100us:
+                            549 ;smz80.h:831: __endasm;
+   01E0 D9            [ 4]  550 	EXX
+   01E1 08            [ 4]  551 	EX AF,AF'
+   01E2 06 3A         [ 7]  552 	LD B,#0x3A
+   01E4                     553 	    LOOP_100:
+   01E4 10 FE         [13]  554 	DJNZ LOOP_100
+   01E6 08            [ 4]  555 	EX AF,AF'
+   01E7 D9            [ 4]  556 	EXX
+   01E8 C9            [10]  557 	ret
+   01E9                     558 _delay_100us_end::
+                            559 ;smz80.h:835: void delay_ms(int ms){
+                            560 ;	---------------------------------
+                            561 ; Function delay_ms
+                            562 ; ---------------------------------
+   01E9                     563 _delay_ms_start::
+   01E9                     564 _delay_ms:
+                            565 ;smz80.h:839: while(ms--)
+   01E9 C1            [10]  566 	pop	bc
+   01EA D1            [10]  567 	pop	de
+   01EB D5            [11]  568 	push	de
+   01EC C5            [11]  569 	push	bc
+   01ED                     570 00102$:
+   01ED 43            [ 4]  571 	ld	b,e
+   01EE 4A            [ 4]  572 	ld	c,d
+   01EF 1B            [ 6]  573 	dec	de
+   01F0 79            [ 4]  574 	ld	a,c
+   01F1 B0            [ 4]  575 	or	a,b
+   01F2 C8            [11]  576 	ret	Z
+                            577 ;smz80.h:840: for(i=0;i<0x106;i++)
+   01F3 01 06 01      [10]  578 	ld	bc,#0x0106
+   01F6                     579 00107$:
+                            580 ;smz80.h:841: __asm__("nop");
+   01F6 00            [ 4]  581 	nop
+   01F7 0B            [ 6]  582 	dec	bc
+                            583 ;smz80.h:840: for(i=0;i<0x106;i++)
+   01F8 78            [ 4]  584 	ld	a,b
+   01F9 B1            [ 4]  585 	or	a,c
+   01FA 20 FA         [12]  586 	jr	NZ,00107$
+   01FC 18 EF         [12]  587 	jr	00102$
+   01FE C9            [10]  588 	ret
+   01FF                     589 _delay_ms_end::
+                            590 ;smz80.h:848: void putchar(char c){
+                            591 ;	---------------------------------
+                            592 ; Function putchar
+                            593 ; ---------------------------------
+   01FF                     594 _putchar_start::
+   01FF                     595 _putchar:
+                            596 ;smz80.h:851: if(c=='\n')
+   01FF 21 02 00      [10]  597 	ld	hl, #2+0
+   0202 39            [11]  598 	add	hl, sp
+   0203 7E            [ 7]  599 	ld	a, (hl)
+   0204 D6 0A         [ 7]  600 	sub	a, #0x0A
+   0206 20 08         [12]  601 	jr	NZ,00102$
+                            602 ;smz80.h:852: uart_write('\r');
+   0208 3E 0D         [ 7]  603 	ld	a,#0x0D
+   020A F5            [11]  604 	push	af
+   020B 33            [ 6]  605 	inc	sp
+   020C CDrABr00      [17]  606 	call	_uart_write
+   020F 33            [ 6]  607 	inc	sp
+   0210                     608 00102$:
+                            609 ;smz80.h:853: uart_write(c);
+   0210 21 02 00      [10]  610 	ld	hl, #2+0
+   0213 39            [11]  611 	add	hl, sp
+   0214 7E            [ 7]  612 	ld	a, (hl)
+   0215 F5            [11]  613 	push	af
+   0216 33            [ 6]  614 	inc	sp
+   0217 CDrABr00      [17]  615 	call	_uart_write
+   021A 33            [ 6]  616 	inc	sp
+   021B C9            [10]  617 	ret
+   021C                     618 _putchar_end::
+                            619 ;smz80.h:858: char getchar(){
+                            620 ;	---------------------------------
+                            621 ; Function getchar
+                            622 ; ---------------------------------
+   021C                     623 _getchar_start::
+   021C                     624 _getchar:
+                            625 ;smz80.h:861: return uart_read();
+   021C C3rBCr00      [10]  626 	jp	_uart_read
+   021F                     627 _getchar_end::
+                            628 ;main.c:109: ISR_NMI(){
+                            629 ;	---------------------------------
+                            630 ; Function isr_vector66
+                            631 ; ---------------------------------
+   021F                     632 _isr_vector66_start::
+   021F                     633 _isr_vector66:
+   021F F5            [11]  634 	push	af
+   0220 C5            [11]  635 	push	bc
+   0221 D5            [11]  636 	push	de
+   0222 E5            [11]  637 	push	hl
+   0223 FD E5         [15]  638 	push	iy
+                            639 ;main.c:111: }
+   0225 FD E1         [14]  640 	pop	iy
+   0227 E1            [10]  641 	pop	hl
+   0228 D1            [10]  642 	pop	de
+   0229 C1            [10]  643 	pop	bc
+   022A F1            [10]  644 	pop	af
+   022B ED 45         [14]  645 	retn
+   022D                     646 _isr_vector66_end::
+   022D                     647 _PROGMEM:
+   022D 00 00               648 	.dw #0x0000
+   022F 01 00               649 	.dw #0x0001
+   0231 FF 00               650 	.dw #0x00FF
+   0233 32 00               651 	.dw #0x0032
+   0235 01 00               652 	.dw #0x0001
+   0237 00 01               653 	.dw #0x0100
+   0239 02 00               654 	.dw #0x0002
+   023B 00 07               655 	.dw #0x0700
+   023D 03 00               656 	.dw #0x0003
+   023F 30 10               657 	.dw #0x1030
+   0241 04 00               658 	.dw #0x0004
+   0243 00 00               659 	.dw #0x0000
+   0245 08 00               660 	.dw #0x0008
+   0247 02 02               661 	.dw #0x0202
+   0249 09 00               662 	.dw #0x0009
+   024B 00 00               663 	.dw #0x0000
+   024D 0A 00               664 	.dw #0x000A
+   024F 00 00               665 	.dw #0x0000
+   0251 0C 00               666 	.dw #0x000C
+   0253 00 00               667 	.dw #0x0000
+   0255 0D 00               668 	.dw #0x000D
+   0257 00 00               669 	.dw #0x0000
+   0259 0F 00               670 	.dw #0x000F
+   025B 00 00               671 	.dw #0x0000
+   025D 10 00               672 	.dw #0x0010
+   025F 00 00               673 	.dw #0x0000
+   0261 11 00               674 	.dw #0x0011
+   0263 07 00               675 	.dw #0x0007
+   0265 12 00               676 	.dw #0x0012
+   0267 00 00               677 	.dw #0x0000
+   0269 13 00               678 	.dw #0x0013
+   026B 00 00               679 	.dw #0x0000
+   026D FF 00               680 	.dw #0x00FF
+   026F C8 00               681 	.dw #0x00C8
+   0271 10 00               682 	.dw #0x0010
+   0273 90 16               683 	.dw #0x1690
+   0275 11 00               684 	.dw #0x0011
+   0277 27 02               685 	.dw #0x0227
+   0279 FF 00               686 	.dw #0x00FF
+   027B 32 00               687 	.dw #0x0032
+   027D 12 00               688 	.dw #0x0012
+   027F 1A 00               689 	.dw #0x001A
+   0281 FF 00               690 	.dw #0x00FF
+   0283 32 00               691 	.dw #0x0032
+   0285 13 00               692 	.dw #0x0013
+   0287 00 18               693 	.dw #0x1800
+   0289 29 00               694 	.dw #0x0029
+   028B 2A 00               695 	.dw #0x002A
+   028D FF 00               696 	.dw #0x00FF
+   028F 32 00               697 	.dw #0x0032
+   0291 30 00               698 	.dw #0x0030
+   0293 00 00               699 	.dw #0x0000
+   0295 31 00               700 	.dw #0x0031
+   0297 00 00               701 	.dw #0x0000
+   0299 32 00               702 	.dw #0x0032
+   029B 00 00               703 	.dw #0x0000
+   029D 35 00               704 	.dw #0x0035
+   029F 06 02               705 	.dw #0x0206
+   02A1 36 00               706 	.dw #0x0036
+   02A3 08 08               707 	.dw #0x0808
+   02A5 37 00               708 	.dw #0x0037
+   02A7 07 00               709 	.dw #0x0007
+   02A9 38 00               710 	.dw #0x0038
+   02AB 01 02               711 	.dw #0x0201
+   02AD 39 00               712 	.dw #0x0039
+   02AF 00 00               713 	.dw #0x0000
+   02B1 3C 00               714 	.dw #0x003C
+   02B3 00 00               715 	.dw #0x0000
+   02B5 3D 00               716 	.dw #0x003D
+   02B7 00 00               717 	.dw #0x0000
+   02B9 20 00               718 	.dw #0x0020
+   02BB 00 00               719 	.dw #0x0000
+   02BD 21 00               720 	.dw #0x0021
+   02BF 00 00               721 	.dw #0x0000
+   02C1 50 00               722 	.dw #0x0050
+   02C3 00 00               723 	.dw #0x0000
+   02C5 51 00               724 	.dw #0x0051
+   02C7 EF 00               725 	.dw #0x00EF
+   02C9 52 00               726 	.dw #0x0052
+   02CB 00 00               727 	.dw #0x0000
+   02CD 53 00               728 	.dw #0x0053
+   02CF 3F 01               729 	.dw #0x013F
+   02D1 60 00               730 	.dw #0x0060
+   02D3 00 A7               731 	.dw #0xA700
+   02D5 61 00               732 	.dw #0x0061
+   02D7 03 00               733 	.dw #0x0003
+   02D9 6A 00               734 	.dw #0x006A
+   02DB 00 00               735 	.dw #0x0000
+   02DD 90 00               736 	.dw #0x0090
+   02DF 10 00               737 	.dw #0x0010
+   02E1 92 00               738 	.dw #0x0092
+   02E3 00 00               739 	.dw #0x0000
+   02E5 93 00               740 	.dw #0x0093
+   02E7 03 00               741 	.dw #0x0003
+   02E9 95 00               742 	.dw #0x0095
+   02EB 00 11               743 	.dw #0x1100
+   02ED 97 00               744 	.dw #0x0097
+   02EF 00 00               745 	.dw #0x0000
+   02F1 98 00               746 	.dw #0x0098
+   02F3 00 00               747 	.dw #0x0000
+   02F5 07 00               748 	.dw #0x0007
+   02F7 33 01               749 	.dw #0x0133
+                            750 ;main.c:113: ISR_INT_38(){
+                            751 ;	---------------------------------
+                            752 ; Function isr_vector38
+                            753 ; ---------------------------------
+   02F9                     754 _isr_vector38_start::
+   02F9                     755 _isr_vector38:
+   02F9 F5            [11]  756 	push	af
+   02FA C5            [11]  757 	push	bc
+   02FB D5            [11]  758 	push	de
+   02FC E5            [11]  759 	push	hl
+   02FD FD E5         [15]  760 	push	iy
+                            761 ;main.c:115: }
+   02FF FD E1         [14]  762 	pop	iy
+   0301 E1            [10]  763 	pop	hl
+   0302 D1            [10]  764 	pop	de
+   0303 C1            [10]  765 	pop	bc
+   0304 F1            [10]  766 	pop	af
+   0305 ED 4D         [14]  767 	reti
+   0307                     768 _isr_vector38_end::
+                            769 ;main.c:118: int main(){
+                            770 ;	---------------------------------
+                            771 ; Function main
+                            772 ; ---------------------------------
+   0307                     773 _main_start::
+   0307                     774 _main:
+                            775 ;main.c:121: system_init(); 
+   0307 CDr0Dr03      [17]  776 	call	_system_init
+                            777 ;main.c:124: while(TRUE){
+   030A                     778 00102$:
+                            779 ;main.c:125: sleep();    //Entra en modo sleep (HALT)
+   030A 76            [ 4]  780 	HALT
+   030B 18 FD         [12]  781 	jr	00102$
+   030D                     782 _main_end::
+                            783 ;main.c:130: void system_init(){
+                            784 ;	---------------------------------
+                            785 ; Function system_init
+                            786 ; ---------------------------------
+   030D                     787 _system_init_start::
+   030D                     788 _system_init:
+                            789 ;main.c:131: PPI_CTRL = 0x89; //Palabra de control PA y PB salida PCH entrada PCD salida
+   030D 3E 89         [ 7]  790 	ld	a,#0x89
+   030F D3 43         [11]  791 	out	(_PPI_CTRL),a
+                            792 ;main.c:132: lcd_init();   
+   0311 C3r14r03      [10]  793 	jp	_lcd_init
+   0314                     794 _system_init_end::
+                            795 ;main.c:135: void lcd_init(){
+                            796 ;	---------------------------------
+                            797 ; Function lcd_init
+                            798 ; ---------------------------------
+   0314                     799 _lcd_init_start::
+   0314                     800 _lcd_init:
+   0314 DD E5         [15]  801 	push	ix
+   0316 DD 21 00 00   [14]  802 	ld	ix,#0
+   031A DD 39         [15]  803 	add	ix,sp
+   031C F5            [11]  804 	push	af
+                            805 ;main.c:136: uint8_t i = 0;
+   031D 0E 00         [ 7]  806 	ld	c,#0x00
+                            807 ;main.c:142: CS_ACTIVE;
+   031F DB 40         [11]  808 	in	a,(_PPI_PORTA)
+   0321 E6 FC         [ 7]  809 	and	a, #0xFC
+   0323 D3 40         [11]  810 	out	(_PPI_PORTA),a
+                            811 ;main.c:143: while(i < sizeof(PROGMEM) / sizeof(uint16_t)) 
+   0325                     812 00104$:
+   0325 79            [ 4]  813 	ld	a,c
+   0326 D6 66         [ 7]  814 	sub	a, #0x66
+   0328 30 3A         [12]  815 	jr	NC,00106$
+                            816 ;main.c:145: a = PROGMEM[i++];
+   032A 69            [ 4]  817 	ld	l,c
+   032B 0C            [ 4]  818 	inc	c
+   032C 26 00         [ 7]  819 	ld	h,#0x00
+   032E 29            [11]  820 	add	hl, hl
+   032F 11r2Dr02      [10]  821 	ld	de,#_PROGMEM
+   0332 19            [11]  822 	add	hl,de
+   0333 7E            [ 7]  823 	ld	a,(hl)
+   0334 DD 77 FE      [19]  824 	ld	-2 (ix),a
+   0337 23            [ 6]  825 	inc	hl
+   0338 7E            [ 7]  826 	ld	a,(hl)
+   0339 DD 77 FF      [19]  827 	ld	-1 (ix),a
+                            828 ;main.c:146: d = PROGMEM[i++];
+   033C 69            [ 4]  829 	ld	l,c
+   033D 0C            [ 4]  830 	inc	c
+   033E 26 00         [ 7]  831 	ld	h,#0x00
+   0340 29            [11]  832 	add	hl, hl
+   0341 11r2Dr02      [10]  833 	ld	de,#_PROGMEM
+   0344 19            [11]  834 	add	hl,de
+   0345 5E            [ 7]  835 	ld	e,(hl)
+   0346 23            [ 6]  836 	inc	hl
+   0347 56            [ 7]  837 	ld	d,(hl)
+                            838 ;main.c:148: if(a == TFTLCD_DELAY)
+   0348 DD 7E FE      [19]  839 	ld	a,-2 (ix)
+   034B 3C            [ 4]  840 	inc	a
+   034C 20 06         [12]  841 	jr	NZ,00121$
+   034E DD 7E FF      [19]  842 	ld	a,-1 (ix)
+   0351 B7            [ 4]  843 	or	a, a
+   0352 28 D1         [12]  844 	jr	Z,00104$
+   0354                     845 00121$:
+                            846 ;main.c:154: writeRegister16(a, d);
+   0354 63            [ 4]  847 	ld	h,e
+   0355 DD 56 FE      [19]  848 	ld	d,-2 (ix)
+   0358 C5            [11]  849 	push	bc
+   0359 E5            [11]  850 	push	hl
+   035A 33            [ 6]  851 	inc	sp
+   035B D5            [11]  852 	push	de
+   035C 33            [ 6]  853 	inc	sp
+   035D CDrB0r04      [17]  854 	call	_writeRegister16
+   0360 F1            [10]  855 	pop	af
+   0361 C1            [10]  856 	pop	bc
+   0362 18 C1         [12]  857 	jr	00104$
+   0364                     858 00106$:
+                            859 ;main.c:157: CS_ACTIVE;
+   0364 DB 40         [11]  860 	in	a,(_PPI_PORTA)
+   0366 E6 FC         [ 7]  861 	and	a, #0xFC
+   0368 D3 40         [11]  862 	out	(_PPI_PORTA),a
+                            863 ;main.c:159: writeRegister16(0x0003, a);
+   036A 21 03 30      [10]  864 	ld	hl,#0x3003
+   036D E5            [11]  865 	push	hl
+   036E CDrB0r04      [17]  866 	call	_writeRegister16
+                            867 ;main.c:160: setAddrWindow(0, 0, TFTWIDTH-1, TFTHEIGHT-1);
+   0371 21 3F 01      [10]  868 	ld	hl, #0x013F
+   0374 E3            [19]  869 	ex	(sp),hl
+   0375 21 EF 00      [10]  870 	ld	hl,#0x00EF
+   0378 E5            [11]  871 	push	hl
+   0379 2E 00         [ 7]  872 	ld	l, #0x00
+   037B E5            [11]  873 	push	hl
+   037C 2E 00         [ 7]  874 	ld	l, #0x00
+   037E E5            [11]  875 	push	hl
+   037F CDrF5r04      [17]  876 	call	_setAddrWindow
+   0382 21 08 00      [10]  877 	ld	hl,#8
+   0385 39            [11]  878 	add	hl,sp
+   0386 F9            [ 6]  879 	ld	sp,hl
+   0387 DD F9         [10]  880 	ld	sp, ix
+   0389 DD E1         [14]  881 	pop	ix
+   038B C9            [10]  882 	ret
+   038C                     883 _lcd_init_end::
+                            884 ;main.c:164: void writeRegister24(uint8_t r, uint32_t d) {
+                            885 ;	---------------------------------
+                            886 ; Function writeRegister24
+                            887 ; ---------------------------------
+   038C                     888 _writeRegister24_start::
+   038C                     889 _writeRegister24:
+                            890 ;main.c:165: CS_ACTIVE;
+   038C DB 40         [11]  891 	in	a,(_PPI_PORTA)
+   038E E6 FC         [ 7]  892 	and	a, #0xFC
+   0390 D3 40         [11]  893 	out	(_PPI_PORTA),a
+                            894 ;main.c:166: CD_COMMAND;
+   0392 DB 40         [11]  895 	in	a,(_PPI_PORTA)
+   0394 E6 FD         [ 7]  896 	and	a, #0xFD
+   0396 D3 40         [11]  897 	out	(_PPI_PORTA),a
+                            898 ;main.c:167: write8(r);
+   0398 21 02 00      [10]  899 	ld	hl, #2+0
+   039B 39            [11]  900 	add	hl, sp
+   039C 7E            [ 7]  901 	ld	a, (hl)
+   039D F5            [11]  902 	push	af
+   039E 33            [ 6]  903 	inc	sp
+   039F CDrE1r04      [17]  904 	call	_write8
+   03A2 33            [ 6]  905 	inc	sp
+                            906 ;main.c:168: CD_DATA;
+   03A3 DB 40         [11]  907 	in	a,(_PPI_PORTA)
+   03A5 CB CF         [ 8]  908 	set	1, a
+   03A7 D3 40         [11]  909 	out	(_PPI_PORTA),a
+                            910 ;main.c:170: write8(d >> 16);
+   03A9 F5            [11]  911 	push	af
+   03AA FD 21 05 00   [14]  912 	ld	iy,#5
+   03AE FD 39         [15]  913 	add	iy,sp
+   03B0 FD 66 00      [19]  914 	ld	h,0 (iy)
+   03B3 FD 6E 01      [19]  915 	ld	l,1 (iy)
+   03B6 FD 56 02      [19]  916 	ld	d,2 (iy)
+   03B9 FD 5E 03      [19]  917 	ld	e,3 (iy)
+   03BC F1            [10]  918 	pop	af
+   03BD 06 10         [ 7]  919 	ld	b,#0x10
+   03BF                     920 00103$:
+   03BF CB 3B         [ 8]  921 	srl	e
+   03C1 CB 1A         [ 8]  922 	rr	d
+   03C3 CB 1D         [ 8]  923 	rr	l
+   03C5 CB 1C         [ 8]  924 	rr	h
+   03C7 10 F6         [13]  925 	djnz	00103$
+   03C9 E5            [11]  926 	push	hl
+   03CA 33            [ 6]  927 	inc	sp
+   03CB CDrE1r04      [17]  928 	call	_write8
+   03CE 33            [ 6]  929 	inc	sp
+                            930 ;main.c:172: write8(d >> 8);
+   03CF F5            [11]  931 	push	af
+   03D0 FD 21 05 00   [14]  932 	ld	iy,#5
+   03D4 FD 39         [15]  933 	add	iy,sp
+   03D6 FD 66 00      [19]  934 	ld	h,0 (iy)
+   03D9 FD 6E 01      [19]  935 	ld	l,1 (iy)
+   03DC FD 56 02      [19]  936 	ld	d,2 (iy)
+   03DF FD 5E 03      [19]  937 	ld	e,3 (iy)
+   03E2 F1            [10]  938 	pop	af
+   03E3 06 08         [ 7]  939 	ld	b,#0x08
+   03E5                     940 00105$:
+   03E5 CB 3B         [ 8]  941 	srl	e
+   03E7 CB 1A         [ 8]  942 	rr	d
+   03E9 CB 1D         [ 8]  943 	rr	l
+   03EB CB 1C         [ 8]  944 	rr	h
+   03ED 10 F6         [13]  945 	djnz	00105$
+   03EF E5            [11]  946 	push	hl
+   03F0 33            [ 6]  947 	inc	sp
+   03F1 CDrE1r04      [17]  948 	call	_write8
+   03F4 33            [ 6]  949 	inc	sp
+                            950 ;main.c:174: write8(d);
+   03F5 FD 21 03 00   [14]  951 	ld	iy,#3
+   03F9 FD 39         [15]  952 	add	iy,sp
+   03FB FD 66 00      [19]  953 	ld	h,0 (iy)
+   03FE E5            [11]  954 	push	hl
+   03FF 33            [ 6]  955 	inc	sp
+   0400 CDrE1r04      [17]  956 	call	_write8
+   0403 33            [ 6]  957 	inc	sp
+                            958 ;main.c:175: CS_IDLE;
+   0404 DB 40         [11]  959 	in	a,(_PPI_PORTA)
+   0406 F6 03         [ 7]  960 	or	a, #0x03
+   0408 D3 40         [11]  961 	out	(_PPI_PORTA),a
+   040A C9            [10]  962 	ret
+   040B                     963 _writeRegister24_end::
+                            964 ;main.c:180: void writeRegister32(uint8_t r, uint32_t d) {
+                            965 ;	---------------------------------
+                            966 ; Function writeRegister32
+                            967 ; ---------------------------------
+   040B                     968 _writeRegister32_start::
+   040B                     969 _writeRegister32:
+                            970 ;main.c:181: CS_ACTIVE;
+   040B DB 40         [11]  971 	in	a,(_PPI_PORTA)
+   040D E6 FC         [ 7]  972 	and	a, #0xFC
+   040F D3 40         [11]  973 	out	(_PPI_PORTA),a
+                            974 ;main.c:182: CD_COMMAND;
+   0411 DB 40         [11]  975 	in	a,(_PPI_PORTA)
+   0413 E6 FD         [ 7]  976 	and	a, #0xFD
+   0415 D3 40         [11]  977 	out	(_PPI_PORTA),a
+                            978 ;main.c:183: write8(r);
+   0417 21 02 00      [10]  979 	ld	hl, #2+0
+   041A 39            [11]  980 	add	hl, sp
+   041B 7E            [ 7]  981 	ld	a, (hl)
+   041C F5            [11]  982 	push	af
+   041D 33            [ 6]  983 	inc	sp
+   041E CDrE1r04      [17]  984 	call	_write8
+   0421 33            [ 6]  985 	inc	sp
+                            986 ;main.c:184: CD_DATA;
+   0422 DB 40         [11]  987 	in	a,(_PPI_PORTA)
+   0424 CB CF         [ 8]  988 	set	1, a
+   0426 D3 40         [11]  989 	out	(_PPI_PORTA),a
+                            990 ;main.c:186: write8(d >> 24);
+   0428 F5            [11]  991 	push	af
+   0429 FD 21 05 00   [14]  992 	ld	iy,#5
+   042D FD 39         [15]  993 	add	iy,sp
+   042F FD 66 00      [19]  994 	ld	h,0 (iy)
+   0432 FD 6E 01      [19]  995 	ld	l,1 (iy)
+   0435 FD 56 02      [19]  996 	ld	d,2 (iy)
+   0438 FD 5E 03      [19]  997 	ld	e,3 (iy)
+   043B F1            [10]  998 	pop	af
+   043C 06 18         [ 7]  999 	ld	b,#0x18
+   043E                    1000 00103$:
+   043E CB 3B         [ 8] 1001 	srl	e
+   0440 CB 1A         [ 8] 1002 	rr	d
+   0442 CB 1D         [ 8] 1003 	rr	l
+   0444 CB 1C         [ 8] 1004 	rr	h
+   0446 10 F6         [13] 1005 	djnz	00103$
+   0448 E5            [11] 1006 	push	hl
+   0449 33            [ 6] 1007 	inc	sp
+   044A CDrE1r04      [17] 1008 	call	_write8
+   044D 33            [ 6] 1009 	inc	sp
+                           1010 ;main.c:188: write8(d >> 16);
+   044E F5            [11] 1011 	push	af
+   044F FD 21 05 00   [14] 1012 	ld	iy,#5
+   0453 FD 39         [15] 1013 	add	iy,sp
+   0455 FD 66 00      [19] 1014 	ld	h,0 (iy)
+   0458 FD 6E 01      [19] 1015 	ld	l,1 (iy)
+   045B FD 56 02      [19] 1016 	ld	d,2 (iy)
+   045E FD 5E 03      [19] 1017 	ld	e,3 (iy)
+   0461 F1            [10] 1018 	pop	af
+   0462 06 10         [ 7] 1019 	ld	b,#0x10
+   0464                    1020 00105$:
+   0464 CB 3B         [ 8] 1021 	srl	e
+   0466 CB 1A         [ 8] 1022 	rr	d
+   0468 CB 1D         [ 8] 1023 	rr	l
+   046A CB 1C         [ 8] 1024 	rr	h
+   046C 10 F6         [13] 1025 	djnz	00105$
+   046E E5            [11] 1026 	push	hl
+   046F 33            [ 6] 1027 	inc	sp
+   0470 CDrE1r04      [17] 1028 	call	_write8
+   0473 33            [ 6] 1029 	inc	sp
+                           1030 ;main.c:190: write8(d >> 8);
+   0474 F5            [11] 1031 	push	af
+   0475 FD 21 05 00   [14] 1032 	ld	iy,#5
+   0479 FD 39         [15] 1033 	add	iy,sp
+   047B FD 66 00      [19] 1034 	ld	h,0 (iy)
+   047E FD 6E 01      [19] 1035 	ld	l,1 (iy)
+   0481 FD 56 02      [19] 1036 	ld	d,2 (iy)
+   0484 FD 5E 03      [19] 1037 	ld	e,3 (iy)
+   0487 F1            [10] 1038 	pop	af
+   0488 06 08         [ 7] 1039 	ld	b,#0x08
+   048A                    1040 00107$:
+   048A CB 3B         [ 8] 1041 	srl	e
+   048C CB 1A         [ 8] 1042 	rr	d
+   048E CB 1D         [ 8] 1043 	rr	l
+   0490 CB 1C         [ 8] 1044 	rr	h
+   0492 10 F6         [13] 1045 	djnz	00107$
+   0494 E5            [11] 1046 	push	hl
+   0495 33            [ 6] 1047 	inc	sp
+   0496 CDrE1r04      [17] 1048 	call	_write8
+   0499 33            [ 6] 1049 	inc	sp
+                           1050 ;main.c:192: write8(d);
+   049A FD 21 03 00   [14] 1051 	ld	iy,#3
+   049E FD 39         [15] 1052 	add	iy,sp
+   04A0 FD 66 00      [19] 1053 	ld	h,0 (iy)
+   04A3 E5            [11] 1054 	push	hl
+   04A4 33            [ 6] 1055 	inc	sp
+   04A5 CDrE1r04      [17] 1056 	call	_write8
+   04A8 33            [ 6] 1057 	inc	sp
+                           1058 ;main.c:193: CS_IDLE;
+   04A9 DB 40         [11] 1059 	in	a,(_PPI_PORTA)
+   04AB F6 03         [ 7] 1060 	or	a, #0x03
+   04AD D3 40         [11] 1061 	out	(_PPI_PORTA),a
+   04AF C9            [10] 1062 	ret
+   04B0                    1063 _writeRegister32_end::
+                           1064 ;main.c:198: void writeRegister16(uint8_t a, uint8_t d) 
+                           1065 ;	---------------------------------
+                           1066 ; Function writeRegister16
+                           1067 ; ---------------------------------
+   04B0                    1068 _writeRegister16_start::
+   04B0                    1069 _writeRegister16:
+                           1070 ;main.c:202: lo = (a); 
+   04B0 21 02 00      [10] 1071 	ld	hl, #2+0
+   04B3 39            [11] 1072 	add	hl, sp
+   04B4 56            [ 7] 1073 	ld	d, (hl)
+                           1074 ;main.c:203: CD_COMMAND; 
+   04B5 DB 40         [11] 1075 	in	a,(_PPI_PORTA)
+   04B7 E6 FD         [ 7] 1076 	and	a, #0xFD
+   04B9 D3 40         [11] 1077 	out	(_PPI_PORTA),a
+                           1078 ;main.c:204: write8(hi); 
+   04BB D5            [11] 1079 	push	de
+   04BC AF            [ 4] 1080 	xor	a, a
+   04BD F5            [11] 1081 	push	af
+   04BE 33            [ 6] 1082 	inc	sp
+   04BF CDrE1r04      [17] 1083 	call	_write8
+   04C2 33            [ 6] 1084 	inc	sp
+   04C3 33            [ 6] 1085 	inc	sp
+   04C4 CDrE1r04      [17] 1086 	call	_write8
+   04C7 33            [ 6] 1087 	inc	sp
+                           1088 ;main.c:207: lo = (d); 
+   04C8 21 03 00      [10] 1089 	ld	hl, #3+0
+   04CB 39            [11] 1090 	add	hl, sp
+   04CC 56            [ 7] 1091 	ld	d, (hl)
+                           1092 ;main.c:208: CD_DATA; 
+   04CD DB 40         [11] 1093 	in	a,(_PPI_PORTA)
+   04CF CB CF         [ 8] 1094 	set	1, a
+   04D1 D3 40         [11] 1095 	out	(_PPI_PORTA),a
+                           1096 ;main.c:209: write8(hi); 
+   04D3 D5            [11] 1097 	push	de
+   04D4 AF            [ 4] 1098 	xor	a, a
+   04D5 F5            [11] 1099 	push	af
+   04D6 33            [ 6] 1100 	inc	sp
+   04D7 CDrE1r04      [17] 1101 	call	_write8
+   04DA 33            [ 6] 1102 	inc	sp
+   04DB 33            [ 6] 1103 	inc	sp
+   04DC CDrE1r04      [17] 1104 	call	_write8
+   04DF 33            [ 6] 1105 	inc	sp
+   04E0 C9            [10] 1106 	ret
+   04E1                    1107 _writeRegister16_end::
+                           1108 ;main.c:213: void write8(uint8_t d) 
+                           1109 ;	---------------------------------
+                           1110 ; Function write8
+                           1111 ; ---------------------------------
+   04E1                    1112 _write8_start::
+   04E1                    1113 _write8:
+                           1114 ;main.c:215: PPI_PORTA = d;
+   04E1 21 02 00      [10] 1115 	ld	hl, #2+0
+   04E4 39            [11] 1116 	add	hl, sp
+   04E5 7E            [ 7] 1117 	ld	a, (hl)
+   04E6 D3 40         [11] 1118 	out	(_PPI_PORTA),a
+                           1119 ;main.c:216: WR_STROBE; 
+   04E8 DB 40         [11] 1120 	in	a,(_PPI_PORTA)
+   04EA E6 FE         [ 7] 1121 	and	a, #0xFE
+   04EC D3 40         [11] 1122 	out	(_PPI_PORTA),a
+   04EE DB 40         [11] 1123 	in	a,(_PPI_PORTA)
+   04F0 CB C7         [ 8] 1124 	set	0, a
+   04F2 D3 40         [11] 1125 	out	(_PPI_PORTA),a
+   04F4 C9            [10] 1126 	ret
+   04F5                    1127 _write8_end::
+                           1128 ;main.c:219: void setAddrWindow(int x1, int y1, int x2, int y2) 
+                           1129 ;	---------------------------------
+                           1130 ; Function setAddrWindow
+                           1131 ; ---------------------------------
+   04F5                    1132 _setAddrWindow_start::
+   04F5                    1133 _setAddrWindow:
+                           1134 ;main.c:222: CS_ACTIVE;
+   04F5 DB 40         [11] 1135 	in	a,(_PPI_PORTA)
+   04F7 E6 FC         [ 7] 1136 	and	a, #0xFC
+   04F9 D3 40         [11] 1137 	out	(_PPI_PORTA),a
+                           1138 ;main.c:223: x  = x1;
+   04FB D1            [10] 1139 	pop	de
+   04FC C1            [10] 1140 	pop	bc
+   04FD C5            [11] 1141 	push	bc
+   04FE D5            [11] 1142 	push	de
+                           1143 ;main.c:224: y  = y1;
+   04FF FD 21 04 00   [14] 1144 	ld	iy,#4
+   0503 FD 39         [15] 1145 	add	iy,sp
+   0505 FD 56 00      [19] 1146 	ld	d,0 (iy)
+   0508 FD 6E 01      [19] 1147 	ld	l,1 (iy)
+                           1148 ;main.c:226: writeRegister16(0x0050, x1); 
+   050B 59            [ 4] 1149 	ld	e,c
+   050C E5            [11] 1150 	push	hl
+   050D D5            [11] 1151 	push	de
+   050E 53            [ 4] 1152 	ld	d, e
+   050F 1E 50         [ 7] 1153 	ld	e,#0x50
+   0511 D5            [11] 1154 	push	de
+   0512 CDrB0r04      [17] 1155 	call	_writeRegister16
+   0515 F1            [10] 1156 	pop	af
+   0516 D1            [10] 1157 	pop	de
+   0517 E1            [10] 1158 	pop	hl
+                           1159 ;main.c:227: writeRegister16(0x0051, x2);
+   0518 FD 21 06 00   [14] 1160 	ld	iy,#6
+   051C FD 39         [15] 1161 	add	iy,sp
+   051E FD 66 00      [19] 1162 	ld	h,0 (iy)
+   0521 E5            [11] 1163 	push	hl
+   0522 D5            [11] 1164 	push	de
+   0523 E5            [11] 1165 	push	hl
+   0524 33            [ 6] 1166 	inc	sp
+   0525 3E 51         [ 7] 1167 	ld	a,#0x51
+   0527 F5            [11] 1168 	push	af
+   0528 33            [ 6] 1169 	inc	sp
+   0529 CDrB0r04      [17] 1170 	call	_writeRegister16
+   052C F1            [10] 1171 	pop	af
+   052D D1            [10] 1172 	pop	de
+   052E E1            [10] 1173 	pop	hl
+                           1174 ;main.c:228: writeRegister16(0x0052, y1);
+   052F D5            [11] 1175 	push	de
+   0530 1E 52         [ 7] 1176 	ld	e, #0x52
+   0532 D5            [11] 1177 	push	de
+   0533 CDrB0r04      [17] 1178 	call	_writeRegister16
+   0536 F1            [10] 1179 	pop	af
+   0537 D1            [10] 1180 	pop	de
+                           1181 ;main.c:229: writeRegister16(0x0053, y2);
+   0538 FD 21 08 00   [14] 1182 	ld	iy,#8
+   053C FD 39         [15] 1183 	add	iy,sp
+   053E FD 66 00      [19] 1184 	ld	h,0 (iy)
+   0541 D5            [11] 1185 	push	de
+   0542 E5            [11] 1186 	push	hl
+   0543 33            [ 6] 1187 	inc	sp
+   0544 3E 53         [ 7] 1188 	ld	a,#0x53
+   0546 F5            [11] 1189 	push	af
+   0547 33            [ 6] 1190 	inc	sp
+   0548 CDrB0r04      [17] 1191 	call	_writeRegister16
+   054B F1            [10] 1192 	pop	af
+   054C D1            [10] 1193 	pop	de
+                           1194 ;main.c:230: writeRegister16(0x0020, x );
+   054D D5            [11] 1195 	push	de
+   054E 53            [ 4] 1196 	ld	d, e
+   054F 1E 20         [ 7] 1197 	ld	e,#0x20
+   0551 D5            [11] 1198 	push	de
+   0552 CDrB0r04      [17] 1199 	call	_writeRegister16
+   0555 F1            [10] 1200 	pop	af
+   0556 D1            [10] 1201 	pop	de
+                           1202 ;main.c:231: writeRegister16(0x0021, y );
+   0557 1E 21         [ 7] 1203 	ld	e, #0x21
+   0559 D5            [11] 1204 	push	de
+   055A CDrB0r04      [17] 1205 	call	_writeRegister16
+   055D F1            [10] 1206 	pop	af
+   055E C9            [10] 1207 	ret
+   055F                    1208 _setAddrWindow_end::
+                           1209 	.area _CODE
+                           1210 	.area _INITIALIZER
+                           1211 	.area _CABS (ABS)

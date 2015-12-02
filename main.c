@@ -1,213 +1,239 @@
 /***************************************************************************
- * 	main.c
+ *  main.c
  *
- * 	Programa  sencillo  de  ejemplo  para  el z80 escrito en C
- * 	con el compilador SDCC.
- *
- * 	Es necesario  contar con los archivos Makefile, sysmap.asm
- *  y el programa hex2bin para la compilacion y generación del
- *  codigo hexadecimal y el archivo ejecutable.
- *
- * 	Se incluye  la  libreria  z80io.h que proporciona macros y
- *  definiciones de los registros para el PPI y la UART.
+ *  Plantilla para un programa en C para le microprocesador Z80 con
+ *  el compilador SDCC.
+ *  
+ *  Se incluye la librería smz80.h, que es una API con funciones para
+ *  el PPI 8255, la UART 8250, funciones para puertos de E/S, funciones
+ *  de delay y macros con instrucciones para el Z80 a bajo nivel. 
  *
  ***************************************************************************
  *
- *		Autor:	Alfredo Orozco de la Paz
- *		e-mail:	alfredoopa@gmail.com
- * 																	*FRED*
+ *      Autor:  Alfredo Orozco de la Paz
+ *      e-mail: alfredoopa@gmail.com 
+ *                                                                  *FRED*
  ***************************************************************************
  */
-#define BAUD 9600
-#define F_UART 4000000
-#include <ctype.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include "z80utils.h"
-#include "z80interrupt.h"
-#include "z80ppi.h"
-#include "z80io.h"
-#include "z80uart.h"
+
+/**
+ * Definicion de las direcciones para el PPI y la UART
+ * Si no se definen, no se pueden usar las funciones de la librería smz80.h.
+ * 
+ * se deben definir antes de incluir la librería.
+ */
+#define PPI_BASE_ADDR  0x40
+#define UART_BASE_ADDR 0x10
+
+#include "smz80.h"
+#include "registers.h"
+
+#define TFTWIDTH 240
+#define TFTHEIGHT 320
+
+#define TFTLCD_DELAY 0xFF
+
+#define RD_ACTIVE PPI_PORTA &= ~PA0
+#define RD_IDLE PPI_PORTA |= PA0
+#define WR_ACTIVE PPI_PORTA &= ~PA1
+#define WR_IDLE PPI_PORTA |= PA1
+#define CD_COMMAND PPI_PORTA &= ~PA2
+#define CD_DATA PPI_PORTA |= PA2
+#define CS_ACTIVE PPI_PORTA &= ~PA3
+#define CS_IDLE PPI_PORTA |= PA3
+#define RD_STROBE { RD_ACTIVE; RD_IDLE; }
+#define WR_STROBE { WR_ACTIVE; WR_IDLE; }
+
+static const uint16_t PROGMEM[] = {
+  ILI932X_START_OSC        , 0x0001,
+  TFTLCD_DELAY             , 50,
+  ILI932X_DRIV_OUT_CTRL    , 0x0100,
+  ILI932X_DRIV_WAV_CTRL    , 0x0700,
+  ILI932X_ENTRY_MOD        , 0x1030,
+  ILI932X_RESIZE_CTRL      , 0x0000,
+  ILI932X_DISP_CTRL2       , 0x0202,
+  ILI932X_DISP_CTRL3       , 0x0000,
+  ILI932X_DISP_CTRL4       , 0x0000,
+  ILI932X_RGB_DISP_IF_CTRL1, 0x0,
+  ILI932X_FRM_MARKER_POS   , 0x0,
+  ILI932X_RGB_DISP_IF_CTRL2, 0x0,
+  ILI932X_POW_CTRL1        , 0x0000,
+  ILI932X_POW_CTRL2        , 0x0007,
+  ILI932X_POW_CTRL3        , 0x0000,
+  ILI932X_POW_CTRL4        , 0x0000,
+  TFTLCD_DELAY             , 200,
+  ILI932X_POW_CTRL1        , 0x1690,
+  ILI932X_POW_CTRL2        , 0x0227,
+  TFTLCD_DELAY             , 50,
+  ILI932X_POW_CTRL3        , 0x001A,
+  TFTLCD_DELAY             , 50,
+  ILI932X_POW_CTRL4        , 0x1800,
+  ILI932X_POW_CTRL7        , 0x002A,
+  TFTLCD_DELAY             , 50,
+  ILI932X_GAMMA_CTRL1      , 0x0000,
+  ILI932X_GAMMA_CTRL2      , 0x0000,
+  ILI932X_GAMMA_CTRL3      , 0x0000,
+  ILI932X_GAMMA_CTRL4      , 0x0206,
+  ILI932X_GAMMA_CTRL5      , 0x0808,
+  ILI932X_GAMMA_CTRL6      , 0x0007,
+  ILI932X_GAMMA_CTRL7      , 0x0201,
+  ILI932X_GAMMA_CTRL8      , 0x0000,
+  ILI932X_GAMMA_CTRL9      , 0x0000,
+  ILI932X_GAMMA_CTRL10     , 0x0000,
+  ILI932X_GRAM_HOR_AD      , 0x0000,
+  ILI932X_GRAM_VER_AD      , 0x0000,
+  ILI932X_HOR_START_AD     , 0x0000,
+  ILI932X_HOR_END_AD       , 0x00EF,
+  ILI932X_VER_START_AD     , 0X0000,
+  ILI932X_VER_END_AD       , 0x013F,
+  ILI932X_GATE_SCAN_CTRL1  , 0xA700, // Driver Output Control (R60h)
+  ILI932X_GATE_SCAN_CTRL2  , 0x0003, // Driver Output Control (R61h)
+  ILI932X_GATE_SCAN_CTRL3  , 0x0000, // Driver Output Control (R62h)
+  ILI932X_PANEL_IF_CTRL1   , 0X0010, // Panel Interface Control 1 (R90h)
+  ILI932X_PANEL_IF_CTRL2   , 0X0000,
+  ILI932X_PANEL_IF_CTRL3   , 0X0003,
+  ILI932X_PANEL_IF_CTRL4   , 0X1100,
+  ILI932X_PANEL_IF_CTRL5   , 0X0000,
+  ILI932X_PANEL_IF_CTRL6   , 0X0000,
+  ILI932X_DISP_CTRL1       , 0x0133, // Main screen turn on
+};
 
 void system_init();
-void delay_ms(int milis);
-void teclado_read();
-unsigned char corrimiento=0;
+void lcd_init();
+void writeRegister16(uint8_t a, uint8_t d);
+void write8(uint8_t d);
+void writeRegister24(uint8_t r, uint32_t d);
+void writeRegister32(uint8_t r, uint32_t d);
+void setAddrWindow(int x1, int y1, int x2, int y2);
 
 ISR_NMI(){
 
-    /* Código de servicio de la interrupción NMI.*/
 }
 
 ISR_INT_38(){
-	teclado_read();
-	EI();
-    /* Código de servicio de la interrupción INT en modo 1 (Vector 0x38).*/
+       
 }
 
 
 int main(){
-	char KEYS[4][4] = 
-		{{'1','2','3','A'},
-		{'4','5','6','B'},
-		{'7','8','9','C'},
-		{'*','0','#','D'}};
-	corrimiento=0X10;
 	
-    system_init();
+    // Inicialización del sistema.
+    system_init(); 
 
-    while(TRUE)
-    {
-		PPI_PORTC = corrimiento;
-    	if(PPI_PORTC==0x0)
-    	{
-    		corrimiento=0x10;
-    	}
-    	else
-    	{
-    		corrimiento<<=1;
-
-    	}
-    	//printf("Letra: ");
-    }
+    // Ciclo infinito del programa.
+    while(TRUE){
+        sleep();    //Entra en modo sleep (HALT)
+    }      
 
 }
 
-
-void system_init(){
-  //uint8_t es igual a unsigned char
-  PPI_CTRL = 0x81; //Salida
-  PPI_PORTA = 0;
-  PPI_PORTB = 0;
-  PPI_PORTC = 0;
-  
-  UartInit();
-  IM(1);
-  EI();
-  
-}
-
-void delay_ms(int milis){
-	int i;
-	while(milis--){
-		for(i = 0; i<0x10A; i++){
-			NOP();
-		}
-	}
-}
-
-void teclado_read()
+void system_init()
 {
-	int RES;
-	char letra;
-	RES  =  PPI_PORTC & 0x0F;
-	RES = RES | corrimiento;
-	switch(RES)
-	{
-		case 0x81:
-		letra='1';
-		printf(" %c", letra);
-		break;
+	PPI_CTRL = 0x89; //Palabra de control PA y PB salida PCH entrada PCD salida
+	lcd_init();   
+}
 
-		case 0x41:		
-		letra='2';
-		printf(" %c", letra);
-		break;
-
-		case 0x21:
-		letra='3';
-		printf(" %c", letra);
-		break;
-
-		case 0x82:
-		letra='4';
-		printf(" %c", letra);
-		break;
-
-	    case 0x42:
-	    letra='5';
-		printf(" %c", letra);
-		break;
-
-	    case 0x22:
-	    letra='6';
-		printf(" %c", letra);
-		break;
-
-	    case 0x84:
-	    letra='7';
-		printf(" %c", letra);
-		break;
-
-        case 0x44:
-        letra='8';
-		printf(" %c", letra);
-		break;
-
-		case 0x24:
-		letra='9';
-		printf(" %c", letra);
-		break;
-
-	    case 0x11:
-	    letra='A';
-		printf(" %c", letra);
-		break;
-
-	    case 0x12:
-	    letra='B';
-		printf(" %c", letra);
-		break;
-
-		case 0x14:
-		letra='C';
-		printf(" %c", letra);
-		break;
-
-		case 0x18:
-		letra='D';
-		printf(" %c", letra);
-		break;
-
-		case 0x88:
-		letra='E';
-		printf(" %c", letra);
-		break;
-
-	    case 0x28:
-	    letra='F';
-		printf(" %c", letra);
-		break;
-
-	    case 0x48:
-	    letra='0';
-		printf(" %c", letra);
-		break;
-	    
-	}
+void lcd_init()
+{
+	uint8_t i = 0;
+	uint16_t a, d;
+	
+	//reset();
+	delay_ms(200);
+	
+    CS_ACTIVE;
+    while(i < sizeof(PROGMEM) / sizeof(uint16_t)) 
+    {
+		a = PROGMEM[i++];
+		d = PROGMEM[i++];
+		
+		if(a == TFTLCD_DELAY)
+		{
+			delay_ms(d);
+		}
+		else
+		{                  
+			writeRegister16(a, d);
+		}
+    }
+    CS_ACTIVE;
+    a = 0x1030;
+    writeRegister16(0x0003, a);
+    setAddrWindow(0, 0, TFTWIDTH-1, TFTHEIGHT-1);
 }
 
 
+void writeRegister24(uint8_t r, uint32_t d) 
+{
+	CS_ACTIVE;
+	CD_COMMAND;
+	write8(r);
+	CD_DATA;
+	delay_10us();
+	write8(d >> 16);
+	delay_10us();
+	write8(d >> 8);
+	delay_10us();
+	write8(d);
+	CS_IDLE;
+}
 
 
+void writeRegister32(uint8_t r, uint32_t d) 
+{
+	CS_ACTIVE;
+	CD_COMMAND;
+	write8(r);
+	CD_DATA;
+	delay_10us();
+	write8(d >> 24);
+	delay_10us();
+	write8(d >> 16);
+	delay_10us();
+	write8(d >> 8);
+	delay_10us();
+	write8(d);
+	CS_IDLE;
+}
 
 
+void writeRegister16(uint8_t a, uint8_t d) 
+{
+	uint8_t hi, lo;
+	
+	hi = (a) >> 8; 
+	lo = (a); 
+	CD_COMMAND; 
+	write8(hi); 
+	write8(lo); 
+	hi = (d) >> 8; 
+	lo = (d); 
+	CD_DATA; 
+	write8(hi); 
+	write8(lo); 
+}
 
+void write8(uint8_t d) 
+{
+	PPI_PORTA = d;
+	WR_STROBE; 
+}
 
+void setAddrWindow(int x1, int y1, int x2, int y2) 
+{
+	int x, y, t;
+	CS_ACTIVE;
+	x  = x1;
+	y  = y1;
+      
+    writeRegister16(0x0050, x1); 
+    writeRegister16(0x0051, x2);
+    writeRegister16(0x0052, y1);
+    writeRegister16(0x0053, y2);
+    writeRegister16(0x0020, x );
+    writeRegister16(0x0021, y );
 
-
-
-
-
-
-
-
-
-
-
-
-
+}
 
 
 
