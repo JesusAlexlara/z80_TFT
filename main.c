@@ -33,6 +33,8 @@
 
 #define TFTLCD_DELAY 0xFF
 
+#define RESET_LOW PPI_PORTA &= ~PA4
+#define RESET_HIGH PPI_PORTA |= PA4
 #define RD_ACTIVE PPI_PORTA &= ~PA0
 #define RD_IDLE PPI_PORTA |= PA0
 #define WR_ACTIVE PPI_PORTA &= ~PA1
@@ -105,6 +107,7 @@ void write8(uint8_t d);
 void writeRegister24(uint8_t r, uint32_t d);
 void writeRegister32(uint8_t r, uint32_t d);
 void setAddrWindow(int x1, int y1, int x2, int y2);
+void reset();
 
 ISR_NMI(){
 
@@ -232,6 +235,32 @@ void setAddrWindow(int x1, int y1, int x2, int y2)
     writeRegister16(0x0053, y2);
     writeRegister16(0x0020, x );
     writeRegister16(0x0021, y );
+
+}
+
+void reset() 
+{
+	uint8_t i;
+	
+	CS_IDLE;
+	WR_IDLE;
+	RD_IDLE;
+	
+	RESET_LOW;
+	delay_ms(2);
+	RESET_HIGH;
+	
+	CS_ACTIVE;
+	CD_COMMAND;
+	write8(0x00);
+	
+	for(i=0; i<3; i++)
+	{ 
+		WR_STROBE;
+	}
+	CS_IDLE;
+	
+	delay_ms(500);
 
 }
 

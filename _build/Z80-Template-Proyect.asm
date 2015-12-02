@@ -1,7 +1,7 @@
 ;--------------------------------------------------------
 ; File Created by SDCC : free open source ANSI-C Compiler
 ; Version 3.4.0 #8981 (Jul 12 2014) (Linux)
-; This file was generated Tue Dec  1 19:45:35 2015
+; This file was generated Tue Dec  1 23:04:36 2015
 ;--------------------------------------------------------
 	.module main
 	.optsdcc -mz80
@@ -41,6 +41,7 @@
 	.globl _writeRegister16
 	.globl _write8
 	.globl _setAddrWindow
+	.globl _reset
 ;--------------------------------------------------------
 ; special function registers
 ;--------------------------------------------------------
@@ -533,7 +534,7 @@ _delay_10us:
 ;smz80.h:817: __endasm;
 	EXX
 	EX AF,AF'
-	LD B,#0x2
+	LD B,#0x4
 	    LOOP_10:
 	DJNZ LOOP_10
 	EX AF,AF'
@@ -574,13 +575,13 @@ _delay_ms:
 	ld	a,c
 	or	a,b
 	ret	Z
-;smz80.h:840: for(i=0;i<0x106;i++)
-	ld	bc,#0x0106
+;smz80.h:840: for(i=0;i<0x10A;i++)
+	ld	bc,#0x010A
 00107$:
 ;smz80.h:841: __asm__("nop");
 	nop
 	dec	bc
-;smz80.h:840: for(i=0;i<0x106;i++)
+;smz80.h:840: for(i=0;i<0x10A;i++)
 	ld	a,b
 	or	a,c
 	jr	NZ,00107$
@@ -625,7 +626,7 @@ _getchar:
 ;smz80.h:861: return uart_read();
 	jp	_uart_read
 _getchar_end::
-;main.c:109: ISR_NMI(){
+;main.c:112: ISR_NMI(){
 ;	---------------------------------
 ; Function isr_vector66
 ; ---------------------------------
@@ -636,7 +637,7 @@ _isr_vector66:
 	push	de
 	push	hl
 	push	iy
-;main.c:111: }
+;main.c:114: }
 	pop	iy
 	pop	hl
 	pop	de
@@ -747,7 +748,7 @@ _PROGMEM:
 	.dw #0x0000
 	.dw #0x0007
 	.dw #0x0133
-;main.c:113: ISR_INT_38(){
+;main.c:116: ISR_INT_38(){
 ;	---------------------------------
 ; Function isr_vector38
 ; ---------------------------------
@@ -758,7 +759,7 @@ _isr_vector38:
 	push	de
 	push	hl
 	push	iy
-;main.c:115: }
+;main.c:118: }
 	pop	iy
 	pop	hl
 	pop	de
@@ -766,33 +767,33 @@ _isr_vector38:
 	pop	af
 	reti
 _isr_vector38_end::
-;main.c:118: int main(){
+;main.c:121: int main(){
 ;	---------------------------------
 ; Function main
 ; ---------------------------------
 _main_start::
 _main:
-;main.c:121: system_init(); 
+;main.c:124: system_init(); 
 	call	_system_init
-;main.c:124: while(TRUE){
+;main.c:127: while(TRUE){
 00102$:
-;main.c:125: sleep();    //Entra en modo sleep (HALT)
+;main.c:128: sleep();    //Entra en modo sleep (HALT)
 	HALT
 	jr	00102$
 _main_end::
-;main.c:130: void system_init(){
+;main.c:133: void system_init()
 ;	---------------------------------
 ; Function system_init
 ; ---------------------------------
 _system_init_start::
 _system_init:
-;main.c:131: PPI_CTRL = 0x89; //Palabra de control PA y PB salida PCH entrada PCD salida
+;main.c:135: PPI_CTRL = 0x89; //Palabra de control PA y PB salida PCH entrada PCD salida
 	ld	a,#0x89
 	out	(_PPI_CTRL),a
-;main.c:132: lcd_init();   
+;main.c:136: lcd_init();   
 	jp	_lcd_init
 _system_init_end::
-;main.c:135: void lcd_init(){
+;main.c:139: void lcd_init()
 ;	---------------------------------
 ; Function lcd_init
 ; ---------------------------------
@@ -802,20 +803,27 @@ _lcd_init:
 	ld	ix,#0
 	add	ix,sp
 	push	af
-;main.c:136: uint8_t i = 0;
-	ld	c,#0x00
-;main.c:142: CS_ACTIVE;
+;main.c:141: uint8_t i = 0;
+	ld	b,#0x00
+;main.c:145: delay_ms(200);
+	push	bc
+	ld	hl,#0x00C8
+	push	hl
+	call	_delay_ms
+	pop	af
+	pop	bc
+;main.c:147: CS_ACTIVE;
 	in	a,(_PPI_PORTA)
 	and	a, #0xFC
 	out	(_PPI_PORTA),a
-;main.c:143: while(i < sizeof(PROGMEM) / sizeof(uint16_t)) 
+;main.c:148: while(i < sizeof(PROGMEM) / sizeof(uint16_t)) 
 00104$:
-	ld	a,c
+	ld	a,b
 	sub	a, #0x66
 	jr	NC,00106$
-;main.c:145: a = PROGMEM[i++];
-	ld	l,c
-	inc	c
+;main.c:150: a = PROGMEM[i++];
+	ld	l,b
+	inc	b
 	ld	h,#0x00
 	add	hl, hl
 	ld	de,#_PROGMEM
@@ -825,9 +833,9 @@ _lcd_init:
 	inc	hl
 	ld	a,(hl)
 	ld	-1 (ix),a
-;main.c:146: d = PROGMEM[i++];
-	ld	l,c
-	inc	c
+;main.c:151: d = PROGMEM[i++];
+	ld	l,b
+	inc	b
 	ld	h,#0x00
 	add	hl, hl
 	ld	de,#_PROGMEM
@@ -835,15 +843,22 @@ _lcd_init:
 	ld	e,(hl)
 	inc	hl
 	ld	d,(hl)
-;main.c:148: if(a == TFTLCD_DELAY)
+;main.c:153: if(a == TFTLCD_DELAY)
 	ld	a,-2 (ix)
 	inc	a
-	jr	NZ,00121$
+	jr	NZ,00102$
 	ld	a,-1 (ix)
 	or	a, a
-	jr	Z,00104$
-00121$:
-;main.c:154: writeRegister16(a, d);
+	jr	NZ,00102$
+;main.c:155: delay_ms(d);
+	push	bc
+	push	de
+	call	_delay_ms
+	pop	af
+	pop	bc
+	jr	00104$
+00102$:
+;main.c:159: writeRegister16(a, d);
 	ld	h,e
 	ld	d,-2 (ix)
 	push	bc
@@ -856,15 +871,15 @@ _lcd_init:
 	pop	bc
 	jr	00104$
 00106$:
-;main.c:157: CS_ACTIVE;
+;main.c:162: CS_ACTIVE;
 	in	a,(_PPI_PORTA)
 	and	a, #0xFC
 	out	(_PPI_PORTA),a
-;main.c:159: writeRegister16(0x0003, a);
+;main.c:164: writeRegister16(0x0003, a);
 	ld	hl,#0x3003
 	push	hl
 	call	_writeRegister16
-;main.c:160: setAddrWindow(0, 0, TFTWIDTH-1, TFTHEIGHT-1);
+;main.c:165: setAddrWindow(0, 0, TFTWIDTH-1, TFTHEIGHT-1);
 	ld	hl, #0x013F
 	ex	(sp),hl
 	ld	hl,#0x00EF
@@ -881,21 +896,21 @@ _lcd_init:
 	pop	ix
 	ret
 _lcd_init_end::
-;main.c:164: void writeRegister24(uint8_t r, uint32_t d) {
+;main.c:169: void writeRegister24(uint8_t r, uint32_t d) 
 ;	---------------------------------
 ; Function writeRegister24
 ; ---------------------------------
 _writeRegister24_start::
 _writeRegister24:
-;main.c:165: CS_ACTIVE;
+;main.c:171: CS_ACTIVE;
 	in	a,(_PPI_PORTA)
 	and	a, #0xFC
 	out	(_PPI_PORTA),a
-;main.c:166: CD_COMMAND;
+;main.c:172: CD_COMMAND;
 	in	a,(_PPI_PORTA)
 	and	a, #0xFD
 	out	(_PPI_PORTA),a
-;main.c:167: write8(r);
+;main.c:173: write8(r);
 	ld	hl, #2+0
 	add	hl, sp
 	ld	a, (hl)
@@ -903,11 +918,13 @@ _writeRegister24:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:168: CD_DATA;
+;main.c:174: CD_DATA;
 	in	a,(_PPI_PORTA)
 	set	1, a
 	out	(_PPI_PORTA),a
-;main.c:170: write8(d >> 16);
+;main.c:175: delay_10us();
+	call	_delay_10us
+;main.c:176: write8(d >> 16);
 	push	af
 	ld	iy,#5
 	add	iy,sp
@@ -927,7 +944,9 @@ _writeRegister24:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:172: write8(d >> 8);
+;main.c:177: delay_10us();
+	call	_delay_10us
+;main.c:178: write8(d >> 8);
 	push	af
 	ld	iy,#5
 	add	iy,sp
@@ -947,7 +966,9 @@ _writeRegister24:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:174: write8(d);
+;main.c:179: delay_10us();
+	call	_delay_10us
+;main.c:180: write8(d);
 	ld	iy,#3
 	add	iy,sp
 	ld	h,0 (iy)
@@ -955,27 +976,27 @@ _writeRegister24:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:175: CS_IDLE;
+;main.c:181: CS_IDLE;
 	in	a,(_PPI_PORTA)
 	or	a, #0x03
 	out	(_PPI_PORTA),a
 	ret
 _writeRegister24_end::
-;main.c:180: void writeRegister32(uint8_t r, uint32_t d) {
+;main.c:185: void writeRegister32(uint8_t r, uint32_t d) 
 ;	---------------------------------
 ; Function writeRegister32
 ; ---------------------------------
 _writeRegister32_start::
 _writeRegister32:
-;main.c:181: CS_ACTIVE;
+;main.c:187: CS_ACTIVE;
 	in	a,(_PPI_PORTA)
 	and	a, #0xFC
 	out	(_PPI_PORTA),a
-;main.c:182: CD_COMMAND;
+;main.c:188: CD_COMMAND;
 	in	a,(_PPI_PORTA)
 	and	a, #0xFD
 	out	(_PPI_PORTA),a
-;main.c:183: write8(r);
+;main.c:189: write8(r);
 	ld	hl, #2+0
 	add	hl, sp
 	ld	a, (hl)
@@ -983,11 +1004,13 @@ _writeRegister32:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:184: CD_DATA;
+;main.c:190: CD_DATA;
 	in	a,(_PPI_PORTA)
 	set	1, a
 	out	(_PPI_PORTA),a
-;main.c:186: write8(d >> 24);
+;main.c:191: delay_10us();
+	call	_delay_10us
+;main.c:192: write8(d >> 24);
 	push	af
 	ld	iy,#5
 	add	iy,sp
@@ -1007,7 +1030,9 @@ _writeRegister32:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:188: write8(d >> 16);
+;main.c:193: delay_10us();
+	call	_delay_10us
+;main.c:194: write8(d >> 16);
 	push	af
 	ld	iy,#5
 	add	iy,sp
@@ -1027,7 +1052,9 @@ _writeRegister32:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:190: write8(d >> 8);
+;main.c:195: delay_10us();
+	call	_delay_10us
+;main.c:196: write8(d >> 8);
 	push	af
 	ld	iy,#5
 	add	iy,sp
@@ -1047,7 +1074,9 @@ _writeRegister32:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:192: write8(d);
+;main.c:197: delay_10us();
+	call	_delay_10us
+;main.c:198: write8(d);
 	ld	iy,#3
 	add	iy,sp
 	ld	h,0 (iy)
@@ -1055,27 +1084,27 @@ _writeRegister32:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:193: CS_IDLE;
+;main.c:199: CS_IDLE;
 	in	a,(_PPI_PORTA)
 	or	a, #0x03
 	out	(_PPI_PORTA),a
 	ret
 _writeRegister32_end::
-;main.c:198: void writeRegister16(uint8_t a, uint8_t d) 
+;main.c:203: void writeRegister16(uint8_t a, uint8_t d) 
 ;	---------------------------------
 ; Function writeRegister16
 ; ---------------------------------
 _writeRegister16_start::
 _writeRegister16:
-;main.c:202: lo = (a); 
+;main.c:208: lo = (a); 
 	ld	hl, #2+0
 	add	hl, sp
 	ld	d, (hl)
-;main.c:203: CD_COMMAND; 
+;main.c:209: CD_COMMAND; 
 	in	a,(_PPI_PORTA)
 	and	a, #0xFD
 	out	(_PPI_PORTA),a
-;main.c:204: write8(hi); 
+;main.c:210: write8(hi); 
 	push	de
 	xor	a, a
 	push	af
@@ -1085,15 +1114,15 @@ _writeRegister16:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:207: lo = (d); 
+;main.c:213: lo = (d); 
 	ld	hl, #3+0
 	add	hl, sp
 	ld	d, (hl)
-;main.c:208: CD_DATA; 
+;main.c:214: CD_DATA; 
 	in	a,(_PPI_PORTA)
 	set	1, a
 	out	(_PPI_PORTA),a
-;main.c:209: write8(hi); 
+;main.c:215: write8(hi); 
 	push	de
 	xor	a, a
 	push	af
@@ -1105,18 +1134,18 @@ _writeRegister16:
 	inc	sp
 	ret
 _writeRegister16_end::
-;main.c:213: void write8(uint8_t d) 
+;main.c:219: void write8(uint8_t d) 
 ;	---------------------------------
 ; Function write8
 ; ---------------------------------
 _write8_start::
 _write8:
-;main.c:215: PPI_PORTA = d;
+;main.c:221: PPI_PORTA = d;
 	ld	hl, #2+0
 	add	hl, sp
 	ld	a, (hl)
 	out	(_PPI_PORTA),a
-;main.c:216: WR_STROBE; 
+;main.c:222: WR_STROBE; 
 	in	a,(_PPI_PORTA)
 	and	a, #0xFE
 	out	(_PPI_PORTA),a
@@ -1125,27 +1154,27 @@ _write8:
 	out	(_PPI_PORTA),a
 	ret
 _write8_end::
-;main.c:219: void setAddrWindow(int x1, int y1, int x2, int y2) 
+;main.c:225: void setAddrWindow(int x1, int y1, int x2, int y2) 
 ;	---------------------------------
 ; Function setAddrWindow
 ; ---------------------------------
 _setAddrWindow_start::
 _setAddrWindow:
-;main.c:222: CS_ACTIVE;
+;main.c:228: CS_ACTIVE;
 	in	a,(_PPI_PORTA)
 	and	a, #0xFC
 	out	(_PPI_PORTA),a
-;main.c:223: x  = x1;
+;main.c:229: x  = x1;
 	pop	de
 	pop	bc
 	push	bc
 	push	de
-;main.c:224: y  = y1;
+;main.c:230: y  = y1;
 	ld	iy,#4
 	add	iy,sp
 	ld	d,0 (iy)
 	ld	l,1 (iy)
-;main.c:226: writeRegister16(0x0050, x1); 
+;main.c:232: writeRegister16(0x0050, x1); 
 	ld	e,c
 	push	hl
 	push	de
@@ -1156,7 +1185,7 @@ _setAddrWindow:
 	pop	af
 	pop	de
 	pop	hl
-;main.c:227: writeRegister16(0x0051, x2);
+;main.c:233: writeRegister16(0x0051, x2);
 	ld	iy,#6
 	add	iy,sp
 	ld	h,0 (iy)
@@ -1171,14 +1200,14 @@ _setAddrWindow:
 	pop	af
 	pop	de
 	pop	hl
-;main.c:228: writeRegister16(0x0052, y1);
+;main.c:234: writeRegister16(0x0052, y1);
 	push	de
 	ld	e, #0x52
 	push	de
 	call	_writeRegister16
 	pop	af
 	pop	de
-;main.c:229: writeRegister16(0x0053, y2);
+;main.c:235: writeRegister16(0x0053, y2);
 	ld	iy,#8
 	add	iy,sp
 	ld	h,0 (iy)
@@ -1191,7 +1220,7 @@ _setAddrWindow:
 	call	_writeRegister16
 	pop	af
 	pop	de
-;main.c:230: writeRegister16(0x0020, x );
+;main.c:236: writeRegister16(0x0020, x );
 	push	de
 	ld	d, e
 	ld	e,#0x20
@@ -1199,13 +1228,81 @@ _setAddrWindow:
 	call	_writeRegister16
 	pop	af
 	pop	de
-;main.c:231: writeRegister16(0x0021, y );
+;main.c:237: writeRegister16(0x0021, y );
 	ld	e, #0x21
 	push	de
 	call	_writeRegister16
 	pop	af
 	ret
 _setAddrWindow_end::
+;main.c:241: void reset() 
+;	---------------------------------
+; Function reset
+; ---------------------------------
+_reset_start::
+_reset:
+;main.c:245: CS_IDLE;
+	in	a,(_PPI_PORTA)
+	or	a, #0x03
+	out	(_PPI_PORTA),a
+;main.c:246: WR_IDLE;
+	in	a,(_PPI_PORTA)
+	set	0, a
+	out	(_PPI_PORTA),a
+;main.c:247: RD_IDLE;
+;main.c:249: RESET_LOW;
+	in	a,(_PPI_PORTA)
+	and	a, #0xFB
+	out	(_PPI_PORTA),a
+;main.c:250: delay_ms(2);
+	ld	hl,#0x0002
+	push	hl
+	call	_delay_ms
+	pop	af
+;main.c:251: RESET_HIGH;
+	in	a,(_PPI_PORTA)
+	set	2, a
+	out	(_PPI_PORTA),a
+;main.c:253: CS_ACTIVE;
+	in	a,(_PPI_PORTA)
+	and	a, #0xFC
+	out	(_PPI_PORTA),a
+;main.c:254: CD_COMMAND;
+	in	a,(_PPI_PORTA)
+	and	a, #0xFD
+	out	(_PPI_PORTA),a
+;main.c:255: write8(0x00);
+	xor	a, a
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+;main.c:257: for(i=0; i<3; i++)
+	ld	d,#0x00
+00102$:
+;main.c:259: WR_STROBE;
+	in	a,(_PPI_PORTA)
+	and	a, #0xFE
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	set	0, a
+	out	(_PPI_PORTA),a
+;main.c:257: for(i=0; i<3; i++)
+	inc	d
+	ld	a,d
+	sub	a, #0x03
+	jr	C,00102$
+;main.c:261: CS_IDLE;
+	in	a,(_PPI_PORTA)
+	or	a, #0x03
+	out	(_PPI_PORTA),a
+;main.c:263: delay_ms(500);
+	ld	hl,#0x01F4
+	push	hl
+	call	_delay_ms
+	pop	af
+	ret
+_reset_end::
 	.area _CODE
 	.area _INITIALIZER
 	.area _CABS (ABS)

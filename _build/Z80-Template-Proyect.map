@@ -44,11 +44,11 @@ Area                                    Addr        Size        Decimal Bytes (A
      0000000A  l__HEADER9                      
      0000000F  l__GSINIT                       
      00000090  s__CODE                         
-     0000059B  l__CODE                         
-     0000062B  s__GSINIT                       
-     0000062B  s__HOME                         
-     0000062B  s__INITIALIZER                  
-     0000063A  s__GSFINAL                      
+     00000619  l__CODE                         
+     000006A9  s__GSINIT                       
+     000006A9  s__HOME                         
+     000006A9  s__INITIALIZER                  
+     000006B8  s__GSFINAL                      
      00008000  s__DATA                         
      00008001  s__BSEG                         
      00008001  s__BSS                          
@@ -60,7 +60,7 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_CODE                               00000090    0000059B =        1435. bytes (REL,CON)
+_CODE                               00000090    00000619 =        1561. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
@@ -119,7 +119,7 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_CODE                               00000090    0000059B =        1435. bytes (REL,CON)
+_CODE                               00000090    00000619 =        1561. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
@@ -147,25 +147,28 @@ _CODE                               00000090    0000059B =        1435. bytes (R
      000003A4  _lcd_init                          main
      000003A4  _lcd_init_start                    main
      000003A4  _system_init_end                   main
-     0000041C  _lcd_init_end                      main
-     0000041C  _writeRegister24                   main
-     0000041C  _writeRegister24_start             main
-     0000049B  _writeRegister24_end               main
-     0000049B  _writeRegister32                   main
-     0000049B  _writeRegister32_start             main
-     00000540  _writeRegister16                   main
-     00000540  _writeRegister16_start             main
-     00000540  _writeRegister32_end               main
-     00000571  _write8                            main
-     00000571  _write8_start                      main
-     00000571  _writeRegister16_end               main
-     00000585  _setAddrWindow                     main
-     00000585  _setAddrWindow_start               main
-     00000585  _write8_end                        main
-     000005EF  _isprint                           isprint
-     000005EF  _isprint_start                     isprint
-     000005EF  _setAddrWindow_end                 main
-     0000062B  _isprint_end                       isprint
+     0000042F  _lcd_init_end                      main
+     0000042F  _writeRegister24                   main
+     0000042F  _writeRegister24_start             main
+     000004B7  _writeRegister24_end               main
+     000004B7  _writeRegister32                   main
+     000004B7  _writeRegister32_start             main
+     00000568  _writeRegister16                   main
+     00000568  _writeRegister16_start             main
+     00000568  _writeRegister32_end               main
+     00000599  _write8                            main
+     00000599  _write8_start                      main
+     00000599  _writeRegister16_end               main
+     000005AD  _setAddrWindow                     main
+     000005AD  _setAddrWindow_start               main
+     000005AD  _write8_end                        main
+     00000617  _reset                             main
+     00000617  _reset_start                       main
+     00000617  _setAddrWindow_end                 main
+     0000066D  _isprint                           isprint
+     0000066D  _isprint_start                     isprint
+     0000066D  _reset_end                         main
+     000006A9  _isprint_end                       isprint
 ASxxxx Linker V03.00 + NoICE + sdld,  page 4.
 Hexadecimal  [32-Bits]
 
@@ -207,18 +210,18 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_GSINIT                             0000062B    0000000F =          15. bytes (REL,CON)
+_GSINIT                             000006A9    0000000F =          15. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
-     0000062B  gsinit                             init
+     000006A9  gsinit                             init
 
 ASxxxx Linker V03.00 + NoICE + sdld,  page 9.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_GSFINAL                            0000063A    00000001 =           1. bytes (REL,CON)
+_GSFINAL                            000006B8    00000001 =           1. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------

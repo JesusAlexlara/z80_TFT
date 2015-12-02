@@ -57,7 +57,7 @@ Symbol Table
   0 _isr_vector66_end                                              022D GR
   0 _isr_vector66_start                                            021F GR
   0 _lcd_init                                                      0314 GR
-  0 _lcd_init_end                                                  038C GR
+  0 _lcd_init_end                                                  039F GR
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 2.
 Hexadecimal [16-Bits]
 
@@ -79,9 +79,12 @@ Symbol Table
   0 _putchar                                                       01FF GR
   0 _putchar_end                                                   021C GR
   0 _putchar_start                                                 01FF GR
-  0 _setAddrWindow                                                 04F5 GR
-  0 _setAddrWindow_end                                             055F GR
-  0 _setAddrWindow_start                                           04F5 GR
+  0 _reset                                                         0587 GR
+  0 _reset_end                                                     05DD GR
+  0 _reset_start                                                   0587 GR
+  0 _setAddrWindow                                                 051D GR
+  0 _setAddrWindow_end                                             0587 GR
+  0 _setAddrWindow_start                                           051D GR
   0 _system_init                                                   030D GR
   0 _system_init_end                                               0314 GR
   0 _system_init_start                                             030D GR
@@ -109,23 +112,23 @@ Symbol Table
   0 _uart_write                                                    00AB GR
   0 _uart_write_end                                                00BC GR
   0 _uart_write_start                                              00AB GR
-  0 _write8                                                        04E1 GR
-  0 _write8_end                                                    04F5 GR
-  0 _write8_start                                                  04E1 GR
-  0 _writeRegister16                                               04B0 GR
-  0 _writeRegister16_end                                           04E1 GR
-  0 _writeRegister16_start                                         04B0 GR
-  0 _writeRegister24                                               038C GR
-  0 _writeRegister24_end                                           040B GR
-  0 _writeRegister24_start                                         038C GR
+  0 _write8                                                        0509 GR
+  0 _write8_end                                                    051D GR
+  0 _write8_start                                                  0509 GR
+  0 _writeRegister16                                               04D8 GR
+  0 _writeRegister16_end                                           0509 GR
+  0 _writeRegister16_start                                         04D8 GR
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 3.
 Hexadecimal [16-Bits]
 
 Symbol Table
 
-  0 _writeRegister32                                               040B GR
-  0 _writeRegister32_end                                           04B0 GR
-  0 _writeRegister32_start                                         040B GR
+  0 _writeRegister24                                               039F GR
+  0 _writeRegister24_end                                           0427 GR
+  0 _writeRegister24_start                                         039F GR
+  0 _writeRegister32                                               0427 GR
+  0 _writeRegister32_end                                           04D8 GR
+  0 _writeRegister32_start                                         0427 GR
 
 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 4.
@@ -133,7 +136,7 @@ Hexadecimal [16-Bits]
 
 Area Table
 
-   0 _CODE                                      size  55F   flags    0
+   0 _CODE                                      size  5DD   flags    0
    1 _DATA                                      size    1   flags    0
    2 _INITIALIZED                               size    0   flags    0
    3 _DABS                                      size    0   flags    8
