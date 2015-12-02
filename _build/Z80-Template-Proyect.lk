@@ -1,0 +1,11 @@
+-mjwx
+-i _build/Z80-Template-Proyect.hex
+-b _CODE = 0x00a0
+-b _DATA = 0x8000
+-k /usr/bin/../share/sdcc/lib/z80
+-k /usr/share/sdcc/lib/z80
+-l z80
+_build/sysmap.rel
+_build/Z80-Template-Proyect.rel
+
+-e
