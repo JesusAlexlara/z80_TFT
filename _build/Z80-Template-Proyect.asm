@@ -1,7 +1,7 @@
 ;--------------------------------------------------------
 ; File Created by SDCC : free open source ANSI-C Compiler
 ; Version 3.4.0 #8981 (Jul 12 2014) (Linux)
-; This file was generated Tue Dec  1 23:04:36 2015
+; This file was generated Fri Dec  4 17:16:32 2015
 ;--------------------------------------------------------
 	.module main
 	.optsdcc -mz80
@@ -13,6 +13,12 @@
 	.globl _isr_vector38
 	.globl _isr_vector66
 	.globl _isprint
+	.globl _jug
+	.globl _rana4
+	.globl _rana3
+	.globl _rana2
+	.globl _rana
+	.globl _cuadroMorado
 	.globl ___ret_aux
 	.globl _io_write
 	.globl _io_read
@@ -42,6 +48,18 @@
 	.globl _write8
 	.globl _setAddrWindow
 	.globl _reset
+	.globl _fillScreen
+	.globl _flood
+	.globl _drawPixel
+	.globl _fillRect
+	.globl _drawGraf
+	.globl _pintaSprite
+	.globl _color565
+	.globl _init_pantalla
+	.globl _pintaAzul
+	.globl _pintaNegro
+	.globl _pintaBarra
+	.globl _repinta_rana
 ;--------------------------------------------------------
 ; special function registers
 ;--------------------------------------------------------
@@ -65,10 +83,52 @@ _PPI_CTRL	=	0x0043
 	.area _DATA
 ___ret_aux::
 	.ds 1
+_cuadroMorado::
+	.ds 800
+_rana::
+	.ds 800
+_rana2::
+	.ds 800
+_rana3::
+	.ds 800
+_rana4::
+	.ds 800
+_jug::
+	.ds 6
 ;--------------------------------------------------------
 ; ram data
 ;--------------------------------------------------------
 	.area _INITIALIZED
+_width:
+	.ds 2
+_height:
+	.ds 2
+_header_data:
+	.ds 2
+_width_Rana:
+	.ds 2
+_height_Rana:
+	.ds 2
+_header_Rana:
+	.ds 2
+_width_Rana2:
+	.ds 2
+_height_Rana2:
+	.ds 2
+_header_Rana2:
+	.ds 2
+_width_Rana3:
+	.ds 2
+_height_Rana3:
+	.ds 2
+_header_Rana3:
+	.ds 2
+_width_Rana4:
+	.ds 2
+_height_Rana4:
+	.ds 2
+_header_Rana4:
+	.ds 2
 ;--------------------------------------------------------
 ; absolute external ram data
 ;--------------------------------------------------------
@@ -626,7 +686,7 @@ _getchar:
 ;smz80.h:861: return uart_read();
 	jp	_uart_read
 _getchar_end::
-;main.c:112: ISR_NMI(){
+;main.c:51: ISR_NMI()
 ;	---------------------------------
 ; Function isr_vector66
 ; ---------------------------------
@@ -637,7 +697,7 @@ _isr_vector66:
 	push	de
 	push	hl
 	push	iy
-;main.c:114: }
+;main.c:54: }
 	pop	iy
 	pop	hl
 	pop	de
@@ -748,7 +808,7 @@ _PROGMEM:
 	.dw #0x0000
 	.dw #0x0007
 	.dw #0x0133
-;main.c:116: ISR_INT_38(){
+;main.c:56: ISR_INT_38()
 ;	---------------------------------
 ; Function isr_vector38
 ; ---------------------------------
@@ -759,7 +819,7 @@ _isr_vector38:
 	push	de
 	push	hl
 	push	iy
-;main.c:118: }
+;main.c:59: }
 	pop	iy
 	pop	hl
 	pop	de
@@ -767,33 +827,52 @@ _isr_vector38:
 	pop	af
 	reti
 _isr_vector38_end::
-;main.c:121: int main(){
+;main.c:62: int main()
 ;	---------------------------------
 ; Function main
 ; ---------------------------------
 _main_start::
 _main:
-;main.c:124: system_init(); 
+;main.c:64: jug.x = 20;
+	ld	hl,#0x0014
+	ld	((_jug + 0x0002)), hl
+;main.c:65: jug.y = 300;
+	ld	hl,#0x012C
+	ld	((_jug + 0x0004)), hl
+;main.c:66: system_init(); 
 	call	_system_init
-;main.c:127: while(TRUE){
+;main.c:67: PPI_PORTA = 0xff;
+	ld	a,#0xFF
+	out	(_PPI_PORTA),a
+;main.c:69: fillScreen(BLACK);
+	ld	hl,#0x0000
+	push	hl
+	call	_fillScreen
+	pop	af
+;main.c:70: init_pantalla();
+	call	_init_pantalla
+;main.c:73: while(TRUE)
 00102$:
-;main.c:128: sleep();    //Entra en modo sleep (HALT)
+;main.c:75: SLEEP();
 	HALT
 	jr	00102$
 _main_end::
-;main.c:133: void system_init()
+;main.c:79: void system_init()
 ;	---------------------------------
 ; Function system_init
 ; ---------------------------------
 _system_init_start::
 _system_init:
-;main.c:135: PPI_CTRL = 0x89; //Palabra de control PA y PB salida PCH entrada PCD salida
+;main.c:81: PPI_CTRL = 0x89;
 	ld	a,#0x89
 	out	(_PPI_CTRL),a
-;main.c:136: lcd_init();   
+;main.c:82: PPI_PORTA = 0xff;
+	ld	a,#0xFF
+	out	(_PPI_PORTA),a
+;main.c:84: lcd_init();   
 	jp	_lcd_init
 _system_init_end::
-;main.c:139: void lcd_init()
+;main.c:87: void lcd_init()
 ;	---------------------------------
 ; Function lcd_init
 ; ---------------------------------
@@ -803,27 +882,40 @@ _lcd_init:
 	ld	ix,#0
 	add	ix,sp
 	push	af
-;main.c:141: uint8_t i = 0;
-	ld	b,#0x00
-;main.c:145: delay_ms(200);
-	push	bc
-	ld	hl,#0x00C8
-	push	hl
-	call	_delay_ms
-	pop	af
-	pop	bc
-;main.c:147: CS_ACTIVE;
+;main.c:89: uint8_t i = 0;
+	ld	c,#0x00
+;main.c:92: CS_IDLE;
 	in	a,(_PPI_PORTA)
-	and	a, #0xFC
+	set	3, a
 	out	(_PPI_PORTA),a
-;main.c:148: while(i < sizeof(PROGMEM) / sizeof(uint16_t)) 
+;main.c:93: WR_IDLE;
+	in	a,(_PPI_PORTA)
+	set	1, a
+	out	(_PPI_PORTA),a
+;main.c:94: RD_IDLE;
+	in	a,(_PPI_PORTA)
+	set	0, a
+	out	(_PPI_PORTA),a
+;main.c:95: CD_DATA;
+	in	a,(_PPI_PORTA)
+	set	2, a
+	out	(_PPI_PORTA),a
+;main.c:97: reset();
+	push	bc
+	call	_reset
+	pop	bc
+;main.c:99: CS_ACTIVE;
+	in	a,(_PPI_PORTA)
+	and	a, #0xF7
+	out	(_PPI_PORTA),a
+;main.c:100: while(i < sizeof(PROGMEM) / sizeof(uint16_t)) 
 00104$:
-	ld	a,b
+	ld	a,c
 	sub	a, #0x66
 	jr	NC,00106$
-;main.c:150: a = PROGMEM[i++];
-	ld	l,b
-	inc	b
+;main.c:102: a = PROGMEM[i++];
+	ld	l,c
+	inc	c
 	ld	h,#0x00
 	add	hl, hl
 	ld	de,#_PROGMEM
@@ -833,9 +925,9 @@ _lcd_init:
 	inc	hl
 	ld	a,(hl)
 	ld	-1 (ix),a
-;main.c:151: d = PROGMEM[i++];
-	ld	l,b
-	inc	b
+;main.c:103: d = PROGMEM[i++];
+	ld	l,c
+	inc	c
 	ld	h,#0x00
 	add	hl, hl
 	ld	de,#_PROGMEM
@@ -843,43 +935,48 @@ _lcd_init:
 	ld	e,(hl)
 	inc	hl
 	ld	d,(hl)
-;main.c:153: if(a == TFTLCD_DELAY)
+;main.c:105: if(a == TFTLCD_DELAY)
 	ld	a,-2 (ix)
 	inc	a
 	jr	NZ,00102$
 	ld	a,-1 (ix)
 	or	a, a
 	jr	NZ,00102$
-;main.c:155: delay_ms(d);
+;main.c:107: delay_ms(d);
 	push	bc
 	push	de
+	push	de
+	call	_delay_ms
+	pop	af
 	call	_delay_ms
 	pop	af
 	pop	bc
 	jr	00104$
 00102$:
-;main.c:159: writeRegister16(a, d);
-	ld	h,e
-	ld	d,-2 (ix)
+;main.c:112: writeRegister16(a, d);
 	push	bc
-	push	hl
-	inc	sp
 	push	de
-	inc	sp
+	ld	l,-2 (ix)
+	ld	h,-1 (ix)
+	push	hl
 	call	_writeRegister16
+	pop	af
 	pop	af
 	pop	bc
 	jr	00104$
 00106$:
-;main.c:162: CS_ACTIVE;
+;main.c:115: CS_ACTIVE;
 	in	a,(_PPI_PORTA)
-	and	a, #0xFC
+	and	a, #0xF7
 	out	(_PPI_PORTA),a
-;main.c:164: writeRegister16(0x0003, a);
-	ld	hl,#0x3003
+;main.c:117: writeRegister16(0x0003, a);
+	ld	hl,#0x1030
+	push	hl
+	ld	hl,#0x0003
 	push	hl
 	call	_writeRegister16
-;main.c:165: setAddrWindow(0, 0, TFTWIDTH-1, TFTHEIGHT-1);
+	pop	af
+;main.c:118: setAddrWindow(0, 0, TFTWIDTH-1, TFTHEIGHT-1);
 	ld	hl, #0x013F
 	ex	(sp),hl
 	ld	hl,#0x00EF
@@ -896,21 +993,21 @@ _lcd_init:
 	pop	ix
 	ret
 _lcd_init_end::
-;main.c:169: void writeRegister24(uint8_t r, uint32_t d) 
+;main.c:122: void writeRegister24(uint8_t r, uint32_t d) 
 ;	---------------------------------
 ; Function writeRegister24
 ; ---------------------------------
 _writeRegister24_start::
 _writeRegister24:
-;main.c:171: CS_ACTIVE;
+;main.c:124: CS_ACTIVE;
 	in	a,(_PPI_PORTA)
-	and	a, #0xFC
+	and	a, #0xF7
 	out	(_PPI_PORTA),a
-;main.c:172: CD_COMMAND;
+;main.c:125: CD_COMMAND;
 	in	a,(_PPI_PORTA)
-	and	a, #0xFD
+	and	a, #0xFB
 	out	(_PPI_PORTA),a
-;main.c:173: write8(r);
+;main.c:126: write8(r);
 	ld	hl, #2+0
 	add	hl, sp
 	ld	a, (hl)
@@ -918,13 +1015,11 @@ _writeRegister24:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:174: CD_DATA;
+;main.c:127: CD_DATA;
 	in	a,(_PPI_PORTA)
-	set	1, a
+	set	2, a
 	out	(_PPI_PORTA),a
-;main.c:175: delay_10us();
-	call	_delay_10us
-;main.c:176: write8(d >> 16);
+;main.c:128: write8(d >> 16);
 	push	af
 	ld	iy,#5
 	add	iy,sp
@@ -944,9 +1039,7 @@ _writeRegister24:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:177: delay_10us();
-	call	_delay_10us
-;main.c:178: write8(d >> 8);
+;main.c:129: write8(d >> 8);
 	push	af
 	ld	iy,#5
 	add	iy,sp
@@ -966,9 +1059,7 @@ _writeRegister24:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:179: delay_10us();
-	call	_delay_10us
-;main.c:180: write8(d);
+;main.c:130: write8(d);
 	ld	iy,#3
 	add	iy,sp
 	ld	h,0 (iy)
@@ -976,27 +1067,27 @@ _writeRegister24:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:181: CS_IDLE;
+;main.c:131: CS_IDLE;
 	in	a,(_PPI_PORTA)
-	or	a, #0x03
+	set	3, a
 	out	(_PPI_PORTA),a
 	ret
 _writeRegister24_end::
-;main.c:185: void writeRegister32(uint8_t r, uint32_t d) 
+;main.c:135: void writeRegister32(uint8_t r, uint32_t d) 
 ;	---------------------------------
 ; Function writeRegister32
 ; ---------------------------------
 _writeRegister32_start::
 _writeRegister32:
-;main.c:187: CS_ACTIVE;
+;main.c:137: CS_ACTIVE;
 	in	a,(_PPI_PORTA)
-	and	a, #0xFC
+	and	a, #0xF7
 	out	(_PPI_PORTA),a
-;main.c:188: CD_COMMAND;
+;main.c:138: CD_COMMAND;
 	in	a,(_PPI_PORTA)
-	and	a, #0xFD
+	and	a, #0xFB
 	out	(_PPI_PORTA),a
-;main.c:189: write8(r);
+;main.c:139: write8(r);
 	ld	hl, #2+0
 	add	hl, sp
 	ld	a, (hl)
@@ -1004,13 +1095,11 @@ _writeRegister32:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:190: CD_DATA;
+;main.c:140: CD_DATA;
 	in	a,(_PPI_PORTA)
-	set	1, a
+	set	2, a
 	out	(_PPI_PORTA),a
-;main.c:191: delay_10us();
-	call	_delay_10us
-;main.c:192: write8(d >> 24);
+;main.c:141: write8(d >> 24);
 	push	af
 	ld	iy,#5
 	add	iy,sp
@@ -1030,9 +1119,7 @@ _writeRegister32:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:193: delay_10us();
-	call	_delay_10us
-;main.c:194: write8(d >> 16);
+;main.c:142: write8(d >> 16);
 	push	af
 	ld	iy,#5
 	add	iy,sp
@@ -1052,9 +1139,7 @@ _writeRegister32:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:195: delay_10us();
-	call	_delay_10us
-;main.c:196: write8(d >> 8);
+;main.c:143: write8(d >> 8);
 	push	af
 	ld	iy,#5
 	add	iy,sp
@@ -1074,9 +1159,7 @@ _writeRegister32:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:197: delay_10us();
-	call	_delay_10us
-;main.c:198: write8(d);
+;main.c:144: write8(d);
 	ld	iy,#3
 	add	iy,sp
 	ld	h,0 (iy)
@@ -1084,48 +1167,50 @@ _writeRegister32:
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:199: CS_IDLE;
+;main.c:145: CS_IDLE;
 	in	a,(_PPI_PORTA)
-	or	a, #0x03
+	set	3, a
 	out	(_PPI_PORTA),a
 	ret
 _writeRegister32_end::
-;main.c:203: void writeRegister16(uint8_t a, uint8_t d) 
+;main.c:149: void writeRegister16(uint16_t a, uint16_t d) 
 ;	---------------------------------
 ; Function writeRegister16
 ; ---------------------------------
 _writeRegister16_start::
 _writeRegister16:
-;main.c:208: lo = (a); 
-	ld	hl, #2+0
-	add	hl, sp
-	ld	d, (hl)
-;main.c:209: CD_COMMAND; 
+;main.c:153: hi = (a) >> 8; 
+	ld	iy,#2
+	add	iy,sp
+	ld	d,1 (iy)
+;main.c:154: lo = (a); 
+	ld	b,0 (iy)
+;main.c:155: CD_COMMAND; 
 	in	a,(_PPI_PORTA)
-	and	a, #0xFD
+	and	a, #0xFB
 	out	(_PPI_PORTA),a
-;main.c:210: write8(hi); 
+;main.c:156: write8(hi);
+	push	bc
 	push	de
-	xor	a, a
-	push	af
 	inc	sp
 	call	_write8
 	inc	sp
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:213: lo = (d); 
-	ld	hl, #3+0
-	add	hl, sp
-	ld	d, (hl)
-;main.c:214: CD_DATA; 
+;main.c:158: hi = (d) >> 8; 
+	ld	iy,#4
+	add	iy,sp
+	ld	d,1 (iy)
+;main.c:159: lo = (d); 
+	ld	b,0 (iy)
+;main.c:160: CD_DATA; 
 	in	a,(_PPI_PORTA)
-	set	1, a
+	set	2, a
 	out	(_PPI_PORTA),a
-;main.c:215: write8(hi); 
+;main.c:161: write8(hi);
+	push	bc
 	push	de
-	xor	a, a
-	push	af
 	inc	sp
 	call	_write8
 	inc	sp
@@ -1134,175 +1219,2815 @@ _writeRegister16:
 	inc	sp
 	ret
 _writeRegister16_end::
-;main.c:219: void write8(uint8_t d) 
+;main.c:167: void write8(uint8_t d) 
 ;	---------------------------------
 ; Function write8
 ; ---------------------------------
 _write8_start::
 _write8:
-;main.c:221: PPI_PORTA = d;
+;main.c:169: PPI_PORTB = d;
 	ld	hl, #2+0
 	add	hl, sp
 	ld	a, (hl)
-	out	(_PPI_PORTA),a
-;main.c:222: WR_STROBE; 
+	out	(_PPI_PORTB),a
+;main.c:170: WR_STROBE; 
 	in	a,(_PPI_PORTA)
-	and	a, #0xFE
+	and	a, #0xFD
 	out	(_PPI_PORTA),a
 	in	a,(_PPI_PORTA)
-	set	0, a
+	set	1, a
 	out	(_PPI_PORTA),a
 	ret
 _write8_end::
-;main.c:225: void setAddrWindow(int x1, int y1, int x2, int y2) 
+;main.c:173: void setAddrWindow(int x1, int y1, int x2, int y2) 
 ;	---------------------------------
 ; Function setAddrWindow
 ; ---------------------------------
 _setAddrWindow_start::
 _setAddrWindow:
-;main.c:228: CS_ACTIVE;
+;main.c:176: CS_ACTIVE;
 	in	a,(_PPI_PORTA)
-	and	a, #0xFC
+	and	a, #0xF7
 	out	(_PPI_PORTA),a
-;main.c:229: x  = x1;
-	pop	de
+;main.c:177: x  = x1;
 	pop	bc
+	pop	de
+	push	de
+	push	bc
+;main.c:178: y  = y1;
+	ld	hl, #4
+	add	hl, sp
+;main.c:180: writeRegister16(0x0050, x1); 
+	ld	c, (hl)
+	inc	hl
+	ld	b, (hl)
 	push	bc
 	push	de
-;main.c:230: y  = y1;
-	ld	iy,#4
-	add	iy,sp
-	ld	d,0 (iy)
-	ld	l,1 (iy)
-;main.c:232: writeRegister16(0x0050, x1); 
-	ld	e,c
-	push	hl
 	push	de
-	ld	d, e
-	ld	e,#0x50
-	push	de
+	ld	bc,#0x0050
+	push	bc
 	call	_writeRegister16
+	pop	af
+	pop	af
+	ld	hl, #10
+	add	hl, sp
+	ld	c, (hl)
+	inc	hl
+	ld	b, (hl)
+	push	bc
+	ld	bc,#0x0051
+	push	bc
+	call	_writeRegister16
+	pop	af
 	pop	af
 	pop	de
 	pop	hl
-;main.c:233: writeRegister16(0x0051, x2);
-	ld	iy,#6
-	add	iy,sp
-	ld	h,0 (iy)
+;main.c:182: writeRegister16(0x0052, y1);
 	push	hl
 	push	de
 	push	hl
-	inc	sp
-	ld	a,#0x51
-	push	af
-	inc	sp
+	ld	bc,#0x0052
+	push	bc
 	call	_writeRegister16
 	pop	af
-	pop	de
-	pop	hl
-;main.c:234: writeRegister16(0x0052, y1);
-	push	de
-	ld	e, #0x52
-	push	de
+	pop	af
+	ld	hl, #12
+	add	hl, sp
+	ld	c, (hl)
+	inc	hl
+	ld	b, (hl)
+	push	bc
+	ld	bc,#0x0053
+	push	bc
 	call	_writeRegister16
 	pop	af
-	pop	de
-;main.c:235: writeRegister16(0x0053, y2);
-	ld	iy,#8
-	add	iy,sp
-	ld	h,0 (iy)
-	push	de
-	push	hl
-	inc	sp
-	ld	a,#0x53
-	push	af
-	inc	sp
+	pop	af
+	ld	bc,#0x0020
+	push	bc
 	call	_writeRegister16
 	pop	af
-	pop	de
-;main.c:236: writeRegister16(0x0020, x );
-	push	de
-	ld	d, e
-	ld	e,#0x20
-	push	de
+	ld	hl, #0x0021
+	ex	(sp),hl
 	call	_writeRegister16
 	pop	af
-	pop	de
-;main.c:237: writeRegister16(0x0021, y );
-	ld	e, #0x21
-	push	de
-	call	_writeRegister16
 	pop	af
 	ret
 _setAddrWindow_end::
-;main.c:241: void reset() 
+;main.c:188: void reset() 
 ;	---------------------------------
 ; Function reset
 ; ---------------------------------
 _reset_start::
 _reset:
-;main.c:245: CS_IDLE;
+;main.c:192: CS_IDLE;
 	in	a,(_PPI_PORTA)
-	or	a, #0x03
+	set	3, a
 	out	(_PPI_PORTA),a
-;main.c:246: WR_IDLE;
+;main.c:193: WR_IDLE;
+	in	a,(_PPI_PORTA)
+	set	1, a
+	out	(_PPI_PORTA),a
+;main.c:194: RD_IDLE;
 	in	a,(_PPI_PORTA)
 	set	0, a
 	out	(_PPI_PORTA),a
-;main.c:247: RD_IDLE;
-;main.c:249: RESET_LOW;
+;main.c:196: RESET_LOW;
+	in	a,(_PPI_PORTA)
+	and	a, #0xEF
+	out	(_PPI_PORTA),a
+;main.c:197: RESET_HIGH;
+	in	a,(_PPI_PORTA)
+	set	4, a
+	out	(_PPI_PORTA),a
+;main.c:199: CS_ACTIVE;
+	in	a,(_PPI_PORTA)
+	and	a, #0xF7
+	out	(_PPI_PORTA),a
+;main.c:200: CD_COMMAND;
 	in	a,(_PPI_PORTA)
 	and	a, #0xFB
 	out	(_PPI_PORTA),a
-;main.c:250: delay_ms(2);
-	ld	hl,#0x0002
-	push	hl
-	call	_delay_ms
-	pop	af
-;main.c:251: RESET_HIGH;
-	in	a,(_PPI_PORTA)
-	set	2, a
-	out	(_PPI_PORTA),a
-;main.c:253: CS_ACTIVE;
-	in	a,(_PPI_PORTA)
-	and	a, #0xFC
-	out	(_PPI_PORTA),a
-;main.c:254: CD_COMMAND;
-	in	a,(_PPI_PORTA)
-	and	a, #0xFD
-	out	(_PPI_PORTA),a
-;main.c:255: write8(0x00);
+;main.c:201: write8(0x00);
 	xor	a, a
 	push	af
 	inc	sp
 	call	_write8
 	inc	sp
-;main.c:257: for(i=0; i<3; i++)
+;main.c:203: for(i=0; i<3; i++)
 	ld	d,#0x00
 00102$:
-;main.c:259: WR_STROBE;
+;main.c:205: WR_STROBE;
 	in	a,(_PPI_PORTA)
-	and	a, #0xFE
+	and	a, #0xFD
 	out	(_PPI_PORTA),a
 	in	a,(_PPI_PORTA)
-	set	0, a
+	set	1, a
 	out	(_PPI_PORTA),a
-;main.c:257: for(i=0; i<3; i++)
+;main.c:203: for(i=0; i<3; i++)
 	inc	d
 	ld	a,d
 	sub	a, #0x03
 	jr	C,00102$
-;main.c:261: CS_IDLE;
+;main.c:207: CS_IDLE;
 	in	a,(_PPI_PORTA)
-	or	a, #0x03
+	set	3, a
 	out	(_PPI_PORTA),a
-;main.c:263: delay_ms(500);
+;main.c:209: delay_ms(500);
 	ld	hl,#0x01F4
 	push	hl
 	call	_delay_ms
 	pop	af
 	ret
 _reset_end::
+;main.c:212: void fillScreen(uint16_t color) {
+;	---------------------------------
+; Function fillScreen
+; ---------------------------------
+_fillScreen_start::
+_fillScreen:
+;main.c:219: CS_ACTIVE;
+	in	a,(_PPI_PORTA)
+	and	a, #0xF7
+	out	(_PPI_PORTA),a
+;main.c:220: writeRegister16(0x0020, x);
+	ld	hl,#0x0000
+	push	hl
+	ld	l, #0x20
+	push	hl
+	call	_writeRegister16
+	pop	af
+	pop	af
+;main.c:221: writeRegister16(0x0021, y);
+	ld	hl,#0x0000
+	push	hl
+	ld	l, #0x21
+	push	hl
+	call	_writeRegister16
+	pop	af
+;main.c:223: flood(color, (long)TFTWIDTH * (long)TFTHEIGHT);
+	ld	hl, #0x0001
+	ex	(sp),hl
+	ld	hl,#0x2C00
+	push	hl
+	ld	hl, #6
+	add	hl, sp
+	ld	c, (hl)
+	inc	hl
+	ld	b, (hl)
+	push	bc
+	call	_flood
+	ld	hl,#6
+	add	hl,sp
+	ld	sp,hl
+	ret
+_fillScreen_end::
+;main.c:227: void flood(uint16_t color, uint32_t len) 
+;	---------------------------------
+; Function flood
+; ---------------------------------
+_flood_start::
+_flood:
+	push	ix
+	ld	ix,#0
+	add	ix,sp
+	ld	hl,#-7
+	add	hl,sp
+	ld	sp,hl
+;main.c:231: hi= color >> 8;
+	ld	c,5 (ix)
+;main.c:232: lo=color;         
+	ld	a,4 (ix)
+	ld	-7 (ix),a
+;main.c:234: CS_ACTIVE;
+	in	a,(_PPI_PORTA)
+	and	a, #0xF7
+	out	(_PPI_PORTA),a
+;main.c:235: CD_COMMAND;
+	in	a,(_PPI_PORTA)
+	and	a, #0xFB
+	out	(_PPI_PORTA),a
+;main.c:237: write8(0x00);
+	push	bc
+	xor	a, a
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	ld	a,#0x22
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	pop	bc
+;main.c:240: CD_DATA;
+	in	a,(_PPI_PORTA)
+	set	2, a
+	out	(_PPI_PORTA),a
+;main.c:241: write8(hi);
+	push	bc
+	ld	a,c
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	ld	a,-7 (ix)
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	pop	bc
+;main.c:243: len--;
+	ld	a,6 (ix)
+	add	a,#0xFF
+	ld	6 (ix),a
+	ld	a,7 (ix)
+	adc	a,#0xFF
+	ld	7 (ix),a
+	ld	a,8 (ix)
+	adc	a,#0xFF
+	ld	8 (ix),a
+	ld	a,9 (ix)
+	adc	a,#0xFF
+	ld	9 (ix),a
+;main.c:245: blocks = (uint16_t)(len / 64);
+	push	af
+	ld	e,6 (ix)
+	ld	d,7 (ix)
+	ld	h,8 (ix)
+	ld	l,9 (ix)
+	pop	af
+	ld	b,#0x06
+00183$:
+	srl	l
+	rr	h
+	rr	d
+	rr	e
+	djnz	00183$
+;main.c:257: for(i = (uint8_t)len & 63; i--; ) 
+	ld	a,6 (ix)
+	and	a, #0x3F
+	ld	-1 (ix),a
+;main.c:246: if(hi == lo) 
+	ld	a,-7 (ix)
+	sub	a, c
+	jp	NZ,00135$
+;main.c:248: while(blocks--) 
+	ld	c, e
+	ld	b, d
+00104$:
+	ld	h,c
+	ld	l,b
+	dec	bc
+	ld	a,l
+	or	a,h
+	jr	Z,00106$
+;main.c:251: do 
+	ld	d,#0x10
+00101$:
+;main.c:253: WR_STROBE; WR_STROBE; WR_STROBE; WR_STROBE;
+	in	a,(_PPI_PORTA)
+	and	a, #0xFD
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	set	1, a
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	and	a, #0xFD
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	set	1, a
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	and	a, #0xFD
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	set	1, a
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	and	a, #0xFD
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	set	1, a
+	out	(_PPI_PORTA),a
+;main.c:254: WR_STROBE; WR_STROBE; WR_STROBE; WR_STROBE; 
+	in	a,(_PPI_PORTA)
+	and	a, #0xFD
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	set	1, a
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	and	a, #0xFD
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	set	1, a
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	and	a, #0xFD
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	set	1, a
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	and	a, #0xFD
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	set	1, a
+	out	(_PPI_PORTA),a
+;main.c:255: }while(--i);
+	dec	d
+	ld	a,d
+	or	a, a
+	jr	NZ,00101$
+	jr	00104$
+00106$:
+;main.c:257: for(i = (uint8_t)len & 63; i--; ) 
+	ld	d,-1 (ix)
+00119$:
+	ld	h,d
+	dec	d
+	ld	a,h
+	or	a, a
+	jp	Z,00117$
+;main.c:259: WR_STROBE;
+	in	a,(_PPI_PORTA)
+	and	a, #0xFD
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	set	1, a
+	out	(_PPI_PORTA),a
+;main.c:260: WR_STROBE;
+	in	a,(_PPI_PORTA)
+	and	a, #0xFD
+	out	(_PPI_PORTA),a
+	in	a,(_PPI_PORTA)
+	set	1, a
+	out	(_PPI_PORTA),a
+	jr	00119$
+;main.c:265: while(blocks--) 
+00135$:
+	ld	-3 (ix),e
+	ld	-2 (ix),d
+00111$:
+	ld	a,-3 (ix)
+	ld	-5 (ix),a
+	ld	a,-2 (ix)
+	ld	-4 (ix),a
+	ld	l,-3 (ix)
+	ld	h,-2 (ix)
+	dec	hl
+	ld	-3 (ix),l
+	ld	-2 (ix),h
+	ld	a,-4 (ix)
+	or	a,-5 (ix)
+	jr	Z,00113$
+;main.c:268: do 
+	ld	-6 (ix),#0x10
+00108$:
+;main.c:270: write8(hi); write8(lo); write8(hi); write8(lo);
+	push	bc
+	ld	a,c
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	ld	a,-7 (ix)
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	pop	bc
+	push	bc
+	ld	a,c
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	ld	a,-7 (ix)
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	pop	bc
+;main.c:271: write8(hi); write8(lo); write8(hi); write8(lo);
+	push	bc
+	ld	a,c
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	ld	a,-7 (ix)
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	pop	bc
+	push	bc
+	ld	a,c
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	ld	a,-7 (ix)
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	pop	bc
+;main.c:272: }while(--i);
+	dec	-6 (ix)
+	ld	a,-6 (ix)
+	or	a, a
+	jr	NZ,00108$
+	jr	00111$
+00113$:
+;main.c:274: for(i = (uint8_t)len & 63; i--; ) {
+	ld	a,-1 (ix)
+	ld	-5 (ix),a
+00122$:
+	ld	h,-5 (ix)
+	dec	-5 (ix)
+	ld	a,h
+	or	a, a
+	jr	Z,00117$
+;main.c:275: write8(hi);
+	push	bc
+	ld	a,c
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	ld	a,-7 (ix)
+	push	af
+	inc	sp
+	call	_write8
+	inc	sp
+	pop	bc
+	jr	00122$
+00117$:
+;main.c:279: CS_IDLE;
+	in	a,(_PPI_PORTA)
+	set	3, a
+	out	(_PPI_PORTA),a
+	ld	sp, ix
+	pop	ix
+	ret
+_flood_end::
+;main.c:282: void drawPixel(int16_t x, int16_t y, uint16_t color) 
+;	---------------------------------
+; Function drawPixel
+; ---------------------------------
+_drawPixel_start::
+_drawPixel:
+	push	ix
+	ld	ix,#0
+	add	ix,sp
+;main.c:284: if((x < 0) || (y < 0) || (x >= TFTWIDTH) || (y >= TFTHEIGHT))
+	bit	7, 5 (ix)
+	jr	NZ,00106$
+	bit	7, 7 (ix)
+	jr	NZ,00106$
+	ld	a,4 (ix)
+	sub	a, #0xF0
+	ld	a,5 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jr	NC,00106$
+	ld	a,6 (ix)
+	sub	a, #0x40
+	ld	a,7 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x81
+;main.c:286: return;
+	jr	NC,00106$
+;main.c:288: CS_ACTIVE;
+	in	a,(_PPI_PORTA)
+	and	a, #0xF7
+	out	(_PPI_PORTA),a
+;main.c:289: writeRegister16(0x0020, x);
+	ld	l,4 (ix)
+	ld	h,5 (ix)
+	push	hl
+	ld	hl,#0x0020
+	push	hl
+	call	_writeRegister16
+	pop	af
+	pop	af
+;main.c:290: writeRegister16(0x0021, y);
+	ld	l,6 (ix)
+	ld	h,7 (ix)
+	push	hl
+	ld	hl,#0x0021
+	push	hl
+	call	_writeRegister16
+	pop	af
+	pop	af
+;main.c:291: writeRegister16(0x0022, color);
+	ld	l,8 (ix)
+	ld	h,9 (ix)
+	push	hl
+	ld	hl,#0x0022
+	push	hl
+	call	_writeRegister16
+	pop	af
+	pop	af
+;main.c:292: CS_IDLE;
+	in	a,(_PPI_PORTA)
+	set	3, a
+	out	(_PPI_PORTA),a
+00106$:
+	pop	ix
+	ret
+_drawPixel_end::
+;main.c:295: void fillRect(int16_t x1, int16_t y1, int16_t w, int16_t h,
+;	---------------------------------
+; Function fillRect
+; ---------------------------------
+_fillRect_start::
+_fillRect:
+	push	ix
+	ld	ix,#0
+	add	ix,sp
+	ld	hl,#-8
+	add	hl,sp
+	ld	sp,hl
+;main.c:299: if( (w <= 0 ) ||  (h  <= 0 ) || (x1 >= TFTWIDTH) ||  (y1 >= TFTHEIGHT) || ((x2 = x1+w-1) <  0 ) || ((y2  = y1+h-1) <  0 ))
+	xor	a, a
+	cp	a, 8 (ix)
+	sbc	a, 9 (ix)
+	jp	PO, 00154$
+	xor	a, #0x80
+00154$:
+	jp	P,00116$
+	xor	a, a
+	cp	a, 10 (ix)
+	sbc	a, 11 (ix)
+	jp	PO, 00155$
+	xor	a, #0x80
+00155$:
+	jp	P,00116$
+	ld	a,4 (ix)
+	sub	a, #0xF0
+	ld	a,5 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	NC,00116$
+	ld	a,6 (ix)
+	sub	a, #0x40
+	ld	a,7 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x81
+	jp	NC,00116$
+	ld	a,4 (ix)
+	add	a, 8 (ix)
+	ld	c,a
+	ld	a,5 (ix)
+	adc	a, 9 (ix)
+	ld	b,a
+	ld	e,c
+	ld	d,b
+	dec	de
+	ld	l, e
+	ld	h, d
+	bit	7, d
+	jp	NZ,00116$
+	ld	a,6 (ix)
+	add	a, 10 (ix)
+	ld	e,a
+	ld	a,7 (ix)
+	adc	a, 11 (ix)
+	ld	d,a
+	ld	a,e
+	add	a,#0xFF
+	ld	-8 (ix),a
+	ld	a,d
+	adc	a,#0xFF
+	ld	-7 (ix),a
+	ld	a,-8 (ix)
+	ld	-6 (ix),a
+	ld	a,-7 (ix)
+	ld	-5 (ix),a
+	bit	7, -7 (ix)
+;main.c:300: return;
+	jp	NZ,00116$
+;main.c:301: if(x1 < 0) 
+	bit	7, 5 (ix)
+	jr	Z,00109$
+;main.c:303: w += x1;
+	ld	8 (ix),c
+	ld	9 (ix),b
+;main.c:304: x1 = 0;
+	ld	4 (ix),#0x00
+	ld	5 (ix),#0x00
+00109$:
+;main.c:306: if(y1 < 0) 
+	bit	7, 7 (ix)
+	jr	Z,00111$
+;main.c:308: h += y1;
+	ld	10 (ix),e
+	ld	11 (ix),d
+;main.c:309: y1 = 0;
+	ld	6 (ix),#0x00
+	ld	7 (ix),#0x00
+00111$:
+;main.c:311: if(x2 >= TFTWIDTH) {
+	ld	a,l
+	sub	a, #0xF0
+	ld	a,h
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jr	C,00113$
+;main.c:312: x2 = TFTWIDTH - 1;
+	ld	hl,#0x00EF
+;main.c:313: w  = x2 - x1 + 1;
+	ld	a,#0xEF
+	sub	a, 4 (ix)
+	ld	e,a
+	ld	a,#0x00
+	sbc	a, 5 (ix)
+	ld	d,a
+	inc	de
+	ld	8 (ix),e
+	ld	9 (ix),d
+00113$:
+;main.c:315: if(y2 >= TFTHEIGHT) {
+	ld	a,-6 (ix)
+	sub	a, #0x40
+	ld	a,-5 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x81
+	jr	C,00115$
+;main.c:316: y2 = TFTHEIGHT - 1;
+	ld	-6 (ix),#0x3F
+	ld	-5 (ix),#0x01
+;main.c:317: h  = y2 - y1 + 1;
+	ld	a,#0x3F
+	sub	a, 6 (ix)
+	ld	e,a
+	ld	a,#0x01
+	sbc	a, 7 (ix)
+	ld	d,a
+	inc	de
+	ld	10 (ix),e
+	ld	11 (ix),d
+00115$:
+;main.c:319: setAddrWindow(x1, y1, x2, y2);
+	pop	de
+	pop	bc
+	push	bc
+	push	de
+	push	bc
+	push	hl
+	ld	l,6 (ix)
+	ld	h,7 (ix)
+	push	hl
+	ld	l,4 (ix)
+	ld	h,5 (ix)
+	push	hl
+	call	_setAddrWindow
+	ld	hl,#8
+	add	hl,sp
+	ld	sp,hl
+;main.c:320: flood(fillcolor, (uint32_t)w * (uint32_t)h);
+	ld	e,8 (ix)
+	ld	d,9 (ix)
+	ld	a,9 (ix)
+	rla
+	sbc	a, a
+	ld	c,a
+	ld	b,a
+	ld	a,10 (ix)
+	ld	-4 (ix),a
+	ld	a,11 (ix)
+	ld	-3 (ix),a
+	ld	a,11 (ix)
+	rla
+	sbc	a, a
+	ld	-2 (ix),a
+	ld	-1 (ix),a
+	ld	l,-2 (ix)
+	ld	h,-1 (ix)
+	push	hl
+	ld	l,-4 (ix)
+	ld	h,-3 (ix)
+	push	hl
+	push	bc
+	push	de
+	call	__mullong_rrx_s
+	pop	af
+	pop	af
+	pop	af
+	pop	af
+	ex	de, hl
+	push	hl
+	push	de
+	ld	l,12 (ix)
+	ld	h,13 (ix)
+	push	hl
+	call	_flood
+	ld	hl,#6
+	add	hl,sp
+	ld	sp,hl
+;main.c:321: setAddrWindow(0, 0, TFTWIDTH - 1, TFTHEIGHT - 1);
+	ld	hl,#0x013F
+	push	hl
+	ld	hl,#0x00EF
+	push	hl
+	ld	l, #0x00
+	push	hl
+	ld	l, #0x00
+	push	hl
+	call	_setAddrWindow
+	ld	hl,#8
+	add	hl,sp
+	ld	sp,hl
+00116$:
+	ld	sp, ix
+	pop	ix
+	ret
+_fillRect_end::
+;main.c:324: void drawGraf()
+;	---------------------------------
+; Function drawGraf
+; ---------------------------------
+_drawGraf_start::
+_drawGraf:
+	push	ix
+	ld	ix,#0
+	add	ix,sp
+	ld	hl,#-21
+	add	hl,sp
+	ld	sp,hl
+;main.c:330: for(i = 0; i < 20; i++)
+	ld	-19 (ix),#0x00
+	ld	-18 (ix),#0x00
+	ld	-2 (ix),#0x00
+	ld	-1 (ix),#0x00
+;main.c:332: for(y = 0; y < 20; y++)
+00133$:
+	ld	de,#0x0000
+00111$:
+;main.c:334: HEADER_PIXEL(header_data,pixeles);
+	ld	hl,#0x0004
+	add	hl,sp
+	ld	-6 (ix),l
+	ld	-5 (ix),h
+	ld	hl,(_header_data)
+	ld	a,(hl)
+	add	a,#0xDF
+	add	a, a
+	add	a, a
+	ld	c,a
+	ld	hl,(_header_data)
+	inc	hl
+	ld	a,(hl)
+	ld	l,a
+	rla
+	sbc	a, a
+	ld	h,a
+	ld	a,l
+	add	a,#0xDF
+	ld	l,a
+	ld	a,h
+	adc	a,#0xFF
+	ld	h,a
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	ld	a,c
+	rla
+	sbc	a, a
+	ld	b,a
+	ld	a,c
+	or	a, l
+	ld	c,a
+	ld	a,b
+	or	a, h
+	ld	l,-6 (ix)
+	ld	h,-5 (ix)
+	ld	(hl),c
+	ld	a,-6 (ix)
+	add	a, #0x01
+	ld	-14 (ix),a
+	ld	a,-5 (ix)
+	adc	a, #0x00
+	ld	-13 (ix),a
+	ld	hl,(_header_data)
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	and	a, #0x0F
+	rlca
+	rlca
+	rlca
+	rlca
+	and	a,#0xF0
+	ld	c,a
+	ld	hl,(_header_data)
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	ld	l,a
+	rla
+	sbc	a, a
+	ld	h,a
+	ld	a,l
+	add	a,#0xDF
+	ld	l,a
+	ld	a,h
+	adc	a,#0xFF
+	ld	h,a
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	ld	a,c
+	rla
+	sbc	a, a
+	ld	b,a
+	ld	a,c
+	or	a, l
+	ld	c,a
+	ld	a,b
+	or	a, h
+	ld	l,-14 (ix)
+	ld	h,-13 (ix)
+	ld	(hl),c
+	ld	a,-6 (ix)
+	add	a, #0x02
+	ld	-12 (ix),a
+	ld	a,-5 (ix)
+	adc	a, #0x00
+	ld	-11 (ix),a
+	ld	hl,(_header_data)
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	and	a, #0x03
+	rrca
+	rrca
+	and	a,#0xC0
+	ld	c,a
+	ld	hl,(_header_data)
+	inc	hl
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	or	a, c
+	ld	l,-12 (ix)
+	ld	h,-11 (ix)
+	ld	(hl),a
+	ld	hl,#_header_data
+	ld	a,(hl)
+	add	a, #0x04
+	ld	(hl),a
+	inc	hl
+	ld	a,(hl)
+	adc	a, #0x00
+	ld	(hl),a
+;main.c:335: colorAux = color565(pixeles[0],pixeles[1],pixeles[2]);
+	ld	l,-12 (ix)
+	ld	h,-11 (ix)
+	ld	a,(hl)
+	ld	l,-14 (ix)
+	ld	h,-13 (ix)
+	ld	c,(hl)
+	ld	l,-6 (ix)
+	ld	h,-5 (ix)
+	ld	b,(hl)
+	push	de
+	push	af
+	inc	sp
+	ld	a,c
+	push	af
+	inc	sp
+	push	bc
+	inc	sp
+	call	_color565
+	pop	af
+	inc	sp
+	pop	de
+	ld	-10 (ix),l
+	ld	-9 (ix),h
+;main.c:336: cuadroMorado[i][y] = colorAux;
+	ld	a,-2 (ix)
+	add	a, #<(_cuadroMorado)
+	ld	c,a
+	ld	a,-1 (ix)
+	adc	a, #>(_cuadroMorado)
+	ld	b,a
+	ld	l, e
+	ld	h, d
+	add	hl, hl
+	add	hl,bc
+	ld	a,-10 (ix)
+	ld	(hl),a
+	inc	hl
+	ld	a,-9 (ix)
+	ld	(hl),a
+;main.c:332: for(y = 0; y < 20; y++)
+	inc	de
+	ld	a,e
+	sub	a, #0x14
+	ld	a,d
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00111$
+;main.c:330: for(i = 0; i < 20; i++)
+	ld	a,-2 (ix)
+	add	a, #0x28
+	ld	-2 (ix),a
+	ld	a,-1 (ix)
+	adc	a, #0x00
+	ld	-1 (ix),a
+	inc	-19 (ix)
+	jr	NZ,00219$
+	inc	-18 (ix)
+00219$:
+	ld	a,-19 (ix)
+	sub	a, #0x14
+	ld	a,-18 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00133$
+;main.c:339: for(i = 0; i < 20; i++)
+	ld	-19 (ix),#0x00
+	ld	-18 (ix),#0x00
+	ld	de,#0x0000
+;main.c:341: for(y = 0; y < 20; y++)
+00137$:
+	ld	hl,#0x0000
+	ex	(sp), hl
+00115$:
+;main.c:343: HEADER_PIXEL(header_Rana,pixeles);
+	ld	hl,(_header_Rana)
+	ld	a,(hl)
+	add	a,#0xDF
+	add	a, a
+	add	a, a
+	ld	c,a
+	ld	hl,(_header_Rana)
+	inc	hl
+	ld	a,(hl)
+	ld	l,a
+	rla
+	sbc	a, a
+	ld	h,a
+	ld	a,l
+	add	a,#0xDF
+	ld	l,a
+	ld	a,h
+	adc	a,#0xFF
+	ld	h,a
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	ld	a,c
+	rla
+	sbc	a, a
+	ld	b,a
+	ld	a,c
+	or	a, l
+	ld	c,a
+	ld	a,b
+	or	a, h
+	ld	l,-6 (ix)
+	ld	h,-5 (ix)
+	ld	(hl),c
+	ld	hl,(_header_Rana)
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	and	a, #0x0F
+	rlca
+	rlca
+	rlca
+	rlca
+	and	a,#0xF0
+	ld	c,a
+	ld	hl,(_header_Rana)
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	ld	l,a
+	rla
+	sbc	a, a
+	ld	h,a
+	ld	a,l
+	add	a,#0xDF
+	ld	l,a
+	ld	a,h
+	adc	a,#0xFF
+	ld	h,a
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	ld	a,c
+	rla
+	sbc	a, a
+	ld	b,a
+	ld	a,c
+	or	a, l
+	ld	c,a
+	ld	a,b
+	or	a, h
+	ld	l,-14 (ix)
+	ld	h,-13 (ix)
+	ld	(hl),c
+	ld	hl,(_header_Rana)
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	and	a, #0x03
+	rrca
+	rrca
+	and	a,#0xC0
+	ld	c,a
+	ld	hl,(_header_Rana)
+	inc	hl
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	or	a, c
+	ld	l,-12 (ix)
+	ld	h,-11 (ix)
+	ld	(hl),a
+	ld	hl,#_header_Rana
+	ld	a,(hl)
+	add	a, #0x04
+	ld	(hl),a
+	inc	hl
+	ld	a,(hl)
+	adc	a, #0x00
+	ld	(hl),a
+;main.c:344: colorAux = color565(pixeles[0],pixeles[1],pixeles[2]);
+	ld	l,-12 (ix)
+	ld	h,-11 (ix)
+	ld	a,(hl)
+	ld	l,-14 (ix)
+	ld	h,-13 (ix)
+	ld	c,(hl)
+	ld	l,-6 (ix)
+	ld	h,-5 (ix)
+	ld	b,(hl)
+	push	de
+	push	af
+	inc	sp
+	ld	a,c
+	push	af
+	inc	sp
+	push	bc
+	inc	sp
+	call	_color565
+	pop	af
+	inc	sp
+	pop	de
+	ld	-10 (ix),l
+	ld	-9 (ix),h
+;main.c:345: rana[i][y] = colorAux;
+	ld	hl,#_rana+0
+	add	hl,de
+	ld	c,l
+	ld	b,h
+	pop	hl
+	push	hl
+	add	hl, hl
+	add	hl,bc
+	ld	a,-10 (ix)
+	ld	(hl),a
+	inc	hl
+	ld	a,-9 (ix)
+	ld	(hl),a
+;main.c:341: for(y = 0; y < 20; y++)
+	inc	-21 (ix)
+	jr	NZ,00220$
+	inc	-20 (ix)
+00220$:
+	ld	a,-21 (ix)
+	sub	a, #0x14
+	ld	a,-20 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00115$
+;main.c:339: for(i = 0; i < 20; i++)
+	ld	hl,#0x0028
+	add	hl,de
+	ex	de,hl
+	inc	-19 (ix)
+	jr	NZ,00221$
+	inc	-18 (ix)
+00221$:
+	ld	a,-19 (ix)
+	sub	a, #0x14
+	ld	a,-18 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00137$
+;main.c:348: for(i = 0; i < 20; i++)
+	ld	-19 (ix),#0x00
+	ld	-18 (ix),#0x00
+	ld	-10 (ix),#0x00
+	ld	-9 (ix),#0x00
+;main.c:350: for(y = 0; y < 20; y++)
+00141$:
+	ld	hl,#0x0000
+	ex	(sp), hl
+00119$:
+;main.c:352: HEADER_PIXEL(header_Rana2,pixeles);
+	ld	hl,(_header_Rana2)
+	ld	-2 (ix),l
+	ld	-1 (ix),h
+	ld	l,-2 (ix)
+	ld	h,-1 (ix)
+	ld	a,(hl)
+	add	a,#0xDF
+	add	a, a
+	add	a, a
+	ld	e,a
+	ld	hl,(_header_Rana2)
+	inc	hl
+	ld	a,(hl)
+	ld	-2 (ix),a
+	rla
+	sbc	a, a
+	ld	-1 (ix),a
+	ld	a,-2 (ix)
+	add	a,#0xDF
+	ld	l,a
+	ld	a,-1 (ix)
+	adc	a,#0xFF
+	ld	h,a
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	ld	a,e
+	rla
+	sbc	a, a
+	ld	d,a
+	ld	a,e
+	or	a, l
+	ld	e,a
+	ld	a,d
+	or	a, h
+	ld	l,-6 (ix)
+	ld	h,-5 (ix)
+	ld	(hl),e
+	ld	hl,(_header_Rana2)
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	and	a, #0x0F
+	rlca
+	rlca
+	rlca
+	rlca
+	and	a,#0xF0
+	ld	c,a
+	ld	hl,(_header_Rana2)
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	ld	l,a
+	rla
+	sbc	a, a
+	ld	h,a
+	ld	a,l
+	add	a,#0xDF
+	ld	l,a
+	ld	a,h
+	adc	a,#0xFF
+	ld	h,a
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	ld	a,c
+	rla
+	sbc	a, a
+	ld	b,a
+	ld	a,c
+	or	a, l
+	ld	d,a
+	ld	a,b
+	or	a, h
+	ld	l,-14 (ix)
+	ld	h,-13 (ix)
+	ld	(hl),d
+	ld	hl,(_header_Rana2)
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	and	a, #0x03
+	rrca
+	rrca
+	and	a,#0xC0
+	ld	d,a
+	ld	iy,(_header_Rana2)
+	ld	a,3 (iy)
+	add	a,#0xDF
+	or	a, d
+	ld	l,-12 (ix)
+	ld	h,-11 (ix)
+	ld	(hl),a
+	ld	hl,#_header_Rana2
+	ld	a,(hl)
+	add	a, #0x04
+	ld	(hl),a
+	inc	hl
+	ld	a,(hl)
+	adc	a, #0x00
+	ld	(hl),a
+;main.c:353: colorAux = color565(pixeles[0],pixeles[1],pixeles[2]);
+	ld	l,-12 (ix)
+	ld	h,-11 (ix)
+	ld	b,(hl)
+	ld	l,-14 (ix)
+	ld	h,-13 (ix)
+	ld	d,(hl)
+	ld	l,-6 (ix)
+	ld	h,-5 (ix)
+	ld	a,(hl)
+	ld	c, d
+	push	bc
+	push	af
+	inc	sp
+	call	_color565
+	pop	af
+	inc	sp
+	ld	d,l
+	ld	e,h
+;main.c:354: rana2[i][y] = colorAux;
+	ld	a,-10 (ix)
+	add	a, #<(_rana2)
+	ld	c,a
+	ld	a,-9 (ix)
+	adc	a, #>(_rana2)
+	ld	b,a
+	pop	hl
+	push	hl
+	add	hl, hl
+	add	hl,bc
+	ld	(hl),d
+	inc	hl
+	ld	(hl),e
+;main.c:350: for(y = 0; y < 20; y++)
+	inc	-21 (ix)
+	jr	NZ,00222$
+	inc	-20 (ix)
+00222$:
+	ld	a,-21 (ix)
+	sub	a, #0x14
+	ld	a,-20 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00119$
+;main.c:348: for(i = 0; i < 20; i++)
+	ld	a,-10 (ix)
+	add	a, #0x28
+	ld	-10 (ix),a
+	ld	a,-9 (ix)
+	adc	a, #0x00
+	ld	-9 (ix),a
+	inc	-19 (ix)
+	jr	NZ,00223$
+	inc	-18 (ix)
+00223$:
+	ld	a,-19 (ix)
+	sub	a, #0x14
+	ld	a,-18 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00141$
+;main.c:357: for(i = 0; i < 20; i++)
+	ld	-19 (ix),#0x00
+	ld	-18 (ix),#0x00
+	ld	-10 (ix),#0x00
+	ld	-9 (ix),#0x00
+;main.c:359: for(y = 0; y < 20; y++)
+00145$:
+	ld	hl,#0x0000
+	ex	(sp), hl
+00123$:
+;main.c:361: HEADER_PIXEL(header_Rana3,pixeles);
+	ld	hl,(_header_Rana3)
+	ld	-2 (ix),l
+	ld	-1 (ix),h
+	ld	l,-2 (ix)
+	ld	h,-1 (ix)
+	ld	a,(hl)
+	ld	-2 (ix), a
+	add	a,#0xDF
+	ld	-2 (ix), a
+	add	a, a
+	add	a, a
+	ld	-2 (ix),a
+	ld	hl,(_header_Rana3)
+	ld	-8 (ix),l
+	ld	-7 (ix),h
+	ld	l,-8 (ix)
+	ld	h,-7 (ix)
+	inc	hl
+	ld	a,(hl)
+	ld	-8 (ix), a
+	ld	-8 (ix), a
+	rla
+	sbc	a, a
+	ld	-7 (ix),a
+	ld	a,-8 (ix)
+	add	a,#0xDF
+	ld	-8 (ix),a
+	ld	a,-7 (ix)
+	adc	a,#0xFF
+	ld	-7 (ix),a
+	ld	l,-8 (ix)
+	ld	h,-7 (ix)
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	ld	e,-2 (ix)
+	ld	a,-2 (ix)
+	rla
+	sbc	a, a
+	ld	d,a
+	ld	a,e
+	or	a, l
+	ld	e,a
+	ld	a,d
+	or	a, h
+	ld	l,-6 (ix)
+	ld	h,-5 (ix)
+	ld	(hl),e
+	ld	hl,(_header_Rana3)
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	and	a, #0x0F
+	ld	-8 (ix), a
+	rlca
+	rlca
+	rlca
+	rlca
+	and	a,#0xF0
+	ld	-8 (ix),a
+	ld	hl,(_header_Rana3)
+	ld	-2 (ix),l
+	ld	-1 (ix),h
+	ld	l,-2 (ix)
+	ld	h,-1 (ix)
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	ld	-2 (ix), a
+	ld	-2 (ix), a
+	rla
+	sbc	a, a
+	ld	-1 (ix),a
+	ld	a,-2 (ix)
+	add	a,#0xDF
+	ld	-2 (ix),a
+	ld	a,-1 (ix)
+	adc	a,#0xFF
+	ld	-1 (ix),a
+	ld	l,-2 (ix)
+	ld	h,-1 (ix)
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	ld	e,-8 (ix)
+	ld	a,-8 (ix)
+	rla
+	sbc	a, a
+	ld	d,a
+	ld	a,e
+	or	a, l
+	ld	e,a
+	ld	a,d
+	or	a, h
+	ld	l,-14 (ix)
+	ld	h,-13 (ix)
+	ld	(hl),e
+	ld	hl,(_header_Rana3)
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	and	a, #0x03
+	ld	-8 (ix), a
+	rrca
+	rrca
+	and	a,#0xC0
+	ld	-8 (ix),a
+	ld	hl,(_header_Rana3)
+	ld	-2 (ix),l
+	ld	-1 (ix),h
+	ld	l,-2 (ix)
+	ld	h,-1 (ix)
+	inc	hl
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	or	a, -8 (ix)
+	ld	l,-12 (ix)
+	ld	h,-11 (ix)
+	ld	(hl),a
+	ld	hl,#_header_Rana3
+	ld	a,(hl)
+	add	a, #0x04
+	ld	(hl),a
+	inc	hl
+	ld	a,(hl)
+	adc	a, #0x00
+	ld	(hl),a
+;main.c:362: colorAux = color565(pixeles[0],pixeles[1],pixeles[2]);
+	ld	l,-12 (ix)
+	ld	h,-11 (ix)
+	ld	b,(hl)
+	ld	l,-14 (ix)
+	ld	h,-13 (ix)
+	ld	d,(hl)
+	ld	l,-6 (ix)
+	ld	h,-5 (ix)
+	ld	a,(hl)
+	ld	c, d
+	push	bc
+	push	af
+	inc	sp
+	call	_color565
+	pop	af
+	inc	sp
+	ld	-7 (ix),h
+	ld	-8 (ix),l
+;main.c:363: rana3[i][y] = colorAux;
+	ld	a,#<(_rana3)
+	add	a, -10 (ix)
+	ld	-2 (ix),a
+	ld	a,#>(_rana3)
+	adc	a, -9 (ix)
+	ld	-1 (ix),a
+	ld	a,-21 (ix)
+	ld	-4 (ix),a
+	ld	a,-20 (ix)
+	ld	-3 (ix),a
+	sla	-4 (ix)
+	rl	-3 (ix)
+	ld	a,-2 (ix)
+	add	a, -4 (ix)
+	ld	-4 (ix),a
+	ld	a,-1 (ix)
+	adc	a, -3 (ix)
+	ld	-3 (ix),a
+	ld	l,-4 (ix)
+	ld	h,-3 (ix)
+	ld	a,-8 (ix)
+	ld	(hl),a
+	inc	hl
+	ld	a,-7 (ix)
+	ld	(hl),a
+;main.c:359: for(y = 0; y < 20; y++)
+	inc	-21 (ix)
+	jr	NZ,00226$
+	inc	-20 (ix)
+00226$:
+	ld	a,-21 (ix)
+	sub	a, #0x14
+	ld	a,-20 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00123$
+;main.c:357: for(i = 0; i < 20; i++)
+	ld	a,-10 (ix)
+	add	a, #0x28
+	ld	-10 (ix),a
+	ld	a,-9 (ix)
+	adc	a, #0x00
+	ld	-9 (ix),a
+	inc	-19 (ix)
+	jr	NZ,00227$
+	inc	-18 (ix)
+00227$:
+	ld	a,-19 (ix)
+	sub	a, #0x14
+	ld	a,-18 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00145$
+;main.c:366: for(i = 0; i < 20; i++)
+	ld	-19 (ix),#0x00
+	ld	-18 (ix),#0x00
+	ld	de,#0x0000
+;main.c:368: for(y = 0; y < 20; y++)
+00149$:
+	ld	hl,#0x0000
+	ex	(sp), hl
+00127$:
+;main.c:370: HEADER_PIXEL(header_Rana4,pixeles);
+	ld	hl,(_header_Rana4)
+	ld	a,(hl)
+	add	a,#0xDF
+	add	a, a
+	add	a, a
+	ld	c,a
+	ld	hl,(_header_Rana4)
+	inc	hl
+	ld	a,(hl)
+	ld	l,a
+	rla
+	sbc	a, a
+	ld	h,a
+	ld	a,l
+	add	a,#0xDF
+	ld	l,a
+	ld	a,h
+	adc	a,#0xFF
+	ld	h,a
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	ld	a,c
+	rla
+	sbc	a, a
+	ld	b,a
+	ld	a,c
+	or	a, l
+	ld	c,a
+	ld	a,b
+	or	a, h
+	ld	l,-6 (ix)
+	ld	h,-5 (ix)
+	ld	(hl),c
+	ld	hl,(_header_Rana4)
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	and	a, #0x0F
+	rlca
+	rlca
+	rlca
+	rlca
+	and	a,#0xF0
+	ld	c,a
+	ld	hl,(_header_Rana4)
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	ld	l,a
+	rla
+	sbc	a, a
+	ld	h,a
+	ld	a,l
+	add	a,#0xDF
+	ld	l,a
+	ld	a,h
+	adc	a,#0xFF
+	ld	h,a
+	sra	h
+	rr	l
+	sra	h
+	rr	l
+	ld	a,c
+	rla
+	sbc	a, a
+	ld	b,a
+	ld	a,c
+	or	a, l
+	ld	c,a
+	ld	a,b
+	or	a, h
+	ld	l,-14 (ix)
+	ld	h,-13 (ix)
+	ld	(hl),c
+	ld	hl,(_header_Rana4)
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	and	a, #0x03
+	rrca
+	rrca
+	and	a,#0xC0
+	ld	b,a
+	ld	hl,(_header_Rana4)
+	inc	hl
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	add	a,#0xDF
+	or	a, b
+	ld	l,-12 (ix)
+	ld	h,-11 (ix)
+	ld	(hl),a
+	ld	hl,#_header_Rana4
+	ld	a,(hl)
+	add	a, #0x04
+	ld	(hl),a
+	inc	hl
+	ld	a,(hl)
+	adc	a, #0x00
+	ld	(hl),a
+;main.c:371: colorAux = color565(pixeles[0],pixeles[1],pixeles[2]);
+	ld	l,-12 (ix)
+	ld	h,-11 (ix)
+	ld	a,(hl)
+	ld	l,-14 (ix)
+	ld	h,-13 (ix)
+	ld	b,(hl)
+	ld	l,-6 (ix)
+	ld	h,-5 (ix)
+	ld	c,(hl)
+	push	de
+	push	af
+	inc	sp
+	push	bc
+	call	_color565
+	pop	af
+	inc	sp
+	pop	de
+	ld	-4 (ix),l
+	ld	-3 (ix),h
+;main.c:372: rana4[i][y] = colorAux;
+	ld	hl,#_rana4+0
+	add	hl,de
+	ld	c,l
+	ld	b,h
+	pop	hl
+	push	hl
+	add	hl, hl
+	add	hl,bc
+	ld	a,-4 (ix)
+	ld	(hl),a
+	inc	hl
+	ld	a,-3 (ix)
+	ld	(hl),a
+;main.c:368: for(y = 0; y < 20; y++)
+	inc	-21 (ix)
+	jr	NZ,00228$
+	inc	-20 (ix)
+00228$:
+	ld	a,-21 (ix)
+	sub	a, #0x14
+	ld	a,-20 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00127$
+;main.c:366: for(i = 0; i < 20; i++)
+	ld	hl,#0x0028
+	add	hl,de
+	ex	de,hl
+	inc	-19 (ix)
+	jr	NZ,00229$
+	inc	-18 (ix)
+00229$:
+	ld	a,-19 (ix)
+	sub	a, #0x14
+	ld	a,-18 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00149$
+	ld	sp, ix
+	pop	ix
+	ret
+_drawGraf_end::
+;main.c:377: void pintaSprite(int _x, int _y, int spr)
+;	---------------------------------
+; Function pintaSprite
+; ---------------------------------
+_pintaSprite_start::
+_pintaSprite:
+	push	ix
+	ld	ix,#0
+	add	ix,sp
+	ld	hl,#-12
+	add	hl,sp
+	ld	sp,hl
+;main.c:381: if(spr == 1)
+	ld	a,8 (ix)
+	dec	a
+	jp	NZ,00104$
+	ld	a,9 (ix)
+	or	a, a
+	jp	NZ,00104$
+;main.c:383: for(y = 0; y < 20; y++)
+	ld	hl,#0x0000
+	ex	(sp), hl
+	ld	de,#0x0000
+;main.c:385: for(x = 0; x < 20; x++)
+00152$:
+	ld	a,-12 (ix)
+	add	a, 6 (ix)
+	ld	-4 (ix),a
+	ld	a,-11 (ix)
+	adc	a, 7 (ix)
+	ld	-3 (ix),a
+	ld	bc,#0x0000
+00129$:
+;main.c:387: drawPixel(x+_x, y+_y, cuadroMorado[y][x]);
+	ld	hl,#_cuadroMorado+0
+	add	hl,de
+	ld	-2 (ix),l
+	ld	-1 (ix),h
+	ld	l, c
+	ld	h, b
+	add	hl, hl
+	ld	a,-2 (ix)
+	add	a, l
+	ld	l,a
+	ld	a,-1 (ix)
+	adc	a, h
+	ld	h,a
+	ld	a, (hl)
+	inc	hl
+	ld	h,(hl)
+	ld	l,a
+	push	hl
+	ld	l,4 (ix)
+	ld	h,5 (ix)
+	push	hl
+	pop	iy
+	pop	hl
+	add	iy, bc
+	push	bc
+	push	de
+	push	hl
+	ld	l,-4 (ix)
+	ld	h,-3 (ix)
+	push	hl
+	push	iy
+	call	_drawPixel
+	ld	hl,#6
+	add	hl,sp
+	ld	sp,hl
+	pop	de
+	pop	bc
+;main.c:385: for(x = 0; x < 20; x++)
+	inc	bc
+	ld	a,c
+	sub	a, #0x14
+	ld	a,b
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jr	C,00129$
+;main.c:383: for(y = 0; y < 20; y++)
+	ld	hl,#0x0028
+	add	hl,de
+	ex	de,hl
+	inc	-12 (ix)
+	jr	NZ,00259$
+	inc	-11 (ix)
+00259$:
+	ld	a,-12 (ix)
+	sub	a, #0x14
+	ld	a,-11 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jr	C,00152$
+00104$:
+;main.c:391: if(spr == 2)
+	ld	a,8 (ix)
+	sub	a, #0x02
+	jp	NZ,00110$
+	ld	a,9 (ix)
+	or	a, a
+	jp	NZ,00110$
+;main.c:393: for(y = 0; y < 20; y++)
+	ld	hl,#0x0000
+	ex	(sp), hl
+	ld	-2 (ix),#0x00
+	ld	-1 (ix),#0x00
+;main.c:395: for(x = 0; x < 20; x++)
+00157$:
+	ld	a,-12 (ix)
+	add	a, 6 (ix)
+	ld	-4 (ix),a
+	ld	a,-11 (ix)
+	adc	a, 7 (ix)
+	ld	-3 (ix),a
+	ld	-10 (ix),#0x00
+	ld	-9 (ix),#0x00
+00133$:
+;main.c:397: if(rana[y][x] != 0x0000)
+	ld	hl,#_rana+0
+	ld	e,-2 (ix)
+	ld	d,-1 (ix)
+	add	hl,de
+	ld	a,-10 (ix)
+	ld	-6 (ix),a
+	ld	a,-9 (ix)
+	ld	-5 (ix),a
+	sla	-6 (ix)
+	rl	-5 (ix)
+	ld	e,-6 (ix)
+	ld	d,-5 (ix)
+	add	hl,de
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)
+	ld	a,b
+	or	a,c
+	jr	Z,00134$
+;main.c:398: drawPixel(x+_x, y+_y, rana[y][x]);
+	ld	a,#<(_rana)
+	add	a, -2 (ix)
+	ld	-8 (ix),a
+	ld	a,#>(_rana)
+	adc	a, -1 (ix)
+	ld	-7 (ix),a
+	ld	a,-8 (ix)
+	add	a, -6 (ix)
+	ld	l,a
+	ld	a,-7 (ix)
+	adc	a, -5 (ix)
+	ld	h,a
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	ld	a,4 (ix)
+	add	a, -10 (ix)
+	ld	l,a
+	ld	a,5 (ix)
+	adc	a, -9 (ix)
+	ld	h,a
+	push	de
+	ld	c,-4 (ix)
+	ld	b,-3 (ix)
+	push	bc
+	push	hl
+	call	_drawPixel
+	ld	hl,#6
+	add	hl,sp
+	ld	sp,hl
+00134$:
+;main.c:395: for(x = 0; x < 20; x++)
+	inc	-10 (ix)
+	jr	NZ,00264$
+	inc	-9 (ix)
+00264$:
+	ld	a,-10 (ix)
+	sub	a, #0x14
+	ld	a,-9 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00133$
+;main.c:393: for(y = 0; y < 20; y++)
+	ld	a,-2 (ix)
+	add	a, #0x28
+	ld	-2 (ix),a
+	ld	a,-1 (ix)
+	adc	a, #0x00
+	ld	-1 (ix),a
+	inc	-12 (ix)
+	jr	NZ,00265$
+	inc	-11 (ix)
+00265$:
+	ld	a,-12 (ix)
+	sub	a, #0x14
+	ld	a,-11 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00157$
+00110$:
+;main.c:402: if(spr == 3)
+	ld	a,8 (ix)
+	sub	a, #0x03
+	jp	NZ,00116$
+	ld	a,9 (ix)
+	or	a, a
+	jp	NZ,00116$
+;main.c:404: for(y = 0; y < 20; y++)
+	ld	hl,#0x0000
+	ex	(sp), hl
+	ld	-8 (ix),#0x00
+	ld	-7 (ix),#0x00
+;main.c:406: for(x = 0; x < 20; x++)
+00162$:
+	ld	a,-12 (ix)
+	add	a, 6 (ix)
+	ld	-6 (ix),a
+	ld	a,-11 (ix)
+	adc	a, 7 (ix)
+	ld	-5 (ix),a
+	ld	-10 (ix),#0x00
+	ld	-9 (ix),#0x00
+00137$:
+;main.c:408: if(rana2[y][x] != 0x0000)
+	ld	hl,#_rana2+0
+	ld	e,-8 (ix)
+	ld	d,-7 (ix)
+	add	hl,de
+	ld	a,-10 (ix)
+	ld	-2 (ix),a
+	ld	a,-9 (ix)
+	ld	-1 (ix),a
+	sla	-2 (ix)
+	rl	-1 (ix)
+	ld	e,-2 (ix)
+	ld	d,-1 (ix)
+	add	hl,de
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)
+	ld	a,b
+	or	a,c
+	jr	Z,00138$
+;main.c:409: drawPixel(x+_x, y+_y, rana2[y][x]);
+	ld	a,#<(_rana2)
+	add	a, -8 (ix)
+	ld	-4 (ix),a
+	ld	a,#>(_rana2)
+	adc	a, -7 (ix)
+	ld	-3 (ix),a
+	ld	a,-4 (ix)
+	add	a, -2 (ix)
+	ld	l,a
+	ld	a,-3 (ix)
+	adc	a, -1 (ix)
+	ld	h,a
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	ld	a,4 (ix)
+	add	a, -10 (ix)
+	ld	l,a
+	ld	a,5 (ix)
+	adc	a, -9 (ix)
+	ld	h,a
+	push	de
+	ld	c,-6 (ix)
+	ld	b,-5 (ix)
+	push	bc
+	push	hl
+	call	_drawPixel
+	ld	hl,#6
+	add	hl,sp
+	ld	sp,hl
+00138$:
+;main.c:406: for(x = 0; x < 20; x++)
+	inc	-10 (ix)
+	jr	NZ,00270$
+	inc	-9 (ix)
+00270$:
+	ld	a,-10 (ix)
+	sub	a, #0x14
+	ld	a,-9 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00137$
+;main.c:404: for(y = 0; y < 20; y++)
+	ld	a,-8 (ix)
+	add	a, #0x28
+	ld	-8 (ix),a
+	ld	a,-7 (ix)
+	adc	a, #0x00
+	ld	-7 (ix),a
+	inc	-12 (ix)
+	jr	NZ,00271$
+	inc	-11 (ix)
+00271$:
+	ld	a,-12 (ix)
+	sub	a, #0x14
+	ld	a,-11 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00162$
+00116$:
+;main.c:413: if(spr == 4)
+	ld	a,8 (ix)
+	sub	a, #0x04
+	jp	NZ,00122$
+	ld	a,9 (ix)
+	or	a, a
+	jp	NZ,00122$
+;main.c:415: for(y = 0; y < 20; y++)
+	ld	hl,#0x0000
+	ex	(sp), hl
+	ld	-8 (ix),#0x00
+	ld	-7 (ix),#0x00
+;main.c:417: for(x = 0; x < 20; x++)
+00167$:
+	ld	a,-12 (ix)
+	add	a, 6 (ix)
+	ld	-6 (ix),a
+	ld	a,-11 (ix)
+	adc	a, 7 (ix)
+	ld	-5 (ix),a
+	ld	-10 (ix),#0x00
+	ld	-9 (ix),#0x00
+00141$:
+;main.c:419: if(rana3[y][x] != 0x0000)
+	ld	hl,#_rana3+0
+	ld	e,-8 (ix)
+	ld	d,-7 (ix)
+	add	hl,de
+	ld	a,-10 (ix)
+	ld	-2 (ix),a
+	ld	a,-9 (ix)
+	ld	-1 (ix),a
+	sla	-2 (ix)
+	rl	-1 (ix)
+	ld	e,-2 (ix)
+	ld	d,-1 (ix)
+	add	hl,de
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)
+	ld	a,b
+	or	a,c
+	jr	Z,00142$
+;main.c:420: drawPixel(x+_x, y+_y, rana3[y][x]);
+	ld	a,#<(_rana3)
+	add	a, -8 (ix)
+	ld	-4 (ix),a
+	ld	a,#>(_rana3)
+	adc	a, -7 (ix)
+	ld	-3 (ix),a
+	ld	a,-4 (ix)
+	add	a, -2 (ix)
+	ld	l,a
+	ld	a,-3 (ix)
+	adc	a, -1 (ix)
+	ld	h,a
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	ld	a,4 (ix)
+	add	a, -10 (ix)
+	ld	l,a
+	ld	a,5 (ix)
+	adc	a, -9 (ix)
+	ld	h,a
+	push	de
+	ld	c,-6 (ix)
+	ld	b,-5 (ix)
+	push	bc
+	push	hl
+	call	_drawPixel
+	ld	hl,#6
+	add	hl,sp
+	ld	sp,hl
+00142$:
+;main.c:417: for(x = 0; x < 20; x++)
+	inc	-10 (ix)
+	jr	NZ,00276$
+	inc	-9 (ix)
+00276$:
+	ld	a,-10 (ix)
+	sub	a, #0x14
+	ld	a,-9 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00141$
+;main.c:415: for(y = 0; y < 20; y++)
+	ld	a,-8 (ix)
+	add	a, #0x28
+	ld	-8 (ix),a
+	ld	a,-7 (ix)
+	adc	a, #0x00
+	ld	-7 (ix),a
+	inc	-12 (ix)
+	jr	NZ,00277$
+	inc	-11 (ix)
+00277$:
+	ld	a,-12 (ix)
+	sub	a, #0x14
+	ld	a,-11 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00167$
+00122$:
+;main.c:424: if(spr == 5)
+	ld	a,8 (ix)
+	sub	a, #0x05
+	jp	NZ,00149$
+	ld	a,9 (ix)
+	or	a, a
+	jp	NZ,00149$
+;main.c:426: for(y = 0; y < 20; y++)
+	ld	hl,#0x0000
+	ex	(sp), hl
+	ld	-8 (ix),#0x00
+	ld	-7 (ix),#0x00
+;main.c:428: for(x = 0; x < 20; x++)
+00172$:
+	ld	a,-12 (ix)
+	add	a, 6 (ix)
+	ld	-6 (ix),a
+	ld	a,-11 (ix)
+	adc	a, 7 (ix)
+	ld	-5 (ix),a
+	ld	-10 (ix),#0x00
+	ld	-9 (ix),#0x00
+00145$:
+;main.c:430: if(rana4[y][x] != 0x0000)
+	ld	a,#<(_rana4)
+	add	a, -8 (ix)
+	ld	-2 (ix),a
+	ld	a,#>(_rana4)
+	adc	a, -7 (ix)
+	ld	-1 (ix),a
+	pop	bc
+	pop	de
+	push	de
+	push	bc
+	sla	e
+	rl	d
+	ld	l,-2 (ix)
+	ld	h,-1 (ix)
+	add	hl,de
+	ld	c,(hl)
+	inc	hl
+	ld	a, (hl)
+	or	a,c
+	jr	Z,00146$
+;main.c:431: drawPixel(x+_x, y+_y, rana4[y][x]);
+	ld	hl,#_rana4+0
+	ld	c,-8 (ix)
+	ld	b,-7 (ix)
+	add	hl,bc
+	add	hl,de
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	ld	a,-10 (ix)
+	add	a, 4 (ix)
+	ld	l,a
+	ld	a,-9 (ix)
+	adc	a, 5 (ix)
+	ld	h,a
+	push	de
+	ld	c,-6 (ix)
+	ld	b,-5 (ix)
+	push	bc
+	push	hl
+	call	_drawPixel
+	ld	hl,#6
+	add	hl,sp
+	ld	sp,hl
+00146$:
+;main.c:428: for(x = 0; x < 20; x++)
+	inc	-10 (ix)
+	jr	NZ,00282$
+	inc	-9 (ix)
+00282$:
+	ld	a,-10 (ix)
+	sub	a, #0x14
+	ld	a,-9 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jr	C,00145$
+;main.c:426: for(y = 0; y < 20; y++)
+	ld	a,-8 (ix)
+	add	a, #0x28
+	ld	-8 (ix),a
+	ld	a,-7 (ix)
+	adc	a, #0x00
+	ld	-7 (ix),a
+	inc	-12 (ix)
+	jr	NZ,00283$
+	inc	-11 (ix)
+00283$:
+	ld	a,-12 (ix)
+	sub	a, #0x14
+	ld	a,-11 (ix)
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jp	C,00172$
+00149$:
+	ld	sp, ix
+	pop	ix
+	ret
+_pintaSprite_end::
+;main.c:437: uint16_t color565(uint8_t r, uint8_t g, uint8_t b) {
+;	---------------------------------
+; Function color565
+; ---------------------------------
+_color565_start::
+_color565:
+	push	ix
+	ld	ix,#0
+	add	ix,sp
+;main.c:438: return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+	ld	a,4 (ix)
+	and	a, #0xF8
+	ld	d,a
+	ld	e,#0x00
+	ld	a,5 (ix)
+	and	a, #0xFC
+	ld	l,a
+	ld	h,#0x00
+	add	hl, hl
+	add	hl, hl
+	add	hl, hl
+	ld	a,l
+	or	a, e
+	ld	l,a
+	ld	a,h
+	or	a, d
+	ld	h,a
+	ld	a,6 (ix)
+	rrca
+	rrca
+	rrca
+	and	a,#0x1F
+	ld	e,a
+	ld	d,#0x00
+	ld	a,l
+	or	a, e
+	ld	l,a
+	ld	a,h
+	or	a, d
+	ld	h,a
+	pop	ix
+	ret
+_color565_end::
+;main.c:441: void init_pantalla()
+;	---------------------------------
+; Function init_pantalla
+; ---------------------------------
+_init_pantalla_start::
+_init_pantalla:
+;main.c:443: drawGraf();
+	call	_drawGraf
+;main.c:445: pintaAzul();
+	call	_pintaAzul
+;main.c:446: pintaNegro();
+	call	_pintaNegro
+;main.c:448: pintaBarra(0);
+	ld	hl,#0x0000
+	push	hl
+	call	_pintaBarra
+	pop	af
+;main.c:449: pintaSprite(jug.x, jug.y, 2);
+	ld	de, (#_jug + 4)
+	ld	hl, (#_jug + 2)
+	ld	bc,#0x0002
+	push	bc
+	push	de
+	push	hl
+	call	_pintaSprite
+	ld	hl,#6
+	add	hl,sp
+	ld	sp,hl
+	ret
+_init_pantalla_end::
+;main.c:452: void pintaAzul()
+;	---------------------------------
+; Function pintaAzul
+; ---------------------------------
+_pintaAzul_start::
+_pintaAzul:
+;main.c:454: fillRect(0, 0, 240, 160, BLUE);
+	ld	hl,#0x001F
+	push	hl
+	ld	l, #0xA0
+	push	hl
+	ld	l, #0xF0
+	push	hl
+	ld	l, #0x00
+	push	hl
+	ld	l, #0x00
+	push	hl
+	call	_fillRect
+	ld	hl,#10
+	add	hl,sp
+	ld	sp,hl
+	ret
+_pintaAzul_end::
+;main.c:457: void pintaNegro()
+;	---------------------------------
+; Function pintaNegro
+; ---------------------------------
+_pintaNegro_start::
+_pintaNegro:
+;main.c:459: fillRect(0, 160, 240, 320, BLACK);
+	ld	hl,#0x0000
+	push	hl
+	ld	hl,#0x0140
+	push	hl
+	ld	hl,#0x00F0
+	push	hl
+	ld	l, #0xA0
+	push	hl
+	ld	l, #0x00
+	push	hl
+	call	_fillRect
+	ld	hl,#10
+	add	hl,sp
+	ld	sp,hl
+	ret
+_pintaNegro_end::
+;main.c:462: void pintaBarra(int i)
+;	---------------------------------
+; Function pintaBarra
+; ---------------------------------
+_pintaBarra_start::
+_pintaBarra:
+;main.c:464: if(i == 0)
+	ld	hl, #2+1
+	add	hl, sp
+	ld	a, (hl)
+	dec	hl
+	or	a,(hl)
+	ret	NZ
+;main.c:465: for(i=0; i < 12; i++){
+	ld	de,#0x0000
+	ld	hl,#0x0000
+00104$:
+;main.c:466: pintaSprite(i*20, 280, 1);
+	push	hl
+	push	de
+	ld	bc,#0x0001
+	push	bc
+	ld	bc,#0x0118
+	push	bc
+	push	hl
+	call	_pintaSprite
+	ld	hl,#6
+	add	hl,sp
+	ld	sp,hl
+	pop	de
+	pop	hl
+;main.c:467: pintaSprite(i*20, 160, 1);
+	push	hl
+	push	de
+	ld	bc,#0x0001
+	push	bc
+	ld	bc,#0x00A0
+	push	bc
+	push	hl
+	call	_pintaSprite
+	ld	hl,#6
+	add	hl,sp
+	ld	sp,hl
+	pop	de
+	pop	hl
+;main.c:465: for(i=0; i < 12; i++){
+	ld	bc,#0x0014
+	add	hl,bc
+	inc	de
+	ld	a,e
+	sub	a, #0x0C
+	ld	a,d
+	rla
+	ccf
+	rra
+	sbc	a, #0x80
+	jr	C,00104$
+	ret
+_pintaBarra_end::
+;main.c:471: void repinta_rana(int i)
+;	---------------------------------
+; Function repinta_rana
+; ---------------------------------
+_repinta_rana_start::
+_repinta_rana:
+	push	ix
+	ld	ix,#0
+	add	ix,sp
+;main.c:473: if(jug.altura <= 7)
+	ld	hl, (#_jug + 0)
+	ld	a,#0x07
+	cp	a, l
+	ld	a,#0x00
+	sbc	a, h
+	jp	PO, 00117$
+	xor	a, #0x80
+00117$:
+	jp	M,00102$
+;main.c:475: fillRect(jug.x, jug.y, 20, 20, BLUE);
+	ld	de, (#_jug + 4)
+	ld	hl, (#_jug + 2)
+	ld	bc,#0x001F
+	push	bc
+	ld	bc,#0x0014
+	push	bc
+	ld	bc,#0x0014
+	push	bc
+	push	de
+	push	hl
+	call	_fillRect
+	ld	hl,#10
+	add	hl,sp
+	ld	sp,hl
+	jr	00103$
+00102$:
+;main.c:478: fillRect(jug.x, jug.y, 20, 20, BLACK);
+	ld	de, (#_jug + 4)
+	ld	hl, (#_jug + 2)
+	ld	bc,#0x0000
+	push	bc
+	ld	bc,#0x0014
+	push	bc
+	ld	bc,#0x0014
+	push	bc
+	push	de
+	push	hl
+	call	_fillRect
+	ld	hl,#10
+	add	hl,sp
+	ld	sp,hl
+00103$:
+;main.c:480: switch(jug.altura)
+	ld	hl, (#_jug + 0)
+	ld	a,l
+	sub	a,#0x08
+	jr	NZ,00118$
+	or	a,h
+	jr	Z,00105$
+00118$:
+	ld	a,l
+	sub	a,#0x0F
+	jr	NZ,00107$
+	or	a,h
+	jr	NZ,00107$
+;main.c:483: case 8:
+00105$:
+;main.c:484: pintaSprite(jug.x, jug.y, 1);
+	ld	de, (#_jug + 4)
+	ld	hl, (#_jug + 2)
+	ld	bc,#0x0001
+	push	bc
+	push	de
+	push	hl
+	call	_pintaSprite
+	ld	hl,#6
+	add	hl,sp
+	ld	sp,hl
+;main.c:486: }
+00107$:
+	pop	ix
+	ret
+_repinta_rana_end::
 	.area _CODE
+___str_0:
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!FQ$XFQ$XFQ$X!!!!FQ$X!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!FQ$X!!!!!!!!!!!!!!!!FQ$X!!!!!!!!!!!!FQ$XFQ$X!!!!!!!!"
+	.ascii "FQ$X!!!!FQ$XFQ$XFQ$X!!!!!!!!FQ$XFQ$X!!!!FQ$X!!!!FQ$XFQ$XFQ$X"
+	.ascii "!!!!FQ$XFQ$X!!!!!!!!FQ$X!!!!FQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$X!!!!"
+	.ascii "FQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$X"
+	.ascii "FQ$XFQ$XFQ$XFQ$X!!!!FQ$XFQ$XFQ$XFQ$X!!$XFQ$XFQ$XFQ$XFQ$X!!$X"
+	.ascii "FQ$XFQ$XFQ$XFQ$XFQ$X!!$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$X!!$X`Q!!"
+	.ascii "!!$XFQ$XFQ$X!!$X`Q!!!!$XFQ$XFQ$XFQ$X!!$X`Q!!!!$XFQ$XFQ$XFQ$X"
+	.ascii "FQ$XFQ$XFQ$XFQ$X!!$XFQ$XFQ$XFQ$XFQ$X!!$XFQ$XFQ$XFQ$XFQ$XFQ$X"
+	.ascii "!!$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$X"
+	.ascii "`Q!!FQ$X!!$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$X!!$XFQ$XFQ$XFQ$X"
+	.ascii "!!$XFQ$XFQ$XFQ$XFQ$X`Q!!!!$X`Q!!!!$XFQ$XFQ$XFQ$XFQ$X!!$XFQ$X"
+	.ascii "!!$X`Q!!!!$XFQ$X!!$X`Q!!!!$XFQ$XFQ$X!!$X`Q!!FQ$X!!$XFQ$XFQ$X"
+	.ascii "FQ$XFQ$X!!$X`Q!!!!$XFQ$X!!$XFQ$XFQ$XFQ$X!!$XFQ$XFQ$X!!$X`Q!!"
+	.ascii "!!$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$X!!$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$X"
+	.ascii "FQ$XFQ$XFQ$XFQ$X!!$XFQ$XFQ$XFQ$XFQ$X!!$XFQ$XFQ$XFQ$XFQ$XFQ$X"
+	.ascii "FQ$XFQ$XFQ$X!!$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$X`Q!!FQ$XFQ$X!!$X`Q!!"
+	.ascii "!!$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$X!!$X`Q!!!!$XFQ$XFQ$XFQ$XFQ$XFQ$X"
+	.ascii "!!!!FQ$XFQ$XFQ$X!!$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$X!!$XFQ$X"
+	.ascii "FQ$X!!$XFQ$XFQ$X!!$X`Q!!!!$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$X!!$XFQ$X"
+	.ascii "FQ$XFQ$XFQ$XFQ$XFQ$X!!$X`Q!!!!$XFQ$XFQ$X!!$XFQ$XFQ$XFQ$XFQ$X"
+	.ascii "FQ$XFQ$X!!$X`Q!!!!$XFQ$XFQ$XFQ$XFQ$XFQ$XFQ$X!!$XFQ$XFQ$XFQ$X"
+	.ascii "FQ$XFQ$XFQ$XFQ$X!!$XFQ$XFQ$XFQ$X!!$XFQ$X!!!!!!!!FQ$XFQ$X!!$X"
+	.ascii "FQ$XFQ$XFQ$XFQ$XFQ$X!!!!FQ$XFQ$X!!$X`Q!!!!$X!!!!!!!!FQ$XFQ$X"
+	.ascii "!!!!!!!!FQ$XFQ$X!!!!FQ$X!!!!FQ$XFQ$XFQ$X!!!!FQ$XFQ$XFQ$X!!$X"
+	.ascii "FQ$X!!!!!!!!!!!!FQ$X!!!!!!!!FQ$XFQ$X!!!!!!!!!!!!FQ$XFQ$X!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!FQ$X"
+	.db 0x00
+___str_1:
+	.ascii "!!!!!!!!!!!!'"
+	.db 0x5C
+	.ascii "5!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!'"
+	.db 0x5C
+	.ascii "5!!!!!!!!!!!!!!!!!!!!!(==!(^=!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!(^=!(==!!!!!!!!!!!!!'"
+	.db 0x5C
+	.ascii "M!)>]!(--!!!!!"
+	.ascii "!!!!!!!![/E#C@!!1?-!``]!``]!``]!!!!!!!!!!!!!(--!)>]!'"
+	.db 0x5C
+	.ascii "M!!!!!"
+	.ascii "!!!!F`]!&J5!(-Y!!!!!`Q$XWAX.7=E>A`I!Y`M!``]!H@Y!6]E>WAX.`Q$X"
+	.ascii "!!!!(-Y!&J5!F`]!!!!!!!!!!!!!%HM!(NE!!!!!`Q$X`Q$X$-96A09!``]!"
+	.ascii "``]!>`1!$=96`Q$X`Q$X!!!!(NE!%HM!!!!!!!!!!!!!!!!!%89!(=5!!!!!"
+	.ascii "%'Q!)_9!(^]!FO]!``]!``]!F?]!(N]!)_9!%'Q!!!!!(=5!%89!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!F`]!$[=!=/5!U0]!W@I!"
+	.db 0x5C
+	.ascii "`Q!``]!``]!``]!``]!``]!=?5!"
+	.ascii "$[=!F`]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!F`]!G>U!``]!S`=!``]!``]!"
+	.ascii "``]!``]!``]!``]!F>Q!F`]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "F`]!``]!,_%!A?Q!``]!``]!``]!``]!``]!F`]!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!F`]!``]!(.Y!@?Q!``]!``]!`@]!``]!``]!F`]!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!F`]!N@5!=/M!BOU!``]!"
+	.ascii "^`Y!``]!``]!S0=!F`]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "F`]!0_-!``]!E/Y!,_!!YPM!``]!ZPQ!0?-!F`]!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!%HA!%]A!)NY!9_A!E?]!``]!``]!PP5!6O9!(^Y!%]A!"
+	.ascii "%HA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#UY!)>Y!)>M!&+9!!+9!<L9!``]!"
+	.ascii "``]!:,9!!+9!&;9!)>M!)>Y!#UY!!!!!!!!!!!!!!!!!!!!!$WA!)>]!)>]!"
+	.ascii ")>Y!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!)>Y!)>]!)>]!$WA!!!!!!!!!"
+	.ascii "!!!!!!!!%85!)>Y!)>Y!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii ")>Y!)>Y!%85!!!!!!!!!!!!!!!!!&J9!(MM!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!(MM!&J9!!!!!!!!!!!!!'"
+	.db 0x5C
+	.ascii "M!)>]!(--!F`]!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!F`]!(--!)>]!'"
+	.db 0x5C
+	.ascii "M!!!!!"
+	.ascii "!!!!F`]!(==!(^=!F`]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "F`]!(^=!(==!F`]!!!!!!!!!!!!!$W5!'"
+	.db 0x5C
+	.ascii "5!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!'"
+	.db 0x5C
+	.ascii "5!$W5!!!!!!!!!"
+	.db 0x00
+___str_2:
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!F`]!'"
+	.db 0x5C
+	.ascii "M!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!F`]!'"
+	.db 0x5C
+	.ascii "M!!!!!!!!!$W5!(==!)>]!&J9!%85!"
+	.ascii "$WA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!%89!%HM!&J5!)>]!(==!!!!!"
+	.ascii "'"
+	.db 0x5C
+	.ascii "5!(^=!(--!(MM!)>Y!)>]!#UY!!!!!!!!!!!!!!!!!!!!!!!!!F`]!(=5!"
+	.ascii "(NE!(-Y!(--!(^=!'"
+	.db 0x5C
+	.ascii "5!!!!!F`]!F`]!!!!!)>Y!)>]!)>Y!%HA!!!!!!!!!"
+	.ascii "!!!!!!!!F`]!$[=!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii ")>Y!)>M!%]A!F`]!F`]!F`]!F`]!G>U!=/5!%'Q!`Q$X`Q$X!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!&+9!)NY!0_-!N@5!``]!``]!``]!U0]!)_9!"
+	.ascii "`Q$XWAX.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!+9!9_A!``]!=/M!"
+	.ascii "(.Y!,_%!S`=!W@I!(^]!$-967=E>[/E#!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!<L9!E?]!E/Y!BOU!@?Q!A?Q!``]!"
+	.db 0x5C
+	.ascii "`Q!FO]!A09!A`I!C@!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!``]!``]!,_!!``]!``]!``]!``]!``]!``]!"
+	.ascii "``]!Y`M!1?-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!``]!``]!YPM!^`Y!"
+	.ascii "``]!``]!``]!``]!``]!``]!``]!``]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!:,9!PP5!``]!``]!`@]!``]!``]!``]!F?]!>`1!H@Y!``]!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!+9!6O9!ZPQ!``]!``]!``]!``]!``]!(N]!"
+	.ascii "$=966]E>``]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!&;9!(^Y!0?-!S0=!"
+	.ascii "``]!``]!``]!``]!)_9!`Q$XWAX.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii ")>Y!)>M!%]A!F`]!F`]!F`]!F`]!F>Q!=?5!%'Q!`Q$X`Q$X!!!!!!!!!!!!"
+	.ascii "!!!!F`]!F`]!!!!!)>Y!)>]!)>Y!%HA!!!!!!!!!!!!!!!!!F`]!$[=!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!'"
+	.db 0x5C
+	.ascii "5!(^=!(--!(MM!)>Y!)>]!#UY!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!F`]!(=5!(NE!(-Y!(--!(^=!'"
+	.db 0x5C
+	.ascii "5!$W5!(==!)>]!&J9!%85!"
+	.ascii "$WA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!%89!%HM!&J5!)>]!(==!!!!!"
+	.ascii "!!!!F`]!'"
+	.db 0x5C
+	.ascii "M!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!F`]!'"
+	.db 0x5C
+	.ascii "M!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.db 0x00
+___str_3:
+	.ascii "!!!!!!!!$W5!'"
+	.db 0x5C
+	.ascii "5!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!'"
+	.db 0x5C
+	.ascii "5!$W5!!!!!!!!!!!!!F`]!(==!(^=!F`]!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!F`]!(^=!(==!F`]!!!!!!!!!'"
+	.db 0x5C
+	.ascii "M!)>]!(--!F`]!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!F`]!(--!)>]!'"
+	.db 0x5C
+	.ascii "M!!!!!"
+	.ascii "!!!!!!!!&J9!(MM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!(MM!&J9!!!!!!!!!!!!!!!!!%85!)>Y!)>Y!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!)>Y!)>Y!%85!!!!!!!!!!!!!!!!!$WA!)>]!)>]!"
+	.ascii ")>Y!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!)>Y!)>]!)>]!$WA!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!#UY!)>Y!)>M!&;9!!+9!:,9!``]!``]!<L9!!+9!&+9!)>M!"
+	.ascii ")>Y!#UY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!%HA!%]A!(^Y!6O9!PP5!``]!"
+	.ascii "``]!E?]!9_A!)NY!%]A!%HA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "F`]!0?-!ZPQ!``]!YPM!,_!!E/Y!``]!0_-!F`]!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!F`]!S0=!``]!``]!^`Y!``]!BOU!=/M!N@5!F`]!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!F`]!``]!``]!`@]!``]!"
+	.ascii "``]!@?Q!(.Y!``]!F`]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "F`]!``]!``]!``]!``]!``]!A?Q!,_%!``]!F`]!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!F`]!F>Q!``]!``]!``]!``]!``]!``]!S`=!``]!G>U!"
+	.ascii "F`]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!F`]!$[=!=?5!``]!``]!``]!``]!"
+	.ascii "``]!"
+	.db 0x5C
+	.ascii "`Q!W@I!U0]!=/5!$[=!F`]!!!!!!!!!!!!!!!!!!!!!%89!(=5!!!!!"
+	.ascii "%'Q!)_9!(N]!F?]!``]!``]!FO]!(^]!)_9!%'Q!!!!!(=5!%89!!!!!!!!!"
+	.ascii "!!!!!!!!%HM!(NE!!!!!`Q$X`Q$X$=96>`1!``]!``]!A09!$-96`Q$X`Q$X"
+	.ascii "!!!!(NE!%HM!!!!!!!!!!!!!F`]!&J5!(-Y!!!!!`Q$XWAX.6]E>H@Y!``]!"
+	.ascii "Y`M!A`I!7=E>WAX.`Q$X!!!!(-Y!&J5!F`]!!!!!!!!!'"
+	.db 0x5C
+	.ascii "M!)>]!(--!!!!!"
+	.ascii "!!!!!!!!``]!``]!``]!1?-!C@!![/E#!!!!!!!!!!!!(--!)>]!'"
+	.db 0x5C
+	.ascii "M!!!!!"
+	.ascii "!!!!!!!!(==!(^=!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!(^=!(==!!!!!!!!!!!!!!!!!!!!!'"
+	.db 0x5C
+	.ascii "5!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!'"
+	.db 0x5C
+	.ascii "5!!!!!!!!!!!!!"
+	.db 0x00
+___str_4:
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!'"
+	.db 0x5C
+	.ascii "M!F`]!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!'"
+	.db 0x5C
+	.ascii "M!F`]!!!!!!!!!(==!)>]!&J5!%HM!"
+	.ascii "%89!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!$WA!%85!&J9!)>]!(==!$W5!"
+	.ascii "'"
+	.db 0x5C
+	.ascii "5!(^=!(--!(-Y!(NE!(=5!F`]!!!!!!!!!!!!!!!!!!!!!!!!!#UY!)>]!"
+	.ascii ")>Y!(MM!(--!(^=!'"
+	.db 0x5C
+	.ascii "5!!!!!!!!!!!!!!!!!!!!!!!!!$[=!F`]!!!!!!!!!"
+	.ascii "!!!!!!!!%HA!)>Y!)>]!)>Y!!!!!F`]!F`]!!!!!!!!!!!!!!!!!`Q$X`Q$X"
+	.ascii "%'Q!=?5!F>Q!F`]!F`]!F`]!F`]!%]A!)>M!)>Y!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!WAX.`Q$X)_9!``]!``]!``]!``]!S0=!0?-!(^Y!&;9!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!``]!6]E>$=96(N]!``]!``]!``]!``]!"
+	.ascii "``]!ZPQ!6O9!!+9!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!``]!H@Y!>`1!"
+	.ascii "F?]!``]!``]!``]!`@]!``]!``]!PP5!:,9!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!``]!``]!``]!``]!``]!``]!``]!``]!^`Y!YPM!``]!``]!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!1?-!Y`M!``]!``]!``]!``]!``]!``]!"
+	.ascii "``]!,_!!``]!``]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!C@!!A`I!A09!"
+	.ascii "FO]!"
+	.db 0x5C
+	.ascii "`Q!``]!A?Q!@?Q!BOU!E/Y!E?]!<L9!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!![/E#7=E>$-96(^]!W@I!S`=!,_%!(.Y!=/M!``]!9_A!!+9!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!WAX.`Q$X)_9!U0]!``]!``]!``]!"
+	.ascii "N@5!0_-!)NY!&+9!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`Q$X`Q$X"
+	.ascii "%'Q!=/5!G>U!F`]!F`]!F`]!F`]!%]A!)>M!)>Y!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!$[=!F`]!!!!!!!!!!!!!!!!!%HA!)>Y!)>]!"
+	.ascii ")>Y!!!!!F`]!F`]!!!!!'"
+	.db 0x5C
+	.ascii "5!(^=!(--!(-Y!(NE!(=5!F`]!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!#UY!)>]!)>Y!(MM!(--!(^=!'"
+	.db 0x5C
+	.ascii "5!!!!!(==!)>]!&J5!%HM!"
+	.ascii "%89!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!$WA!%85!&J9!)>]!(==!$W5!"
+	.ascii "!!!!!!!!'"
+	.db 0x5C
+	.ascii "M!F`]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!'"
+	.db 0x5C
+	.ascii "M!F`]!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.ascii "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	.db 0x00
 	.area _INITIALIZER
+__xinit__width:
+	.dw #0x0014
+__xinit__height:
+	.dw #0x0014
+__xinit__header_data:
+	.dw ___str_0
+__xinit__width_Rana:
+	.dw #0x0014
+__xinit__height_Rana:
+	.dw #0x0014
+__xinit__header_Rana:
+	.dw ___str_1
+__xinit__width_Rana2:
+	.dw #0x0014
+__xinit__height_Rana2:
+	.dw #0x0014
+__xinit__header_Rana2:
+	.dw ___str_2
+__xinit__width_Rana3:
+	.dw #0x0014
+__xinit__height_Rana3:
+	.dw #0x0014
+__xinit__header_Rana3:
+	.dw ___str_3
+__xinit__width_Rana4:
+	.dw #0x0014
+__xinit__height_Rana4:
+	.dw #0x0014
+__xinit__header_Rana4:
+	.dw ___str_4
 	.area _CABS (ABS)
