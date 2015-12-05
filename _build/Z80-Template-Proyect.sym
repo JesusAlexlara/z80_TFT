@@ -25,11 +25,11 @@ Symbol Table
     _URRBR                                                      =  0010 
     _URTHR                                                      =  0010 
   1 ___ret_aux                                                     0000 GR
-  0 ___str_0                                                       161F R
-  0 ___str_1                                                       1C60 R
-  0 ___str_2                                                       22A1 R
-  0 ___str_3                                                       28E2 R
-  0 ___str_4                                                       2F23 R
+  0 ___str_0                                                       16BA R
+  0 ___str_1                                                       1CFB R
+  0 ___str_2                                                       233C R
+  0 ___str_3                                                       297D R
+  0 ___str_4                                                       2FBE R
     __mullong_rrx_s                                                **** GX
   7 __xinit__header_Rana                                           000A R
   7 __xinit__header_Rana2                                          0010 R
@@ -46,9 +46,9 @@ Symbol Table
   7 __xinit__width_Rana2                                           000C R
   7 __xinit__width_Rana3                                           0012 R
   7 __xinit__width_Rana4                                           0018 R
-  0 _color565                                                      14C6 GR
-  0 _color565_end                                                  14FB GR
-  0 _color565_start                                                14C6 GR
+  0 _color565                                                      1508 GR
+  0 _color565_end                                                  153D GR
+  0 _color565_start                                                1508 GR
   1 _cuadroMorado                                                  0001 GR
   0 _delay_100us                                                   01E0 GR
   0 _delay_100us_end                                               01E9 GR
@@ -64,21 +64,21 @@ Hexadecimal [16-Bits]
 Symbol Table
 
   0 _delay_ms_start                                                01E9 GR
-  0 _drawGraf                                                      0A09 GR
-  0 _drawGraf_end                                                  10BB GR
-  0 _drawGraf_start                                                0A09 GR
-  0 _drawPixel                                                     0811 GR
-  0 _drawPixel_end                                                 0882 GR
-  0 _drawPixel_start                                               0811 GR
-  0 _fillRect                                                      0882 GR
-  0 _fillRect_end                                                  0A09 GR
-  0 _fillRect_start                                                0882 GR
-  0 _fillScreen                                                    0604 GR
-  0 _fillScreen_end                                                063A GR
-  0 _fillScreen_start                                              0604 GR
-  0 _flood                                                         063A GR
-  0 _flood_end                                                     0811 GR
-  0 _flood_start                                                   063A GR
+  0 _drawGraf                                                      0A4B GR
+  0 _drawGraf_end                                                  10FD GR
+  0 _drawGraf_start                                                0A4B GR
+  0 _drawPixel                                                     0853 GR
+  0 _drawPixel_end                                                 08C4 GR
+  0 _drawPixel_start                                               0853 GR
+  0 _fillRect                                                      08C4 GR
+  0 _fillRect_end                                                  0A4B GR
+  0 _fillRect_start                                                08C4 GR
+  0 _fillScreen                                                    0646 GR
+  0 _fillScreen_end                                                067C GR
+  0 _fillScreen_start                                              0646 GR
+  0 _flood                                                         067C GR
+  0 _flood_end                                                     0853 GR
+  0 _flood_start                                                   067C GR
   0 _getchar                                                       021C GR
   0 _getchar_end                                                   021F GR
   0 _getchar_start                                                 021C GR
@@ -92,9 +92,9 @@ Symbol Table
   2 _height_Rana2                                                  000E R
   2 _height_Rana3                                                  0014 R
   2 _height_Rana4                                                  001A R
-  0 _init_pantalla                                                 14FB GR
-  0 _init_pantalla_end                                             1522 GR
-  0 _init_pantalla_start                                           14FB GR
+  0 _init_pantalla                                                 153D GR
+  0 _init_pantalla_end                                             1564 GR
+  0 _init_pantalla_start                                           153D GR
   0 _io_read                                                       0011 GR
   0 _io_read_buffer                                                0042 GR
   0 _io_read_buffer_end                                            005D GR
@@ -115,29 +115,29 @@ Symbol Table
   0 _isr_vector66_end                                              022D GR
   0 _isr_vector66_start                                            021F GR
   1 _jug                                                           0FA1 GR
-  0 _lcd_init                                                      0333 GR
-  0 _lcd_init_end                                                  03DC GR
-  0 _lcd_init_start                                                0333 GR
+  0 _lcd_init                                                      0375 GR
+  0 _lcd_init_end                                                  041E GR
+  0 _lcd_init_start                                                0375 GR
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 3.
 Hexadecimal [16-Bits]
 
 Symbol Table
 
   0 _main                                                          0307 GR
-  0 _main_end                                                      0328 GR
+  0 _main_end                                                      036A GR
   0 _main_start                                                    0307 GR
-  0 _pintaAzul                                                     1522 GR
-  0 _pintaAzul_end                                                 153B GR
-  0 _pintaAzul_start                                               1522 GR
-  0 _pintaBarra                                                    1556 GR
-  0 _pintaBarra_end                                                159F GR
-  0 _pintaBarra_start                                              1556 GR
-  0 _pintaNegro                                                    153B GR
-  0 _pintaNegro_end                                                1556 GR
-  0 _pintaNegro_start                                              153B GR
-  0 _pintaSprite                                                   10BB GR
-  0 _pintaSprite_end                                               14C6 GR
-  0 _pintaSprite_start                                             10BB GR
+  0 _pintaAzul                                                     1564 GR
+  0 _pintaAzul_end                                                 157D GR
+  0 _pintaAzul_start                                               1564 GR
+  0 _pintaBarra                                                    1598 GR
+  0 _pintaBarra_end                                                15E1 GR
+  0 _pintaBarra_start                                              1598 GR
+  0 _pintaNegro                                                    157D GR
+  0 _pintaNegro_end                                                1598 GR
+  0 _pintaNegro_start                                              157D GR
+  0 _pintaSprite                                                   10FD GR
+  0 _pintaSprite_end                                               1508 GR
+  0 _pintaSprite_start                                             10FD GR
   0 _ppi_clear_portc_bit                                           01CE GR
   0 _ppi_clear_portc_bit_end                                       01D7 GR
   0 _ppi_clear_portc_bit_start                                     01CE GR
@@ -154,18 +154,18 @@ Symbol Table
   1 _rana2                                                         0641 GR
   1 _rana3                                                         0961 GR
   1 _rana4                                                         0C81 GR
-  0 _repinta_rana                                                  159F GR
-  0 _repinta_rana_end                                              161F GR
-  0 _repinta_rana_start                                            159F GR
-  0 _reset                                                         05B0 GR
-  0 _reset_end                                                     0604 GR
-  0 _reset_start                                                   05B0 GR
-  0 _setAddrWindow                                                 0551 GR
-  0 _setAddrWindow_end                                             05B0 GR
-  0 _setAddrWindow_start                                           0551 GR
-  0 _system_init                                                   0328 GR
-  0 _system_init_end                                               0333 GR
-  0 _system_init_start                                             0328 GR
+  0 _repinta_rana                                                  15E1 GR
+  0 _repinta_rana_end                                              16BA GR
+  0 _repinta_rana_start                                            15E1 GR
+  0 _reset                                                         05F2 GR
+  0 _reset_end                                                     0646 GR
+  0 _reset_start                                                   05F2 GR
+  0 _setAddrWindow                                                 0593 GR
+  0 _setAddrWindow_end                                             05F2 GR
+  0 _setAddrWindow_start                                           0593 GR
+  0 _system_init                                                   036A GR
+  0 _system_init_end                                               0375 GR
+  0 _system_init_start                                             036A GR
   0 _uart_disable_interrupts                                       0177 GR
   0 _uart_disable_interrupts_end                                   017C GR
   0 _uart_disable_interrupts_start                                 0177 GR
@@ -200,18 +200,18 @@ Symbol Table
   2 _width_Rana2                                                   000C R
   2 _width_Rana3                                                   0012 R
   2 _width_Rana4                                                   0018 R
-  0 _write8                                                        053D GR
-  0 _write8_end                                                    0551 GR
-  0 _write8_start                                                  053D GR
-  0 _writeRegister16                                               0500 GR
-  0 _writeRegister16_end                                           053D GR
-  0 _writeRegister16_start                                         0500 GR
-  0 _writeRegister24                                               03DC GR
-  0 _writeRegister24_end                                           045B GR
-  0 _writeRegister24_start                                         03DC GR
-  0 _writeRegister32                                               045B GR
-  0 _writeRegister32_end                                           0500 GR
-  0 _writeRegister32_start                                         045B GR
+  0 _write8                                                        057F GR
+  0 _write8_end                                                    0593 GR
+  0 _write8_start                                                  057F GR
+  0 _writeRegister16                                               0542 GR
+  0 _writeRegister16_end                                           057F GR
+  0 _writeRegister16_start                                         0542 GR
+  0 _writeRegister24                                               041E GR
+  0 _writeRegister24_end                                           049D GR
+  0 _writeRegister24_start                                         041E GR
+  0 _writeRegister32                                               049D GR
+  0 _writeRegister32_end                                           0542 GR
+  0 _writeRegister32_start                                         049D GR
 
 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 5.
@@ -219,7 +219,7 @@ Hexadecimal [16-Bits]
 
 Area Table
 
-   0 _CODE                                      size 3564   flags    0
+   0 _CODE                                      size 35FF   flags    0
    1 _DATA                                      size  FA7   flags    0
    2 _INITIALIZED                               size   1E   flags    0
    3 _DABS                                      size    0   flags    8

@@ -6,6 +6,9 @@
 
 #define TFTLCD_DELAY 0xFF
 
+#define TOUCHA PP1_PORTB |= BV(PB7)
+#define TOUCHB PP1_PORTB |= BV(PB6)
+
 #define RESET_LOW PPI_PORTA &= ~BV(PA4)
 #define RESET_HIGH PPI_PORTA |= BV(PA4)
 #define RD_ACTIVE PPI_PORTA &= ~BV(PA0)

@@ -55,14 +55,30 @@ ISR_NMI()
 
 ISR_INT_38()
 {
-       
+	DI();
+	if(!BV(PC1))
+	{
+		repinta_rana(1);
+	}
+	else if(!BV(PC2))
+	{
+		
+	}else if(!BV(PC3))
+	{
+		
+	}
+	
+	EI();
 }
 
 
 int main()
 {  
+	int c = 0;
+	
 	jug.x = 20;
 	jug.y = 300;
+	jug.altura = 15;
     system_init(); 
     PPI_PORTA = 0xff;
     
@@ -72,8 +88,22 @@ int main()
     
     while(TRUE)
     {
-		SLEEP();
-    }      
+		c++;
+		if(c > 500)
+		{
+			repinta_rana(2);
+			c++;
+		}
+		
+		if(jug.x > 100)
+		{
+			TOUCHA;
+			TOUCHB;
+			SLEEP();
+		}
+		
+		delay_ms(2);
+    }   
 }
 
 void system_init()
@@ -440,9 +470,9 @@ uint16_t color565(uint8_t r, uint8_t g, uint8_t b) {
 
 void init_pantalla()
 {
-	drawGraf();
+	drawGraf();  //carga imagenes
 	
-	pintaAzul();
+	pintaAzul(); 
 	pintaNegro();
 	
 	pintaBarra(0);
@@ -471,20 +501,22 @@ void pintaBarra(int i)
 void repinta_rana(int i)
 {
 	if(jug.altura <= 7)
+	
+	switch(i)
 	{
-		fillRect(jug.x, jug.y, 20, 20, BLUE);
+		case 1:
+		case 2:
+			if((jug.x + 20) <= 220)
+			{
+				jug.x += 20;
+				pintaSprite(jug.x, jug.y, 3);
+			}
+			else
+			{
+				pintaSprite(jug.x, jug.y, 3);
+			}
+		break;		
 	}
-	else{
-		fillRect(jug.x, jug.y, 20, 20, BLACK);
-	}
-	switch(jug.altura)
-	{
-		case 15:
-		case 8:
-			pintaSprite(jug.x, jug.y, 1);
-		break;
-	}
-	//aumenta y repinta		
 }
 	
 
