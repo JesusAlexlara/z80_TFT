@@ -56,19 +56,12 @@ ISR_NMI()
 ISR_INT_38()
 {
 	DI();
-	if(!BV(PC1))
-	{
-		repinta_rana(1);
-	}
-	else if(!BV(PC2))
-	{
-		
-	}else if(!BV(PC3))
-	{
-		
-	}
 	
+	if(BV(PC5) == 0x0)
+		repinta_rana(2);
+		
 	EI();
+	
 }
 
 
@@ -84,25 +77,11 @@ int main()
     
     fillScreen(BLACK);
     init_pantalla();
-    
+    EI();
     
     while(TRUE)
     {
-		c++;
-		if(c > 500)
-		{
-			repinta_rana(2);
-			c++;
-		}
-		
-		if(jug.x > 100)
-		{
-			TOUCHA;
-			TOUCHB;
-			SLEEP();
-		}
-		
-		delay_ms(2);
+		SLEEP();
     }   
 }
 
@@ -110,8 +89,9 @@ void system_init()
 {
 	PPI_CTRL = 0x89;
 	PPI_PORTA = 0xff;
-
-	lcd_init();   
+	PPI_PORTC = 0x00;
+	lcd_init();  
+	IM(1);
 }
 
 void lcd_init()
@@ -501,6 +481,19 @@ void pintaBarra(int i)
 void repinta_rana(int i)
 {
 	if(jug.altura <= 7)
+	{
+		fillRect(jug.x, jug.y, 20, 20, BLUE);
+	}
+	else
+	{
+		fillRect(jug.x, jug.y, 20, 20, BLACK);
+	}
+	switch(jug.altura)
+	{
+		case 8:
+		case 14:
+			pintaSprite(jug.x, jug.y, 2);
+	}
 	
 	switch(i)
 	{

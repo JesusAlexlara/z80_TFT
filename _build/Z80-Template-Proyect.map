@@ -44,11 +44,11 @@ Area                                    Addr        Size        Decimal Bytes (A
      0000001E  l__INITIALIZER                  
      00000090  s__CODE                         
      00000FA7  l__DATA                         
-     00003C0D  l__CODE                         
-     00003C9D  s__HOME                         
-     00003C9D  s__INITIALIZER                  
-     00003CBB  s__GSINIT                       
-     00003CCA  s__GSFINAL                      
+     00003BDB  l__CODE                         
+     00003C6B  s__HOME                         
+     00003C6B  s__INITIALIZER                  
+     00003C89  s__GSINIT                       
+     00003C98  s__GSFINAL                      
      00008000  s__DATA                         
      00008FA7  s__INITIALIZED                  
      00008FC5  s__BSEG                         
@@ -60,7 +60,7 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_CODE                               00000090    00003C0D =       15373. bytes (REL,CON)
+_CODE                               00000090    00003BDB =       15323. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
@@ -119,7 +119,7 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_CODE                               00000090    00003C0D =       15373. bytes (REL,CON)
+_CODE                               00000090    00003BDB =       15323. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
@@ -138,177 +138,177 @@ _CODE                               00000090    00003C0D =       15373. bytes (R
      000002BD  _isr_vector66_end                  main
      00000389  _isr_vector38                      main
      00000389  _isr_vector38_start                main
-     00000397  _isr_vector38_end                  main
-     00000397  _main                              main
-     00000397  _main_start                        main
-     000003FA  _main_end                          main
-     000003FA  _system_init                       main
-     000003FA  _system_init_start                 main
-     00000405  _lcd_init                          main
-     00000405  _lcd_init_start                    main
-     00000405  _system_init_end                   main
-     000004AE  _lcd_init_end                      main
-     000004AE  _writeRegister24                   main
-     000004AE  _writeRegister24_start             main
-     0000052D  _writeRegister24_end               main
-     0000052D  _writeRegister32                   main
-     0000052D  _writeRegister32_start             main
-     000005D2  _writeRegister16                   main
-     000005D2  _writeRegister16_start             main
-     000005D2  _writeRegister32_end               main
-     0000060F  _write8                            main
-     0000060F  _write8_start                      main
-     0000060F  _writeRegister16_end               main
-     00000623  _setAddrWindow                     main
-     00000623  _setAddrWindow_start               main
-     00000623  _write8_end                        main
-     00000682  _reset                             main
-     00000682  _reset_start                       main
-     00000682  _setAddrWindow_end                 main
-     000006D6  _fillScreen                        main
-     000006D6  _fillScreen_start                  main
-     000006D6  _reset_end                         main
-     0000070C  _fillScreen_end                    main
-     0000070C  _flood                             main
-     0000070C  _flood_start                       main
-     000008E3  _drawPixel                         main
-     000008E3  _drawPixel_start                   main
-     000008E3  _flood_end                         main
+     00000399  _isr_vector38_end                  main
+     00000399  _main                              main
+     00000399  _main_start                        main
+     000003C1  _main_end                          main
+     000003C1  _system_init                       main
+     000003C1  _system_init_start                 main
+     000003D3  _lcd_init                          main
+     000003D3  _lcd_init_start                    main
+     000003D3  _system_init_end                   main
+     0000047C  _lcd_init_end                      main
+     0000047C  _writeRegister24                   main
+     0000047C  _writeRegister24_start             main
+     000004FB  _writeRegister24_end               main
+     000004FB  _writeRegister32                   main
+     000004FB  _writeRegister32_start             main
+     000005A0  _writeRegister16                   main
+     000005A0  _writeRegister16_start             main
+     000005A0  _writeRegister32_end               main
+     000005DD  _write8                            main
+     000005DD  _write8_start                      main
+     000005DD  _writeRegister16_end               main
+     000005F1  _setAddrWindow                     main
+     000005F1  _setAddrWindow_start               main
+     000005F1  _write8_end                        main
+     00000650  _reset                             main
+     00000650  _reset_start                       main
+     00000650  _setAddrWindow_end                 main
+     000006A4  _fillScreen                        main
+     000006A4  _fillScreen_start                  main
+     000006A4  _reset_end                         main
+     000006DA  _fillScreen_end                    main
+     000006DA  _flood                             main
+     000006DA  _flood_start                       main
+     000008B1  _drawPixel                         main
+     000008B1  _drawPixel_start                   main
+     000008B1  _flood_end                         main
 ASxxxx Linker V03.00 + NoICE + sdld,  page 4.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_CODE                               00000090    00003C0D =       15373. bytes (REL,CON)
+_CODE                               00000090    00003BDB =       15323. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
-     00000954  _drawPixel_end                     main
-     00000954  _fillRect                          main
-     00000954  _fillRect_start                    main
-     00000ADB  _drawGraf                          main
-     00000ADB  _drawGraf_start                    main
-     00000ADB  _fillRect_end                      main
-     0000118D  _drawGraf_end                      main
-     0000118D  _pintaSprite                       main
-     0000118D  _pintaSprite_start                 main
-     00001598  _color565                          main
-     00001598  _color565_start                    main
-     00001598  _pintaSprite_end                   main
-     000015CD  _color565_end                      main
-     000015CD  _init_pantalla                     main
-     000015CD  _init_pantalla_start               main
-     000015F4  _init_pantalla_end                 main
-     000015F4  _pintaAzul                         main
-     000015F4  _pintaAzul_start                   main
-     0000160D  _pintaAzul_end                     main
-     0000160D  _pintaNegro                        main
-     0000160D  _pintaNegro_start                  main
-     00001628  _pintaBarra                        main
-     00001628  _pintaBarra_start                  main
-     00001628  _pintaNegro_end                    main
-     00001671  _pintaBarra_end                    main
-     00001671  _repinta_rana                      main
-     00001671  _repinta_rana_start                main
-     0000174A  _repinta_rana_end                  main
-     0000368F  __mullong_rrf_s                    
-     0000368F  __mullong_rrx_s                    
-     00003692  __modslong_rrf_s                   
-     00003692  __modslong_rrx_s                   
-     00003695  __modulong_rrf_s                   
-     00003695  __modulong_rrx_s                   
-     00003698  __divslong_rrf_s                   
-     00003698  __divslong_rrx_s                   
-     0000369B  __divulong_rrf_s                   
-     0000369B  __divulong_rrx_s                   
-     0000369E  __mulint_rrf_s                     
-     000036A4  __divsint_rrf_s                    
-     000036AA  __divuint_rrf_s                    
-     000036B0  __mulschar_rrf_s                   
-     000036B6  __divschar_rrf_s                   
-     000036BC  __modschar_rrf_s                   
-     000036C2  __muluchar_rrf_s                   
-     000036C8  __divuchar_rrf_s                   
-     000036CE  __moduchar_rrf_s                   
-     000036D4  __mulsuchar_rrf_s                  
-     000036DA  __divsuchar_rrf_s                  
-     000036E0  __modsuchar_rrf_s                  
-     000036E6  __muluschar_rrf_s                  
+     00000922  _drawPixel_end                     main
+     00000922  _fillRect                          main
+     00000922  _fillRect_start                    main
+     00000AA9  _drawGraf                          main
+     00000AA9  _drawGraf_start                    main
+     00000AA9  _fillRect_end                      main
+     0000115B  _drawGraf_end                      main
+     0000115B  _pintaSprite                       main
+     0000115B  _pintaSprite_start                 main
+     00001566  _color565                          main
+     00001566  _color565_start                    main
+     00001566  _pintaSprite_end                   main
+     0000159B  _color565_end                      main
+     0000159B  _init_pantalla                     main
+     0000159B  _init_pantalla_start               main
+     000015C2  _init_pantalla_end                 main
+     000015C2  _pintaAzul                         main
+     000015C2  _pintaAzul_start                   main
+     000015DB  _pintaAzul_end                     main
+     000015DB  _pintaNegro                        main
+     000015DB  _pintaNegro_start                  main
+     000015F6  _pintaBarra                        main
+     000015F6  _pintaBarra_start                  main
+     000015F6  _pintaNegro_end                    main
+     0000163F  _pintaBarra_end                    main
+     0000163F  _repinta_rana                      main
+     0000163F  _repinta_rana_start                main
+     00001718  _repinta_rana_end                  main
+     0000365D  __mullong_rrf_s                    
+     0000365D  __mullong_rrx_s                    
+     00003660  __modslong_rrf_s                   
+     00003660  __modslong_rrx_s                   
+     00003663  __modulong_rrf_s                   
+     00003663  __modulong_rrx_s                   
+     00003666  __divslong_rrf_s                   
+     00003666  __divslong_rrx_s                   
+     00003669  __divulong_rrf_s                   
+     00003669  __divulong_rrx_s                   
+     0000366C  __mulint_rrf_s                     
+     00003672  __divsint_rrf_s                    
+     00003678  __divuint_rrf_s                    
+     0000367E  __mulschar_rrf_s                   
+     00003684  __divschar_rrf_s                   
+     0000368A  __modschar_rrf_s                   
+     00003690  __muluchar_rrf_s                   
+     00003696  __divuchar_rrf_s                   
+     0000369C  __moduchar_rrf_s                   
+     000036A2  __mulsuchar_rrf_s                  
+     000036A8  __divsuchar_rrf_s                  
+     000036AE  __modsuchar_rrf_s                  
+     000036B4  __muluschar_rrf_s                  
 ASxxxx Linker V03.00 + NoICE + sdld,  page 5.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_CODE                               00000090    00003C0D =       15373. bytes (REL,CON)
+_CODE                               00000090    00003BDB =       15323. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
-     000036EC  __divuschar_rrf_s                  
-     000036F2  __moduschar_rrf_s                  
-     000036F8  __modsint_rrf_s                    
-     000036FE  __moduint_rrf_s                    
-     00003704  __moduchar_rrx_s                   
-     0000370B  __moduchar_rrx_hds                 
-     00003710  __moduint_rrx_s                    
-     00003716  __moduint_rrx_hds                  
-     0000371B  __divsint_rrx_s                    
-     00003724  __divschar_rrx_s                   
-     0000372B  __div8                             
-     0000372B  __divschar_rrx_hds                 
-     0000372F  __div_signexte                     
-     00003733  __div16                            
-     00003733  __divsint_rrx_hds                  
-     00003759  __get_remainder                    
-     00003763  __divuint_rrx_s                    
-     0000376B  __divuchar_rrx_s                   
-     00003772  __divu8                            
-     00003772  __divuchar_rrx_hds                 
-     00003775  __divu16                           
-     00003775  __divuint_rrx_hds                  
-     000037A4  __modsuchar_rrx_s                  
-     000037B3  __moduschar_rrx_s                  
-     000037C5  __divsuchar_rrx_s                  
-     000037D1  __divuschar_rrx_s                  
-     000037E0  __modschar_rrx_s                   
-     000037E7  __modschar_rrx_hds                 
-     000037ED  __modsint_rrx_s                    
-     000037F3  __modsint_rrx_hds                  
-     000037F9  __muluchar_rrx_s                   
-     0000380B  __mulsuchar_rrx_s                  
-     00003815  __muluschar_rrx_s                  
-     0000381F  __mulschar_rrx_s                   
-     00003826  __mulschar_rrx_hds                 
-     00003832  __modslong                         _modslong
-     00003832  __modslong_start                   _modslong
-     000038D6  __modslong_end                     _modslong
-     000038D6  __modulong                         _modulong
-     000038D6  __modulong_start                   _modulong
-     00003993  __divslong                         _divslong
-     00003993  __divslong_start                   _divslong
-     00003993  __modulong_end                     _modulong
-     00003A49  __divslong_end                     _divslong
-     00003A49  __mulint_rrx_s                     
-     00003A4F  __mulint_rrx_hds                   
-     00003A4F  __muluchar_rrx_hds                 
-     00003A51  __mul16                            
-     00003A65  __divulong                         _divulong
-     00003A65  __divulong_start                   _divulong
-     00003AE3  __divulong_end                     _divulong
+     000036BA  __divuschar_rrf_s                  
+     000036C0  __moduschar_rrf_s                  
+     000036C6  __modsint_rrf_s                    
+     000036CC  __moduint_rrf_s                    
+     000036D2  __moduchar_rrx_s                   
+     000036D9  __moduchar_rrx_hds                 
+     000036DE  __moduint_rrx_s                    
+     000036E4  __moduint_rrx_hds                  
+     000036E9  __divsint_rrx_s                    
+     000036F2  __divschar_rrx_s                   
+     000036F9  __div8                             
+     000036F9  __divschar_rrx_hds                 
+     000036FD  __div_signexte                     
+     00003701  __div16                            
+     00003701  __divsint_rrx_hds                  
+     00003727  __get_remainder                    
+     00003731  __divuint_rrx_s                    
+     00003739  __divuchar_rrx_s                   
+     00003740  __divu8                            
+     00003740  __divuchar_rrx_hds                 
+     00003743  __divu16                           
+     00003743  __divuint_rrx_hds                  
+     00003772  __modsuchar_rrx_s                  
+     00003781  __moduschar_rrx_s                  
+     00003793  __divsuchar_rrx_s                  
+     0000379F  __divuschar_rrx_s                  
+     000037AE  __modschar_rrx_s                   
+     000037B5  __modschar_rrx_hds                 
+     000037BB  __modsint_rrx_s                    
+     000037C1  __modsint_rrx_hds                  
+     000037C7  __muluchar_rrx_s                   
+     000037D9  __mulsuchar_rrx_s                  
+     000037E3  __muluschar_rrx_s                  
+     000037ED  __mulschar_rrx_s                   
+     000037F4  __mulschar_rrx_hds                 
+     00003800  __modslong                         _modslong
+     00003800  __modslong_start                   _modslong
+     000038A4  __modslong_end                     _modslong
+     000038A4  __modulong                         _modulong
+     000038A4  __modulong_start                   _modulong
+     00003961  __divslong                         _divslong
+     00003961  __divslong_start                   _divslong
+     00003961  __modulong_end                     _modulong
+     00003A17  __divslong_end                     _divslong
+     00003A17  __mulint_rrx_s                     
+     00003A1D  __mulint_rrx_hds                   
+     00003A1D  __muluchar_rrx_hds                 
+     00003A1F  __mul16                            
+     00003A33  __divulong                         _divulong
+     00003A33  __divulong_start                   _divulong
+     00003AB1  __divulong_end                     _divulong
 ASxxxx Linker V03.00 + NoICE + sdld,  page 6.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_CODE                               00000090    00003C0D =       15373. bytes (REL,CON)
+_CODE                               00000090    00003BDB =       15323. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
-     00003AE3  _isprint                           isprint
-     00003AE3  _isprint_start                     isprint
-     00003B1F  __mullong                          _mullong
-     00003B1F  __mullong_start                    _mullong
-     00003B1F  _isprint_end                       isprint
-     00003C9D  __mullong_end                      _mullong
+     00003AB1  _isprint                           isprint
+     00003AB1  _isprint_start                     isprint
+     00003AED  __mullong                          _mullong
+     00003AED  __mullong_start                    _mullong
+     00003AED  _isprint_end                       isprint
+     00003C6B  __mullong_end                      _mullong
 
 ASxxxx Linker V03.00 + NoICE + sdld,  page 7.
 Hexadecimal  [32-Bits]
@@ -351,7 +351,7 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_INITIALIZER                        00003C9D    0000001E =          30. bytes (REL,CON)
+_INITIALIZER                        00003C6B    0000001E =          30. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
@@ -360,18 +360,18 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_GSINIT                             00003CBB    0000000F =          15. bytes (REL,CON)
+_GSINIT                             00003C89    0000000F =          15. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
-     00003CBB  gsinit                             init
+     00003C89  gsinit                             init
 
 ASxxxx Linker V03.00 + NoICE + sdld,  page 13.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_GSFINAL                            00003CCA    00000001 =           1. bytes (REL,CON)
+_GSFINAL                            00003C98    00000001 =           1. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
